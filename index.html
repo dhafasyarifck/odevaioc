@@ -693,6 +693,17 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
 .close-status .when{ font-size:11px; color:var(--ink-faint); }
 .close-status .reopen-btn{ align-self:flex-start; border:none; background:none; color:var(--g-700); font-size:11.5px; font-weight:700; padding:0; }
 
+/* escalation panel */
+.escalate-panel{ border:1px solid var(--line); border-radius:11px; padding:13px; background:var(--card-tint); }
+.escalate-row{ display:flex; gap:8px; align-items:center; margin-bottom:10px; }
+.escalate-row label{ font-size:11px; color:var(--ink-faint); font-weight:700; text-transform:uppercase; letter-spacing:.03em; flex:0 0 auto; }
+.escalate-select{ flex:1; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font-size:12.5px; background:#fff; color:var(--ink); }
+.escalate-note{ font-size:11px; color:var(--ink-faint); line-height:1.5; margin-bottom:10px; }
+.escalate-btn{ width:100%; border:none; border-radius:9px; padding:10px 12px; background:var(--grad); color:#fff; font-size:12.5px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:6px; }
+.escalate-btn:hover{ filter:brightness(1.04); }
+.escalate-sent{ display:flex; align-items:center; gap:8px; font-size:12px; color:var(--g-700); font-weight:700; padding:6px 2px; }
+.escalate-history{ margin-top:10px; display:flex; flex-direction:column; gap:6px; }
+
 /* ---------------- CLICKABLE SUMMARY ROWS ---------------- */
 .hbar-row{ cursor:pointer; border-radius:8px; transition:background .12s; }
 .hbar-row:hover{ background:var(--card-tint); }
@@ -723,6 +734,541 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
 </head>
 <body>
 
+<!-- ============================================================
+     PRE-DASHBOARD SCREENS: Login → Consent → WA Connect
+     ============================================================ -->
+<style>
+/* ---- Shared screen wrapper ---- */
+.screen {
+  position: fixed; inset: 0; z-index: 8000;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(145deg, #EDFAF4 0%, #F6FCF9 40%, #DFFAEE 100%);
+  transition: opacity .45s ease, transform .45s ease;
+}
+.screen.hidden {
+  opacity: 0; pointer-events: none; transform: scale(.97);
+}
+
+/* Subtle animated mesh background */
+.screen::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 600px 400px at 20% 20%, rgba(95,203,153,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 500px at 80% 80%, rgba(14,107,73,0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 300px at 60% 10%, rgba(23,168,116,0.10) 0%, transparent 70%);
+}
+
+/* ---- Card shell ---- */
+.pre-card {
+  position: relative; z-index: 1;
+  background: #fff;
+  border: 1px solid rgba(10,51,39,0.10);
+  border-radius: 24px;
+  box-shadow: 0 24px 80px rgba(10,51,39,0.13), 0 4px 16px rgba(10,51,39,0.06);
+  width: 440px; max-width: calc(100vw - 32px);
+  overflow: hidden;
+  animation: precard-in .5s cubic-bezier(.4,0,.2,1);
+}
+@keyframes precard-in {
+  from { opacity:0; transform: translateY(24px) scale(.97); }
+  to   { opacity:1; transform: translateY(0) scale(1); }
+}
+.pre-card .card-accent { height: 4px; background: var(--grad); }
+
+/* ---- Brand header ---- */
+.pre-brand {
+  display: flex; align-items: center; gap: 14px;
+  padding: 28px 32px 0;
+}
+.pre-brand .mark {
+  width: 40px; height: 40px; border-radius: 12px; flex: 0 0 auto;
+  background: linear-gradient(135deg, var(--g-300), var(--g-500) 50%, var(--g-900));
+  display: grid; place-items: center; font-size: 18px; font-weight: 800; color: #fff;
+  box-shadow: 0 6px 20px rgba(14,107,73,0.30);
+}
+.pre-brand .brand-text .name { font-size: 20px; font-weight: 800; color: var(--g-900); line-height: 1.1; letter-spacing: -.02em; }
+.pre-brand .brand-text .sub  { font-size: 11.5px; color: var(--ink-faint); font-weight: 500; margin-top: 2px; }
+
+/* ---- Screen title area ---- */
+.pre-title-area { padding: 22px 32px 0; }
+.pre-title-area h2 { font-size: 22px; color: var(--g-900); letter-spacing: -.02em; }
+.pre-title-area p  { font-size: 13px; color: var(--ink-dim); margin-top: 5px; line-height: 1.5; }
+
+/* ---- Form fields ---- */
+.pre-body { padding: 22px 32px 28px; display: flex; flex-direction: column; gap: 16px; }
+
+.pf-label { font-size: 11.5px; font-weight: 700; color: var(--ink-dim); margin-bottom: 6px; display: block; letter-spacing: .01em; }
+.pf-input {
+  width: 100%; border: 1.5px solid var(--line);
+  border-radius: 11px; padding: 11px 14px;
+  font-size: 14px; color: var(--ink); background: #fff; outline: none;
+  transition: border-color .15s, box-shadow .15s;
+  font-family: var(--font);
+}
+.pf-input:focus {
+  border-color: var(--g-500);
+  box-shadow: 0 0 0 3px rgba(23,168,116,0.14);
+}
+.pf-input::placeholder { color: var(--ink-faint); }
+
+/* password field wrapper */
+.pf-pw-wrap { position: relative; }
+.pf-pw-wrap .pf-input { padding-right: 44px; }
+.pf-pw-eye {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; color: var(--ink-faint);
+  padding: 4px; display: grid; place-items: center;
+}
+.pf-pw-eye svg { width: 18px; height: 18px; }
+
+/* remember / forgot row */
+.pf-row { display: flex; align-items: center; justify-content: space-between; }
+.pf-remember { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--ink-dim); cursor: pointer; }
+.pf-remember input[type=checkbox] { accent-color: var(--g-500); width: 15px; height: 15px; cursor: pointer; }
+.pf-forgot { font-size: 12.5px; font-weight: 700; color: var(--g-700); background: none; border: none; }
+
+/* Error banner */
+.pf-error {
+  background: var(--red-bg); border: 1px solid var(--red-line);
+  border-radius: 10px; padding: 10px 14px;
+  font-size: 12.5px; color: #C24545; font-weight: 600;
+  display: none; align-items: center; gap: 8px;
+}
+.pf-error.show { display: flex; }
+
+/* Primary CTA button */
+.pf-btn {
+  width: 100%; background: var(--grad); color: #fff;
+  border: none; border-radius: 12px; padding: 13px;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  box-shadow: 0 6px 20px rgba(14,107,73,0.30);
+  transition: opacity .15s, transform .1s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.pf-btn:hover { opacity: .92; transform: translateY(-1px); }
+.pf-btn:active { transform: translateY(0); }
+.pf-btn.loading { opacity: .7; pointer-events: none; }
+
+/* Divider */
+.pf-divider { display: flex; align-items: center; gap: 12px; }
+.pf-divider span { font-size: 11.5px; color: var(--ink-faint); white-space: nowrap; }
+.pf-divider::before, .pf-divider::after { content:''; flex:1; height:1px; background: var(--line); }
+
+/* SSO button */
+.pf-sso {
+  width: 100%; background: #fff; border: 1.5px solid var(--line);
+  border-radius: 12px; padding: 11px; cursor: pointer;
+  font-size: 13.5px; font-weight: 600; color: var(--ink-dim);
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: background .15s, border-color .15s;
+}
+.pf-sso:hover { background: var(--card-tint); border-color: var(--g-300); }
+.pf-sso .sso-icon { width: 20px; height: 20px; border-radius: 4px; display: grid; place-items: center; font-size: 14px; }
+
+/* Footer caption */
+.pre-footer {
+  padding: 0 32px 22px;
+  font-size: 11px; color: var(--ink-faint);
+  text-align: center; line-height: 1.6;
+}
+
+/* ============================================================
+   SCREEN 2 — CONSENT FORM
+   ============================================================ */
+.consent-card { width: 520px; }
+.consent-scrollbox {
+  max-height: 200px; overflow-y: auto;
+  background: var(--card-tint); border: 1px solid var(--line);
+  border-radius: 12px; padding: 14px 16px;
+  font-size: 12px; color: var(--ink-dim); line-height: 1.7;
+  margin-top: 4px;
+}
+.consent-scrollbox::-webkit-scrollbar { width: 4px; }
+.consent-scrollbox::-webkit-scrollbar-thumb { background: var(--g-300); border-radius: 4px; }
+.consent-scrollbox h4 { font-size: 12px; color: var(--g-900); margin: 10px 0 4px; }
+.consent-scrollbox h4:first-child { margin-top: 0; }
+.consent-scrollbox ul { padding-left: 16px; }
+.consent-scrollbox li { margin-bottom: 4px; }
+
+.consent-checks { display: flex; flex-direction: column; gap: 12px; margin-top: 4px; }
+.consent-check-row {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: #fff; border: 1.5px solid var(--line);
+  border-radius: 12px; padding: 12px 14px; cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.consent-check-row:hover { border-color: var(--g-300); background: var(--card-tint); }
+.consent-check-row.checked { border-color: var(--g-500); background: #F1F9F4; }
+.consent-check-row input[type=checkbox] { accent-color: var(--g-500); width: 16px; height: 16px; flex: 0 0 auto; margin-top: 2px; cursor: pointer; }
+.consent-check-row .ccr-text { font-size: 12.5px; color: var(--ink); line-height: 1.5; }
+.consent-check-row .ccr-text b { color: var(--g-900); }
+.consent-check-row .ccr-badge { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 999px; background: var(--red-bg); color: var(--red); border: 1px solid var(--red-line); display: inline-block; margin-left: 6px; vertical-align: middle; }
+.consent-check-row .ccr-badge.opt { background: var(--amber-bg); color: #B4720A; border-color: var(--amber-line); }
+
+.consent-all-err { font-size: 11.5px; color: var(--red); font-weight: 600; display: none; }
+.consent-all-err.show { display: block; }
+
+/* ============================================================
+   SCREEN 3 — WHATSAPP CONNECT
+   ============================================================ */
+.wa-connect-card { width: 480px; }
+
+.wa-steps-row {
+  display: flex; align-items: flex-start; gap: 0;
+  margin: 0 32px; padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+.wa-step-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; }
+.wa-step-item::after {
+  content: ''; position: absolute;
+  top: 13px; left: calc(50% + 16px); right: calc(-50% + 16px);
+  height: 2px; background: var(--line);
+}
+.wa-step-item:last-child::after { display: none; }
+.wa-step-item.done::after { background: var(--g-300); }
+.ws-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 2px solid var(--line); background: #fff;
+  display: grid; place-items: center;
+  font-size: 11px; font-weight: 700; color: var(--ink-faint);
+  position: relative; z-index: 1; flex: 0 0 auto;
+  transition: all .3s;
+}
+.wa-step-item.done .ws-dot { background: var(--g-500); border-color: var(--g-500); color: #fff; }
+.wa-step-item.active .ws-dot { border-color: var(--g-700); color: var(--g-700); box-shadow: 0 0 0 3px rgba(23,168,116,0.2); }
+.ws-label { font-size: 10px; font-weight: 700; color: var(--ink-faint); text-align: center; line-height: 1.3; }
+.wa-step-item.active .ws-label, .wa-step-item.done .ws-label { color: var(--g-700); }
+
+/* QR / barcode area */
+.qr-area {
+  margin: 0 32px 20px;
+  border: 1.5px dashed var(--g-300);
+  border-radius: 18px;
+  padding: 24px;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  background: linear-gradient(135deg, rgba(95,203,153,0.06), rgba(23,168,116,0.04));
+  position: relative; overflow: hidden;
+}
+/* QR code SVG drawn in JS */
+.qr-svg-wrap { position: relative; }
+.qr-scan-line {
+  position: absolute; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, transparent, var(--g-500), transparent);
+  animation: qr-scan 2.4s ease-in-out infinite;
+  border-radius: 2px;
+  pointer-events: none;
+}
+@keyframes qr-scan {
+  0%   { top: 0;   opacity: 1; }
+  90%  { top: 100%; opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+.qr-label { font-size: 12px; color: var(--ink-dim); font-weight: 500; text-align: center; line-height: 1.5; }
+.qr-label b { color: var(--g-800); }
+.qr-timer { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; color: var(--ink-faint); }
+.qr-timer .qr-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--amber); }
+
+/* WA step sub-screens */
+.wa-substep { display: none; }
+.wa-substep.active { display: block; }
+
+/* success animation */
+.wa-success-wrap {
+  margin: 0 32px 20px;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  padding: 28px 0 16px;
+}
+.wa-success-icon {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: var(--grad);
+  display: grid; place-items: center;
+  font-size: 28px;
+  box-shadow: 0 8px 30px rgba(14,107,73,0.30);
+  animation: pop-in .4s cubic-bezier(.4,0,.2,1);
+}
+@keyframes pop-in {
+  0%   { transform: scale(0.4); opacity: 0; }
+  70%  { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); }
+}
+.wa-success-wrap h3 { font-size: 18px; color: var(--g-900); text-align: center; }
+.wa-success-wrap p  { font-size: 12.5px; color: var(--ink-dim); text-align: center; line-height: 1.5; }
+.wa-group-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.wa-group-chip {
+  display: flex; align-items: center; gap: 6px;
+  background: #DCF8C6; border: 1px solid #BFE9D3;
+  border-radius: 999px; padding: 5px 12px;
+  font-size: 12px; font-weight: 600; color: var(--g-800);
+  animation: chip-pop .3s ease both;
+}
+@keyframes chip-pop { from { opacity:0; transform:scale(.85); } to { opacity:1; transform:scale(1); } }
+.wa-group-chip .wg-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--g-500); }
+
+/* Spinner */
+.spinner {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2.5px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  animation: spin .7s linear infinite;
+  flex: 0 0 auto;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Connecting overlay over QR */
+.qr-connecting {
+  position: absolute; inset: 0; border-radius: 16px;
+  background: rgba(255,255,255,0.92);
+  display: none; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  font-size: 13px; font-weight: 700; color: var(--g-700);
+}
+.qr-connecting.show { display: flex; }
+.qr-connecting .big-spinner {
+  width: 40px; height: 40px;
+  border: 3.5px solid rgba(23,168,116,0.2);
+  border-top-color: var(--g-500);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+
+/* Notification badge for group pills */
+.wa-step-count { font-size: 11px; font-weight: 700; color: var(--g-700); background: var(--card-tint); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; display: inline-flex; align-items: center; gap: 5px; }
+.wa-step-count .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--g-500); }
+</style>
+
+<!-- ====================== SCREEN 1: LOGIN ====================== -->
+<div class="screen" id="screen-login">
+  <div class="pre-card">
+    <div class="card-accent"></div>
+    <div class="pre-brand">
+      <div class="mark">O</div>
+      <div class="brand-text">
+        <div class="name">Odeva IOM</div>
+        <div class="sub">Integrated Operations Management</div>
+      </div>
+    </div>
+    <div class="pre-title-area">
+      <h2>Selamat datang kembali 👋</h2>
+      <p>Masuk ke dashboard operasional Anda</p>
+    </div>
+    <div class="pre-body">
+      <div class="pf-error" id="login-error">
+        <span>⚠</span> Email atau password salah. Coba lagi.
+      </div>
+      <div>
+        <label class="pf-label" for="login-email">Email</label>
+        <input class="pf-input" id="login-email" type="email" placeholder="ari.wijaya@odeva.id" value="ari.wijaya@odeva.id" autocomplete="off">
+      </div>
+      <div>
+        <label class="pf-label" for="login-pw">Password</label>
+        <div class="pf-pw-wrap">
+          <input class="pf-input" id="login-pw" type="password" placeholder="Masukkan password" value="demo1234">
+          <button class="pf-pw-eye" onclick="togglePw()" type="button" title="Tampilkan password">
+            <svg id="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="pf-row">
+        <label class="pf-remember"><input type="checkbox" checked> Ingat saya 30 hari</label>
+        <button class="pf-forgot" type="button">Lupa password?</button>
+      </div>
+      <button class="pf-btn" id="login-btn" onclick="doLogin()">
+        <span id="login-btn-label">Masuk ke Dashboard</span>
+      </button>
+      <div class="pf-divider"><span>atau masuk dengan</span></div>
+      <button class="pf-sso" onclick="doLogin()">
+        <div class="sso-icon">🏢</div>
+        <span>Single Sign-On (SSO) Perusahaan</span>
+      </button>
+    </div>
+    <div class="pre-footer">
+      Dengan masuk, Anda menyetujui <u>Syarat & Ketentuan</u> dan <u>Kebijakan Privasi</u> Odeva.<br>
+      © 2026 Odeva Technologies — v3.4.1
+    </div>
+  </div>
+</div>
+
+<!-- =================== SCREEN 2: CONSENT FORM =================== -->
+<div class="screen hidden" id="screen-consent">
+  <div class="pre-card consent-card">
+    <div class="card-accent"></div>
+    <div class="pre-brand">
+      <div class="mark">O</div>
+      <div class="brand-text">
+        <div class="name">Odeva IOM</div>
+        <div class="sub">Data & Privacy Agreement</div>
+      </div>
+    </div>
+    <div class="pre-title-area">
+      <h2>Persetujuan Penggunaan Data 📋</h2>
+      <p>Baca dan setujui sebelum mengaktifkan integrasi WhatsApp</p>
+    </div>
+    <div class="pre-body">
+      <!-- Scrollable legal text -->
+      <div>
+        <label class="pf-label">Ketentuan Penggunaan Data (versi 2.1 — Agu 2026)</label>
+        <div class="consent-scrollbox">
+          <h4>1. Data yang Dikumpulkan</h4>
+          <p>Odeva IOM mengakses percakapan pada grup WhatsApp yang Anda hubungkan secara eksplisit. Kami membaca pesan teks, timestamp, dan identitas pengirim (nama tampilan) di dalam grup yang dipilih. Kami tidak membaca percakapan pribadi (personal chat) atau grup yang tidak dipilih.</p>
+          <h4>2. Tujuan Pemrosesan</h4>
+          <ul>
+            <li>Deteksi otomatis isu operasional menggunakan NLP</li>
+            <li>Analisis sentimen untuk monitoring kualitas komunikasi tim</li>
+            <li>Pembuatan tiket, alert, dan notifikasi PIC terkait</li>
+            <li>Pelaporan dan audit internal perusahaan Anda</li>
+          </ul>
+          <h4>3. Penyimpanan & Retensi</h4>
+          <p>Data percakapan disimpan di server Odeva yang berlokasi di Indonesia (data residency lokal). Retensi default adalah 12 bulan. Admin dapat mengatur atau menghapus data kapan saja melalui panel Settings.</p>
+          <h4>4. Keamanan</h4>
+          <p>Seluruh data dienkripsi saat transit (TLS 1.3) dan saat istirahat (AES-256). Akses dibatasi berdasarkan role pengguna yang dikonfigurasi oleh admin organisasi Anda.</p>
+          <h4>5. Hak Pengguna</h4>
+          <p>Anda dapat mencabut akses Odeva ke grup WhatsApp kapan saja dari halaman Settings > WhatsApp Groups. Pencabutan akses menghentikan pengumpulan data baru secara instan.</p>
+          <h4>6. Berbagi dengan Pihak Ketiga</h4>
+          <p>Odeva tidak menjual atau berbagi data Anda kepada pihak ketiga untuk tujuan komersial. Data hanya diproses oleh model AI internal Odeva dan subprosesor yang telah menandatangani DPA (Data Processing Agreement).</p>
+        </div>
+      </div>
+
+      <!-- Checkboxes -->
+      <div class="consent-checks" id="consent-checks">
+        <label class="consent-check-row" id="cc1" onclick="toggleConsent('cc1','cb1')">
+          <input type="checkbox" id="cb1" onchange="updateConsentState()">
+          <div class="ccr-text"><b>Saya menyetujui</b> pengumpulan dan pemrosesan pesan dari grup WhatsApp yang saya pilih untuk tujuan operasional. <span class="ccr-badge">Wajib</span></div>
+        </label>
+        <label class="consent-check-row" id="cc2" onclick="toggleConsent('cc2','cb2')">
+          <input type="checkbox" id="cb2" onchange="updateConsentState()">
+          <div class="ccr-text"><b>Saya memahami</b> bahwa data disimpan di server Indonesia selama 12 bulan dan dapat dihapus melalui Settings. <span class="ccr-badge">Wajib</span></div>
+        </label>
+        <label class="consent-check-row" id="cc3" onclick="toggleConsent('cc3','cb3')">
+          <input type="checkbox" id="cb3" onchange="updateConsentState()">
+          <div class="ccr-text"><b>Saya mengizinkan</b> Odeva AI menganalisis sentimen dan membuat ringkasan percakapan untuk laporan internal. <span class="ccr-badge opt">Opsional</span></div>
+        </label>
+      </div>
+      <div class="consent-all-err" id="consent-err">⚠ Harap centang semua persetujuan wajib untuk melanjutkan.</div>
+
+      <button class="pf-btn" id="consent-btn" onclick="doConsent()">
+        <span id="consent-btn-label">Setuju & Lanjutkan</span>
+      </button>
+    </div>
+    <div class="pre-footer">
+      Pertanyaan tentang privasi data? Hubungi <u>privacy@odeva.id</u>
+    </div>
+  </div>
+</div>
+
+<!-- ================= SCREEN 3: WHATSAPP CONNECT ================= -->
+<div class="screen hidden" id="screen-wa">
+  <div class="pre-card wa-connect-card">
+    <div class="card-accent"></div>
+    <div class="pre-brand">
+      <div class="mark">O</div>
+      <div class="brand-text">
+        <div class="name">Odeva IOM</div>
+        <div class="sub">Koneksi WhatsApp Business</div>
+      </div>
+    </div>
+
+    <!-- Step progress -->
+    <div class="wa-steps-row" id="wa-steps-indicator">
+      <div class="wa-step-item active" id="wsi-0">
+        <div class="ws-dot">1</div>
+        <div class="ws-label">Scan QR</div>
+      </div>
+      <div class="wa-step-item" id="wsi-1">
+        <div class="ws-dot">2</div>
+        <div class="ws-label">Konfirmasi</div>
+      </div>
+      <div class="wa-step-item" id="wsi-2">
+        <div class="ws-dot">3</div>
+        <div class="ws-label">Pilih Grup</div>
+      </div>
+      <div class="wa-step-item" id="wsi-3">
+        <div class="ws-dot">4</div>
+        <div class="ws-label">Siap!</div>
+      </div>
+    </div>
+
+    <!-- Sub-step A: QR Code -->
+    <div class="wa-substep active" id="wa-sub-0">
+      <div class="pre-title-area">
+        <h2>Scan kode QR ini 📱</h2>
+        <p>Buka WhatsApp di HP Anda → Menu → Perangkat Tertaut → Tautkan Perangkat</p>
+      </div>
+      <div class="pre-body" style="gap:14px; padding-top:14px;">
+        <div class="qr-area">
+          <div class="qr-svg-wrap">
+            <!-- QR Code SVG — generated inline -->
+            <svg id="qr-svg" width="176" height="176" viewBox="0 0 176 176" xmlns="http://www.w3.org/2000/svg" style="display:block;border-radius:10px;"></svg>
+            <div class="qr-scan-line" id="qr-scan-line"></div>
+            <div class="qr-connecting" id="qr-connecting">
+              <div class="big-spinner"></div>
+              <span>Menghubungkan…</span>
+            </div>
+          </div>
+          <div class="qr-label">Arahkan kamera WhatsApp ke kode di atas<br><b>Kode berlaku 60 detik</b></div>
+          <div class="qr-timer"><span class="qr-dot"></span><span id="qr-countdown">57 detik tersisa</span></div>
+        </div>
+        <button class="pf-btn" onclick="simulateScan()">
+          <span>📱 Simulasikan Scan QR</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Sub-step B: Connecting -->
+    <div class="wa-substep" id="wa-sub-1">
+      <div class="pre-title-area">
+        <h2>Mengonfirmasi perangkat… ⚙️</h2>
+        <p>Odeva sedang memverifikasi koneksi dengan WhatsApp Anda</p>
+      </div>
+      <div class="pre-body" style="align-items:center; gap:20px; padding-top:24px; padding-bottom:24px;">
+        <div style="width:56px;height:56px;border:4px solid rgba(23,168,116,0.2);border-top-color:var(--g-500);border-radius:50%;animation:spin .8s linear infinite;"></div>
+        <div style="text-align:center;">
+          <div style="font-size:14px;font-weight:700;color:var(--g-900);">Memverifikasi sesi…</div>
+          <div style="font-size:12px;color:var(--ink-faint);margin-top:4px;" id="wa-verify-status">Menghubungi server WhatsApp</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sub-step C: Select Groups -->
+    <div class="wa-substep" id="wa-sub-2">
+      <div class="pre-title-area">
+        <h2>Pilih Grup WhatsApp 💬</h2>
+        <p>Grup yang dipilih akan dipantau oleh Odeva AI secara real-time</p>
+      </div>
+      <div class="pre-body" style="gap:10px; padding-top:14px;">
+        <div id="wa-group-list" style="display:flex;flex-direction:column;gap:8px;max-height:240px;overflow-y:auto;"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+          <span id="wa-sel-count" style="font-size:12px;color:var(--ink-faint);font-weight:600;">0 grup dipilih</span>
+          <button style="font-size:12px;font-weight:700;color:var(--g-700);background:none;border:none;" onclick="waSelectAll()">Pilih semua</button>
+        </div>
+        <button class="pf-btn" id="wa-confirm-btn" onclick="waConfirmGroups()" disabled style="opacity:.5">
+          Konfirmasi & Mulai Monitoring
+        </button>
+      </div>
+    </div>
+
+    <!-- Sub-step D: Success -->
+    <div class="wa-substep" id="wa-sub-3">
+      <div class="wa-success-wrap">
+        <div class="wa-success-icon">✓</div>
+        <h3>WhatsApp terhubung! 🎉</h3>
+        <p>Odeva AI sudah aktif memantau <b id="wa-connected-count">7</b> grup WhatsApp Anda secara real-time</p>
+        <div class="wa-group-chips" id="wa-connected-chips"></div>
+      </div>
+      <div class="pre-body" style="padding-top:0;">
+        <button class="pf-btn" onclick="enterDashboard()">
+          Masuk ke Dashboard →
+        </button>
+      </div>
+    </div>
+
+    <div class="pre-footer" id="wa-footer-note">
+      Koneksi aman · Enkripsi end-to-end dipertahankan · Data disimpan di server Indonesia
+    </div>
+  </div>
+</div>
+
+<!-- Actual dashboard hidden until login complete -->
+<div id="dashboard-shell" style="display:none;">
 <div class="glow glow-1"></div>
 <div class="glow glow-2"></div>
 
@@ -1043,7 +1589,7 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
     <div class="meta-grid">
       <div class="meta-item"><div class="k">Kategori</div><div class="v" id="d-category">—</div></div>
       <div class="meta-item"><div class="k">Severity</div><div class="v" id="d-severity">—</div></div>
-      <div class="meta-item"><div class="k">PIC</div><div class="v" id="d-pic">—</div></div>
+      <div class="meta-item"><div class="k">PIC</div><div class="v" id="d-pic">—</div><div style="font-size:10.5px;color:var(--ink-faint);margin-top:2px;">✏️ Bisa dipindahkan di bawah</div></div>
       <div class="meta-item"><div class="k">Sumber Deteksi</div><div class="v" id="d-sourcetype">—</div></div>
       <div class="meta-item"><div class="k">Sumber Grup</div><div class="v" id="d-source">—</div></div>
       <div class="meta-item"><div class="k">Dibuat</div><div class="v" id="d-created">—</div></div>
@@ -1058,6 +1604,12 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
 
     <h5>Notifikasi Alert Otomatis</h5>
     <div id="d-alert-panel"></div>
+
+    <h5>Eskalasi Tiket</h5>
+    <div id="d-escalate-panel"></div>
+
+    <h5>Perpindahan PIC</h5>
+    <div id="d-pic-transfer-panel"></div>
 
     <h5>Percakapan WhatsApp</h5>
     <div class="wa-thread" id="d-thread"></div>
@@ -1137,8 +1689,306 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
     </div>
   </div>
 </div>
+</div><!-- end dashboard-shell -->
 
 <script>
+/* ============================================================
+   PRE-DASHBOARD FLOW: Login → Consent → WA Connect → Dashboard
+   ============================================================ */
+
+/* ---- QR Code generator (pixel-art style, no deps) ---- */
+function buildQR(svgEl) {
+  // A realistic-looking 25×25 QR pixel grid (static art — for demo)
+  const size = 25;
+  const cell = 7; // px per module
+  const quiet = 0;
+  const totalPx = size * cell + quiet * 2;
+  svgEl.setAttribute('width', totalPx);
+  svgEl.setAttribute('height', totalPx);
+  svgEl.setAttribute('viewBox', `0 0 ${totalPx} ${totalPx}`);
+  svgEl.style.background = '#fff';
+
+  // Pseudo-random but deterministic pattern for "odeva-iom" encoded string
+  const seed = [
+    1,1,1,1,1,1,1,0,1,0,1,1,0,0,1,0,1,0,1,1,1,1,1,1,1,
+    1,0,0,0,0,0,1,0,0,1,1,0,1,0,0,1,0,0,1,0,0,0,0,0,1,
+    1,0,1,1,1,0,1,0,1,0,0,1,1,0,1,1,0,0,1,0,1,1,1,0,1,
+    1,0,1,1,1,0,1,0,0,0,1,0,0,1,0,0,1,0,1,0,1,1,1,0,1,
+    1,0,1,1,1,0,1,0,1,1,0,0,1,0,1,1,0,0,1,0,1,1,1,0,1,
+    1,0,0,0,0,0,1,0,0,1,0,1,0,0,0,1,0,0,1,0,0,0,0,0,1,
+    1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1,
+    0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,0,1,0,0,0,0,0,0,0,0,
+    1,0,1,1,0,1,1,1,0,0,1,0,1,0,0,1,1,1,0,1,1,0,1,0,1,
+    0,1,0,0,1,0,0,0,1,1,0,0,1,1,0,0,0,1,0,1,0,0,1,1,0,
+    1,0,1,0,1,1,1,0,0,1,1,1,0,0,1,0,1,0,1,0,0,1,0,1,1,
+    0,1,0,1,0,0,0,1,0,0,1,0,0,1,0,1,0,0,1,0,1,0,0,0,1,
+    1,1,0,0,1,0,1,0,1,1,0,1,1,0,1,0,1,1,0,1,0,1,1,0,0,
+    0,0,0,0,0,0,0,1,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0,1,0,
+    1,0,0,1,0,1,1,0,1,0,1,1,0,0,1,0,0,1,1,0,1,0,0,1,1,
+    0,1,0,1,1,0,0,1,0,0,0,1,0,1,0,1,1,0,0,1,0,0,1,0,0,
+    1,0,1,0,0,1,1,0,1,1,0,0,1,0,0,1,0,1,0,1,1,0,1,0,1,
+    0,0,0,0,0,0,0,0,1,0,1,1,0,0,1,0,1,0,0,0,1,1,0,0,0,
+    1,1,1,1,1,1,1,0,0,1,1,0,0,1,0,1,0,0,1,0,0,1,0,1,1,
+    1,0,0,0,0,0,1,0,1,0,0,1,1,0,0,1,1,0,0,1,0,0,1,0,0,
+    1,0,1,1,1,0,1,0,0,1,0,0,1,1,0,0,0,1,1,0,1,1,0,1,0,
+    1,0,1,1,1,0,1,0,1,1,1,0,0,1,1,0,1,0,0,1,0,0,1,0,1,
+    1,0,1,1,1,0,1,0,0,0,1,1,0,0,1,1,0,1,0,0,1,0,0,1,0,
+    1,0,0,0,0,0,1,0,1,0,0,0,1,0,0,1,0,0,1,1,0,1,1,0,1,
+    1,1,1,1,1,1,1,0,0,1,0,1,0,0,1,0,1,1,0,0,1,0,0,1,0,
+  ];
+
+  let html = '';
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      if (seed[r * size + c]) {
+        const x = quiet + c * cell;
+        const y = quiet + r * cell;
+        html += `<rect x="${x}" y="${y}" width="${cell}" height="${cell}" fill="#0A3327" rx="0.5"/>`;
+      }
+    }
+  }
+  // Odeva brand overlay in center
+  html += `<rect x="${quiet+8*cell}" y="${quiet+8*cell}" width="${9*cell}" height="${9*cell}" fill="#fff" rx="4"/>`;
+  html += `<rect x="${quiet+9*cell+1}" y="${quiet+9*cell+1}" width="${7*cell-2}" height="${7*cell-2}" fill="#0E6B49" rx="3"/>`;
+  html += `<text x="${quiet+12.5*cell}" y="${quiet+13.2*cell}" text-anchor="middle" font-size="14" font-weight="800" fill="#fff" font-family="Arial,sans-serif">O</text>`;
+  svgEl.innerHTML = html;
+}
+
+/* ---- Screen transitions ---- */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  const el = document.getElementById(id);
+  if (el) { el.classList.remove('hidden'); }
+}
+
+/* ---- Screen 1: LOGIN ---- */
+function togglePw() {
+  const pw = document.getElementById('login-pw');
+  const icon = document.getElementById('eye-icon');
+  const isHide = pw.type === 'password';
+  pw.type = isHide ? 'text' : 'password';
+  icon.innerHTML = isHide
+    ? `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M1 1l22 22"/>`
+    : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+}
+
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pw = document.getElementById('login-pw').value;
+  const err = document.getElementById('login-error');
+  const btn = document.getElementById('login-btn');
+  const label = document.getElementById('login-btn-label');
+
+  err.classList.remove('show');
+
+  if (!email || !pw) { err.classList.add('show'); return; }
+
+  // Simulate loading
+  btn.classList.add('loading');
+  label.innerHTML = '<span style="display:flex;align-items:center;gap:10px;"><span style="width:18px;height:18px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:block;"></span> Memverifikasi…</span>';
+
+  setTimeout(() => {
+    btn.classList.remove('loading');
+    label.textContent = 'Masuk ke Dashboard';
+    showScreen('screen-consent');
+  }, 1800);
+}
+
+/* ---- Screen 2: CONSENT ---- */
+function toggleConsent(rowId, cbId) {
+  const cb = document.getElementById(cbId);
+  cb.checked = !cb.checked;
+  updateConsentState();
+}
+
+function updateConsentState() {
+  ['cc1','cc2','cc3'].forEach((id, i) => {
+    const cb = document.getElementById('cb'+(i+1));
+    document.getElementById(id).classList.toggle('checked', cb.checked);
+  });
+  const cb1 = document.getElementById('cb1').checked;
+  const cb2 = document.getElementById('cb2').checked;
+  const btn = document.getElementById('consent-btn');
+  btn.style.opacity = (cb1 && cb2) ? '1' : '0.55';
+}
+
+function doConsent() {
+  const cb1 = document.getElementById('cb1').checked;
+  const cb2 = document.getElementById('cb2').checked;
+  const errEl = document.getElementById('consent-err');
+  if (!cb1 || !cb2) { errEl.classList.add('show'); return; }
+  errEl.classList.remove('show');
+
+  const btn = document.getElementById('consent-btn');
+  const label = document.getElementById('consent-btn-label');
+  btn.classList.add('loading');
+  label.innerHTML = '<span style="display:flex;align-items:center;gap:10px;"><span style="width:18px;height:18px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:block;"></span> Menyimpan persetujuan…</span>';
+
+  setTimeout(() => {
+    showScreen('screen-wa');
+    initWaScreen();
+  }, 1400);
+}
+
+/* ---- Screen 3: WHATSAPP CONNECT ---- */
+const waGroupOptions = [
+  { id:'g1', name:'WAG Jakarta Operations', industry:'Logistics · Fleet', msgs:342 },
+  { id:'g2', name:'WAG Fleet Maintenance Jakarta', industry:'Logistics · Maintenance', msgs:97 },
+  { id:'g3', name:'WAG Site Ops Kalimantan', industry:'Mining', msgs:189 },
+  { id:'g4', name:'WAG Customer Service Jakarta', industry:'Retail · Customer', msgs:210 },
+  { id:'g5', name:'WAG IT Support', industry:'Manufacturing · IT', msgs:128 },
+  { id:'g6', name:'WAG Finance & Procurement', industry:'Corporate', msgs:76 },
+  { id:'g7', name:'WAG HR Central', industry:'Corporate', msgs:54 },
+];
+let waSelectedGroups = new Set();
+let qrTimerInterval = null;
+let qrSeconds = 57;
+
+function initWaScreen() {
+  buildQR(document.getElementById('qr-svg'));
+  startQrTimer();
+  setWaSubstep(0);
+}
+
+function startQrTimer() {
+  qrSeconds = 57;
+  document.getElementById('qr-countdown').textContent = qrSeconds + ' detik tersisa';
+  clearInterval(qrTimerInterval);
+  qrTimerInterval = setInterval(() => {
+    qrSeconds--;
+    if (qrSeconds <= 0) {
+      clearInterval(qrTimerInterval);
+      document.getElementById('qr-countdown').textContent = 'Kode kadaluarsa — klik "Simulasikan Scan" untuk refresh';
+    } else {
+      document.getElementById('qr-countdown').textContent = qrSeconds + ' detik tersisa';
+    }
+  }, 1000);
+}
+
+function setWaSubstep(n) {
+  [0,1,2,3].forEach(i => {
+    document.getElementById('wa-sub-'+i).classList.toggle('active', i===n);
+    const ind = document.getElementById('wsi-'+i);
+    ind.classList.remove('active','done');
+    if (i < n) ind.classList.add('done');
+    else if (i === n) ind.classList.add('active');
+    // mark the dot
+    const dot = ind.querySelector('.ws-dot');
+    dot.textContent = i < n ? '✓' : (i+1);
+  });
+}
+
+function simulateScan() {
+  clearInterval(qrTimerInterval);
+  // Show connecting overlay on QR
+  document.getElementById('qr-connecting').classList.add('show');
+  document.getElementById('qr-scan-line').style.display = 'none';
+
+  setTimeout(() => {
+    setWaSubstep(1);
+    const statuses = ['Menghubungi server WhatsApp…','Memverifikasi sesi keamanan…','Menyinkronkan kontak & grup…','Hampir selesai…'];
+    let idx = 0;
+    const iv = setInterval(() => {
+      idx++;
+      const el = document.getElementById('wa-verify-status');
+      if (el && statuses[idx]) el.textContent = statuses[idx];
+      if (idx >= statuses.length - 1) {
+        clearInterval(iv);
+        setTimeout(() => {
+          setWaSubstep(2);
+          renderWaGroupList();
+        }, 600);
+      }
+    }, 700);
+  }, 1400);
+}
+
+function renderWaGroupList() {
+  const container = document.getElementById('wa-group-list');
+  container.innerHTML = waGroupOptions.map(g => `
+    <div class="consent-check-row ${waSelectedGroups.has(g.id)?'checked':''}" id="wg-row-${g.id}" onclick="toggleWaGroup('${g.id}')">
+      <input type="checkbox" ${waSelectedGroups.has(g.id)?'checked':''} onchange="toggleWaGroup('${g.id}')" onclick="event.stopPropagation()">
+      <div class="ccr-text" style="flex:1;">
+        <b>${g.name}</b>
+        <div style="font-size:11px;color:var(--ink-faint);margin-top:2px;">
+          ${g.industry} · <span style="font-family:var(--font-mono);">${g.msgs}</span> pesan/hari
+        </div>
+      </div>
+    </div>`).join('');
+  updateWaSelCount();
+}
+
+function toggleWaGroup(id) {
+  if (waSelectedGroups.has(id)) waSelectedGroups.delete(id);
+  else waSelectedGroups.add(id);
+  renderWaGroupList();
+  updateWaSelCount();
+}
+
+function waSelectAll() {
+  waGroupOptions.forEach(g => waSelectedGroups.add(g.id));
+  renderWaGroupList();
+  updateWaSelCount();
+}
+
+function updateWaSelCount() {
+  const n = waSelectedGroups.size;
+  document.getElementById('wa-sel-count').textContent = n === 0 ? 'Belum ada grup dipilih' : `${n} grup dipilih`;
+  const btn = document.getElementById('wa-confirm-btn');
+  btn.disabled = n === 0;
+  btn.style.opacity = n > 0 ? '1' : '0.5';
+}
+
+function waConfirmGroups() {
+  const btn = document.getElementById('wa-confirm-btn');
+  btn.innerHTML = '<span style="display:flex;align-items:center;gap:10px;justify-content:center;"><span style="width:18px;height:18px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:block;"></span> Menghubungkan grup…</span>';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    setWaSubstep(3);
+
+    // Populate connected count & chips
+    const selectedNames = waGroupOptions.filter(g => waSelectedGroups.has(g.id)).map(g => g.name);
+    document.getElementById('wa-connected-count').textContent = selectedNames.length;
+
+    const chips = document.getElementById('wa-connected-chips');
+    chips.innerHTML = selectedNames.map((name, i) =>
+      `<div class="wa-group-chip" style="animation-delay:${i*0.08}s;"><span class="wg-dot"></span>${name}</div>`
+    ).join('');
+  }, 1800);
+}
+
+function enterDashboard() {
+  // Hide all pre-screens, show dashboard
+  document.querySelectorAll('.screen').forEach(s => {
+    s.style.transition = 'opacity .5s ease, transform .5s ease';
+    s.classList.add('hidden');
+  });
+
+  const shell = document.getElementById('dashboard-shell');
+  shell.style.display = 'block';
+  shell.style.opacity = '0';
+  shell.style.transition = 'opacity .6s ease';
+  setTimeout(() => { shell.style.opacity = '1'; }, 50);
+
+  // Init dashboard if not yet done
+  if (!window._dashboardInited) {
+    window._dashboardInited = true;
+    init();
+  }
+}
+
+/* ---- Allow Enter key on login ---- */
+document.getElementById('login-pw').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+document.getElementById('login-email').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('login-pw').focus();
+});
+
+/* ---- Init pre-screens ---- */
+showScreen('screen-login');
+
 /* ---------------- DATA ---------------- */
 const now = Date.now();
 const min = 60*1000, hr = 60*min;
@@ -1235,7 +2085,25 @@ const waGroups = [
   {id:"g5", name:"WAG IT Support", industry:"Manufacturing · IT", msgs:128, issues:6, top:"IT"},
   {id:"g6", name:"WAG Finance & Procurement", industry:"Corporate", msgs:76, issues:4, top:"Finance"},
   {id:"g7", name:"WAG HR Central", industry:"Corporate", msgs:54, issues:2, top:"HR"},
+  {id:"g8", name:"WAG FU Issue", industry:"Cross-Function · Follow Up", msgs:41, issues:0, top:"Escalation"},
+  {id:"g9", name:"WAG Info Perpindahan PIC", industry:"Cross-Function · PIC Transfer", msgs:0, issues:0, top:"PIC Transfer"},
 ];
+
+/* Daftar Tim/PIC yang bisa dipilih saat memindahkan penanggung jawab tiket */
+const PIC_TEAMS = ["Customer Service","Finance Team","Fleet Team","HR / Fleet","HR Team","IT Infrastructure","Logistics / Fleet Team","Maintenance Team","Procurement Team"];
+const PIC_TRANSFER_GROUP = "g9";
+
+/* Mapping kategori issue -> grup WA tujuan eskalasi default (selain WAG FU Issue umum) */
+const escalationGroupMap = {
+  Fleet: "g1",
+  IT: "g5",
+  Finance: "g6",
+  Procurement: "g6",
+  HR: "g7",
+  Customer: "g4",
+  Operations: "g3",
+};
+const FU_ISSUE_GROUP = "g8";
 
 let companies = [
   {id:"c1", name:"PT Astra Logistics", industry:"Logistics", groupIds:["g1","g2"]},
@@ -1311,6 +2179,11 @@ const conversations = {
     {who:"HR Team", time:"10:40", date:"12 Agu 2026", day:"Rabu", text:"Sudah di-approve ya, mohon maaf ada keterlambatan sistem."},
     {who:"Hiring Manager", time:"09:15", date:"13 Agu 2026", day:"Kamis", text:"Laptop untuk karyawan baru belum siap, padahal mulai kerja besok. Sudah saya buatkan tiket manual ke IT Asset.", flag:{severity:"Low", issueId:"OPS-2279"}},
   ]},
+  g8: {last:"Sudah dieskalasi ke tim terkait.", time:"09:40", msgs:[
+    {who:"CS Lead", time:"09:10", date:"13 Agu 2026", day:"Kamis", text:"Tiket OPS-2287 sudah dieskalasi ke warehouse untuk follow up refund/ganti unit."},
+    {who:"🤖 Odeva IOM Bot", time:"09:40", date:"13 Agu 2026", day:"Kamis", text:"Follow up eskalasi tercatat. Menunggu update dari PIC terkait."},
+  ]},
+  g9: {last:"Belum ada perpindahan PIC hari ini.", time:"—", msgs:[]},
 };
 
 /* ---------------- HELPERS ---------------- */
@@ -1704,7 +2577,7 @@ let convoSearch = '';
 const sevRank = {Critical:4, High:3, Medium:2, Low:1};
 
 function buildGroupAiSummary(groupId){
-  const c = conversations[groupId];
+  const c = conversations[groupId] || { msgs: [] };
   const flaggedMsgs = c.msgs.filter(m=>m.flag);
   const items = flaggedMsgs.map(m=>{
     const issue = issues.find(i=>i.id===m.flag.issueId);
@@ -1811,7 +2684,7 @@ function jumpToIssueMessage(groupId, msgIndex){
 
 function renderConvoList(){
   document.getElementById('convo-list').innerHTML = waGroups.map(g=>{
-    const c = conversations[g.id];
+    const c = conversations[g.id] || { last: "-", time: "-", msgs: [] };
     const flaggedCount = c.msgs.filter(m=>m.flag).length;
     return `<div class="convo-list-item ${g.id===activeGroupId?'active':''}" onclick="selectConvo('${g.id}')">
       <div class="name">${g.name}</div>
@@ -1973,6 +2846,9 @@ function openDrawer(id){
       <div class="awb-meta">${channelChips(relAlert.channels)}<span class="badge ${alertStatusBadgeClass(relAlert.status)}">${relAlert.status}</span></div>
     </div>` : `<div class="settings-empty" style="padding:10px 0 18px; text-align:left;">Belum ada alert otomatis terkirim untuk issue ini.</div>`;
 
+  renderEscalatePanel(it);
+  renderPicTransferPanel(it);
+
   document.getElementById('d-thread').innerHTML = it.thread.length ? it.thread.map(m=>`
     <div class="thread-msg"><div class="who">${m.who}</div><div class="bubble">${m.text}</div></div>`).join('')
     : '<div class="settings-empty" style="padding:10px 0; text-align:left;">Tiket ini dibuat manual, tidak berasal dari percakapan WhatsApp.</div>';
@@ -2014,6 +2890,123 @@ function renderClosePanel(it){
         <div class="desc">Ditutup langsung oleh ${it.pic||'PIC'} tanpa menunggu deteksi AI</div>
       </button>
     </div>`;
+}
+
+/* ---------------- ESKALASI TIKET KE GRUP WA ---------------- */
+function suggestedEscalationGroupId(it){
+  return escalationGroupMap[it.category] || FU_ISSUE_GROUP;
+}
+function escalateGroupOptions(it){
+  const suggestedId = suggestedEscalationGroupId(it);
+  // WAG FU Issue selalu ada di daftar, plus grup PIC terkait kategori (kalau beda)
+  const opts = [waGroups.find(g=>g.id===FU_ISSUE_GROUP)];
+  if(suggestedId !== FU_ISSUE_GROUP) opts.push(waGroups.find(g=>g.id===suggestedId));
+  return opts.filter(Boolean);
+}
+function renderEscalatePanel(it){
+  const el = document.getElementById('d-escalate-panel');
+  const opts = escalateGroupOptions(it);
+  const history = (it.escalations||[]);
+  el.innerHTML = `
+    <div class="escalate-panel">
+      <div class="escalate-row">
+        <label>Kirim ke</label>
+        <select class="escalate-select" id="d-escalate-select">
+          ${opts.map(g=>`<option value="${g.id}">${g.name}${g.id===FU_ISSUE_GROUP?' (grup follow up issue)':''}</option>`).join('')}
+        </select>
+      </div>
+      <div class="escalate-note">Pesan eskalasi akan dikirim otomatis via Odeva IOM Bot ke grup WhatsApp terpilih, berisi ringkasan tiket dan status SLA saat ini.</div>
+      <button class="escalate-btn" onclick="escalateIssue('${it.id}')">🚀 Eskalasi Sekarang</button>
+      ${history.length ? `<div class="escalate-history">${history.map(h=>`
+        <div class="escalate-sent">✅ Terkirim ke <b>${h.group}</b> · ${h.time}</div>`).join('')}</div>` : ''}
+    </div>`;
+}
+function escalateIssue(id){
+  const it = issues.find(x=>x.id===id);
+  if(!it) return;
+  const select = document.getElementById('d-escalate-select');
+  const groupId = select ? select.value : suggestedEscalationGroupId(it);
+  const group = waGroups.find(g=>g.id===groupId);
+  if(!group) return;
+  const time = nowTimeStr();
+  it.escalations = it.escalations || [];
+  it.escalations.push({ group: group.name, time });
+  it.thread.push({
+    who: "🤖 Odeva IOM Bot · " + time,
+    text: `🚀 Eskalasi dikirim ke <b>${group.name}</b>: [${it.severity}] ${it.title} — PIC: ${it.pic||'-'}. Mohon segera ditindaklanjuti.`
+  });
+  renderEscalatePanel(it);
+  document.getElementById('d-thread').innerHTML = it.thread.map(m=>`
+    <div class="thread-msg"><div class="who">${m.who}</div><div class="bubble">${m.text}</div></div>`).join('');
+  demoToast(`🚀 Eskalasi tiket ${it.id} terkirim ke ${group.name}`);
+}
+
+/* ---------------- PERPINDAHAN PIC (EDIT/REASSIGN) ---------------- */
+function renderPicTransferPanel(it){
+  const el = document.getElementById('d-pic-transfer-panel');
+  if(!el) return;
+  const history = (it.picTransfers||[]);
+  el.innerHTML = `
+    <div class="escalate-panel">
+      <div class="escalate-row">
+        <label>Pindahkan ke</label>
+        <select class="escalate-select" id="d-pic-select">
+          ${PIC_TEAMS.map(p=>`<option value="${p}" ${p===it.pic?'selected':''}>${p}</option>`).join('')}
+        </select>
+      </div>
+      <div class="escalate-note">PIC saat ini: <b>${it.pic||'-'}</b>. Perpindahan akan otomatis dikirim sebagai notifikasi ke grup <b>WAG Info Perpindahan PIC</b> agar seluruh tim mengetahui pergantian penanggung jawab tiket ini.</div>
+      <button class="escalate-btn" onclick="transferPic('${it.id}')">🔄 Pindahkan PIC Sekarang</button>
+      ${history.length ? `<div class="escalate-history">${history.map(h=>`
+        <div class="escalate-sent">🔄 <b>${h.from}</b> → <b>${h.to}</b> · ${h.time}</div>`).join('')}</div>` : ''}
+    </div>`;
+}
+
+function transferPic(id){
+  const it = issues.find(x=>x.id===id);
+  if(!it) return;
+  const select = document.getElementById('d-pic-select');
+  const newPic = select ? select.value : it.pic;
+  if(!newPic || newPic === it.pic){
+    demoToast('PIC baru sama dengan PIC saat ini — tidak ada perubahan.');
+    return;
+  }
+  const oldPic = it.pic || '-';
+  const time = nowTimeStr();
+  it.pic = newPic;
+  it.picTransfers = it.picTransfers || [];
+  it.picTransfers.push({ from: oldPic, to: newPic, time });
+
+  // Catat di thread tiket
+  it.thread.push({
+    who: "🤖 Odeva IOM Bot · " + time,
+    text: `🔄 PIC tiket dipindahkan dari <b>${oldPic}</b> ke <b>${newPic}</b>.`
+  });
+
+  // Kirim notifikasi ke grup WhatsApp khusus Info Perpindahan PIC
+  const today = new Date();
+  const notifText = `🔄 <b>Perpindahan PIC</b> — Tiket [${it.id}] ${it.title}<br>Kategori: ${it.category} · Severity: ${it.severity}<br>Dari: <b>${oldPic}</b> → Ke: <b>${newPic}</b><br>Status: ${it.status} · SLA: ${it.sla}`;
+  conversations[PIC_TRANSFER_GROUP].msgs.push({
+    who: "🤖 Odeva IOM Bot",
+    time: time,
+    date: today.toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'}),
+    day: today.toLocaleDateString('id-ID',{weekday:'long'}),
+    text: notifText
+  });
+  conversations[PIC_TRANSFER_GROUP].last = `PIC tiket ${it.id} dipindah ke ${newPic}.`;
+  conversations[PIC_TRANSFER_GROUP].time = time;
+
+  // Re-render bagian yang terdampak
+  document.getElementById('d-pic').textContent = it.pic;
+  renderPicTransferPanel(it);
+  document.getElementById('d-thread').innerHTML = it.thread.map(m=>`
+    <div class="thread-msg"><div class="who">${m.who}</div><div class="bubble">${m.text}</div></div>`).join('');
+  renderIssuesTable();
+  renderSlaTable();
+  renderRecentIssues();
+  renderConvoList();
+  if(typeof activeGroupId !== 'undefined' && activeGroupId === PIC_TRANSFER_GROUP) renderConvoMessages();
+
+  demoToast(`🔄 PIC dipindahkan ke ${newPic} — notifikasi terkirim ke WAG Info Perpindahan PIC`);
 }
 
 function nowTimeStr(){
@@ -2144,7 +3137,7 @@ function init(){
   document.getElementById('badge-flagged').textContent = countFlaggedToday();
   setInterval(()=>{ renderSlaTable(); }, 30000);
 }
-init();
+// init() is now called from enterDashboard() after login flow completes
 </script>
 <!-- ============================================================
      DEMO SIMULATOR PANEL HTML
