@@ -1,0 +1,2570 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Odeva IOM — Integrated Operations Management</title>
+<style>
+:root{
+  --bg:#FFFFFF;
+  --bg-soft:#F4FAF6;
+  --g-900:#06231A;
+  --g-800:#0A3327;
+  --g-700:#0E6B49;
+  --g-500:#17A874;
+  --g-300:#5FCB99;
+  --ink:#0C2019;
+  --ink-dim:#4E655B;
+  --ink-faint:#8AA096;
+  --line: rgba(10,51,39,0.12);
+  --card:#FFFFFF;
+  --card-tint:#F1F9F4;
+  --amber:#E0A426; --amber-bg:#FFF2DA; --amber-line:#F4D9A0;
+  --red:#D9534F; --red-bg:#FDE7E7; --red-line:#F4C1C1;
+  --grad: linear-gradient(120deg, var(--g-300), var(--g-500) 50%, var(--g-800));
+  --grad-soft: linear-gradient(135deg, rgba(95,203,153,0.16), rgba(23,168,116,0.10) 50%, rgba(10,51,39,0.08));
+  --radius: 14px;
+  --shadow: 0 2px 10px rgba(10,51,39,0.05), 0 1px 2px rgba(10,51,39,0.04);
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  --sidebar-w: 240px;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{ background:linear-gradient(180deg,#FBFEFC 0%, #FFFFFF 420px); color:var(--ink); font-family:var(--font); line-height:1.5; -webkit-font-smoothing:antialiased; }
+button, select, input{ font-family:var(--font); }
+h1,h2,h3,h4{ font-family:var(--font); letter-spacing:-0.01em; font-weight:700; color:var(--g-900); }
+.mono{ font-family:var(--font-mono); }
+::selection{ background:var(--g-300); color:var(--g-900); }
+button{ cursor:pointer; }
+
+/* ============================================================
+   DEMO SIMULATOR PANEL
+   ============================================================ */
+#demo-panel {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9999;
+  width: 380px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 8px 40px rgba(10,51,39,0.18), 0 2px 8px rgba(10,51,39,0.08);
+  overflow: hidden;
+  transition: transform .35s cubic-bezier(.4,0,.2,1), opacity .35s;
+  transform: translateY(0);
+}
+#demo-panel.collapsed {
+  transform: translateY(calc(100% + 28px));
+  opacity: 0;
+  pointer-events: none;
+}
+#demo-panel .dp-accent {
+  height: 4px;
+  background: var(--grad);
+}
+#demo-panel .dp-header {
+  padding: 14px 18px 10px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+#demo-panel .dp-header .dp-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--g-900);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#demo-panel .dp-header .dp-title .dp-icon {
+  width: 24px; height: 24px; border-radius: 7px;
+  background: var(--grad);
+  display: grid; place-items: center;
+  font-size: 12px;
+  flex: 0 0 auto;
+}
+#demo-panel .dp-header .dp-subtitle {
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  margin-top: 2px;
+}
+#demo-panel .dp-close-btn {
+  border: none; background: none;
+  font-size: 18px; color: var(--ink-faint);
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  transition: background .15s;
+}
+#demo-panel .dp-close-btn:hover { background: var(--card-tint); }
+
+/* Progress bar */
+#demo-panel .dp-progress-bar {
+  height: 3px;
+  background: var(--card-tint);
+  margin: 0;
+}
+#demo-panel .dp-progress-fill {
+  height: 100%;
+  background: var(--grad);
+  transition: width .5s ease;
+}
+
+/* Steps list */
+#demo-panel .dp-steps {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.dp-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  transition: all .2s;
+  cursor: default;
+}
+.dp-step-item.done {
+  background: #F1F9F4;
+  border-color: #BFE9D3;
+}
+.dp-step-item.active {
+  background: linear-gradient(135deg, rgba(95,203,153,0.14), rgba(23,168,116,0.10));
+  border-color: var(--g-300);
+  box-shadow: 0 2px 8px rgba(23,168,116,0.12);
+}
+.dp-step-item.pending {
+  opacity: 0.45;
+}
+.dp-step-dot {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  display: grid; place-items: center;
+  font-size: 10px;
+  flex: 0 0 auto;
+  font-weight: 700;
+  background: #fff;
+  color: var(--ink-faint);
+  transition: all .3s;
+}
+.dp-step-item.done .dp-step-dot {
+  background: var(--g-500);
+  border-color: var(--g-500);
+  color: #fff;
+}
+.dp-step-item.active .dp-step-dot {
+  border-color: var(--g-500);
+  color: var(--g-700);
+  animation: dp-pulse-dot 1.5s infinite;
+}
+@keyframes dp-pulse-dot {
+  0%,100% { box-shadow: 0 0 0 0 rgba(23,168,116,0.4); }
+  50% { box-shadow: 0 0 0 5px rgba(23,168,116,0); }
+}
+.dp-step-text {
+  flex: 1;
+}
+.dp-step-label {
+  font-size: 12px; font-weight: 700; color: var(--g-900);
+  line-height: 1.3;
+}
+.dp-step-item.pending .dp-step-label { color: var(--ink-faint); }
+.dp-step-desc {
+  font-size: 10.5px;
+  color: var(--ink-dim);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+/* Active step callout */
+#demo-panel .dp-callout {
+  margin: 0 16px 12px;
+  background: linear-gradient(135deg, rgba(95,203,153,0.18), rgba(23,168,116,0.10));
+  border: 1px solid var(--g-300);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: var(--g-800);
+  line-height: 1.5;
+  display: none;
+}
+#demo-panel .dp-callout.show { display: block; }
+#demo-panel .dp-callout .dp-callout-title {
+  font-weight: 700;
+  font-size: 11.5px;
+  color: var(--g-700);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Footer actions */
+#demo-panel .dp-footer {
+  padding: 12px 16px 14px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dp-btn-next {
+  flex: 1;
+  background: var(--grad);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: opacity .2s, transform .1s;
+  box-shadow: 0 3px 12px rgba(14,107,73,0.25);
+}
+.dp-btn-next:hover { opacity: 0.9; transform: translateY(-1px); }
+.dp-btn-next:active { transform: translateY(0); }
+.dp-btn-next:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.dp-btn-reset {
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--ink-dim);
+  border-radius: 10px;
+  padding: 9px 13px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background .15s;
+}
+.dp-btn-reset:hover { background: var(--card-tint); }
+.dp-step-counter {
+  font-size: 11px;
+  color: var(--ink-faint);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Toggle FAB */
+#demo-fab {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9998;
+  background: var(--grad);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 6px 24px rgba(14,107,73,0.35);
+  cursor: pointer;
+  transition: transform .15s, opacity .15s;
+}
+#demo-fab:hover { transform: translateY(-2px); }
+#demo-fab.hidden { display: none; }
+
+/* notification toast */
+.dp-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-80px);
+  z-index: 99999;
+  background: var(--g-800);
+  color: #fff;
+  border-radius: 12px;
+  padding: 12px 22px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+  transition: transform .4s cubic-bezier(.4,0,.2,1);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.dp-toast.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* highlight pulse for pointed UI element */
+.dp-highlight {
+  box-shadow: 0 0 0 0 rgba(23,168,116,0.6) !important;
+  animation: dp-ring 1.6s ease-out 2;
+}
+@keyframes dp-ring {
+  0% { box-shadow: 0 0 0 0 rgba(23,168,116,0.6); }
+  70% { box-shadow: 0 0 0 10px rgba(23,168,116,0); }
+  100% { box-shadow: 0 0 0 0 rgba(23,168,116,0); }
+}
+
+.glow{ position:fixed; z-index:0; pointer-events:none; border-radius:50%; filter:blur(130px); }
+.glow-1{ width:560px; height:560px; top:-260px; left:120px; background:var(--g-300); opacity:0.16; }
+.glow-2{ width:480px; height:480px; top:60px; right:-180px; background:var(--g-700); opacity:0.10; }
+
+/* ---------------- APP SHELL ---------------- */
+.app{ display:flex; min-height:100vh; position:relative; z-index:1; }
+
+.sidebar{
+  width:var(--sidebar-w); flex:0 0 var(--sidebar-w);
+  border-right:1px solid var(--line); background:#fff;
+  display:flex; flex-direction:column; position:sticky; top:0; height:100vh;
+}
+.side-accent{ height:3px; background:var(--grad); flex:0 0 auto; }
+.side-brand{ display:flex; align-items:center; gap:10px; padding:20px 20px 16px; }
+.brand-mark{ width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg, var(--g-300), var(--g-500) 55%, var(--g-900)); display:grid; place-items:center; font-size:13px; color:#fff; font-weight:700; flex:0 0 auto; box-shadow:0 3px 10px rgba(14,107,73,0.28); }
+.side-brand .name{ font-weight:700; font-size:15.5px; color:var(--g-900); line-height:1.2; }
+.side-brand .sub{ font-size:11px; color:var(--ink-faint); font-weight:500; }
+
+.side-nav{ flex:1; padding:6px 12px; display:flex; flex-direction:column; gap:2px; overflow-y:auto; }
+.nav-item{
+  display:flex; align-items:center; gap:11px; border:none; background:none; text-align:left;
+  padding:10px 12px; border-radius:9px; font-size:13.5px; font-weight:600; color:var(--ink-dim);
+  width:100%; position:relative;
+}
+.nav-item svg{ width:17px; height:17px; flex:0 0 auto; opacity:0.75; }
+.nav-item:hover{ background:var(--card-tint); color:var(--g-900); }
+.nav-item.active{ background:var(--grad-soft); color:var(--g-800); }
+.nav-item.active::before{ content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; border-radius:3px; background:var(--grad); }
+.nav-item.active svg{ opacity:1; color:var(--g-700); }
+.nav-badge{ margin-left:auto; font-size:10.5px; font-weight:700; background:var(--red-bg); color:var(--red); border-radius:999px; padding:1px 7px; }
+.nav-badge.soft{ background:var(--grad); color:#fff; }
+.nav-group-label{ font-size:10.5px; text-transform:uppercase; letter-spacing:0.06em; color:var(--ink-faint); font-weight:700; padding:14px 12px 6px; }
+
+.side-bottom{ padding:14px; border-top:1px solid var(--line); }
+.user-chip{ display:flex; align-items:center; gap:10px; padding:8px; border-radius:10px; }
+.user-chip:hover{ background:var(--card-tint); }
+.avatar-sm{ width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--g-300),var(--g-700) 60%,var(--g-900)); color:#fff; display:grid; place-items:center; font-size:12px; font-weight:700; flex:0 0 auto; }
+.user-chip .who{ font-size:12.5px; font-weight:700; color:var(--g-900); line-height:1.25; }
+.user-chip .role{ font-size:11px; color:var(--ink-faint); }
+
+.main{ flex:1; min-width:0; display:flex; flex-direction:column; }
+
+.topbar{
+  position:sticky; top:0; z-index:20; background:rgba(255,255,255,0.85); backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line); padding:16px 30px; display:flex; align-items:center; justify-content:space-between; gap:18px;
+  position:relative;
+}
+.topbar::after{ content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:var(--grad); opacity:0.55; }
+.topbar h1{ font-size:19px; }
+.topbar .sub{ font-size:12.5px; color:var(--ink-faint); margin-top:2px; font-weight:500; }
+.topbar-right{ display:flex; align-items:center; gap:12px; }
+.search-box{ display:flex; align-items:center; gap:8px; border:1px solid var(--line); border-radius:9px; padding:8px 12px; background:var(--card-tint); min-width:250px; }
+.search-box svg{ width:14px; height:14px; opacity:0.5; flex:0 0 auto; }
+.search-box input{ border:none; background:none; outline:none; font-size:13px; width:100%; color:var(--ink); }
+.icon-btn{ position:relative; border:1px solid var(--line); background:#fff; width:36px; height:36px; border-radius:9px; display:grid; place-items:center; }
+.icon-btn svg{ width:16px; height:16px; color:var(--ink-dim); }
+.notif-dot{ position:absolute; top:7px; right:8px; width:7px; height:7px; border-radius:50%; background:var(--red); border:1.5px solid #fff; }
+.pill-live{ display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; color:var(--g-700); background:var(--card-tint); border:1px solid var(--line); border-radius:999px; padding:6px 11px; }
+.pill-live .dot{ width:6px; height:6px; border-radius:50%; background:var(--g-500); animation:pulse 1.8s infinite; }
+@keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.25;} }
+
+.content{ padding:26px 30px 70px; flex:1; position:relative; }
+.view{ display:none; }
+.view.active{ display:block; animation:fadein .25s ease; }
+@keyframes fadein{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
+
+/* ---------------- shared components ---------------- */
+.grid-4{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+.grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.grid-2{ display:grid; grid-template-columns:1.4fr 1fr; gap:16px; }
+@media(max-width:1100px){ .grid-4{ grid-template-columns:repeat(2,1fr);} .grid-3{ grid-template-columns:1fr 1fr;} .grid-2{ grid-template-columns:1fr;} }
+@media(max-width:640px){ .grid-4{ grid-template-columns:1fr;} .grid-3{ grid-template-columns:1fr;} }
+
+.card{ border:1px solid var(--line); background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); padding:20px; }
+.card h3{ font-size:14.5px; }
+.card .card-sub{ font-size:12px; color:var(--ink-faint); margin-top:2px; font-weight:500; }
+
+.card.kpi{ position:relative; overflow:hidden; }
+.card.kpi::before{ content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--grad); }
+.kpi .label{ font-size:11.5px; color:var(--ink-faint); font-weight:700; text-transform:uppercase; letter-spacing:0.03em; margin-bottom:10px; }
+.kpi .value{ font-family:var(--font-mono); font-size:26px; font-weight:600; color:var(--g-800); }
+.kpi .delta{ font-size:11.5px; font-weight:700; margin-top:6px; }
+.kpi .delta.up{ color:var(--g-700); }
+.kpi .delta.down{ color:var(--red); }
+
+.section-title{ display:flex; align-items:center; justify-content:space-between; margin:34px 0 14px; }
+.section-title h2{ font-size:16.5px; display:flex; align-items:center; gap:9px; }
+.section-title h2::before{ content:''; display:inline-block; width:4px; height:16px; border-radius:3px; background:var(--grad); }
+.section-title:first-child{ margin-top:0; }
+.link-btn{ font-size:12.5px; font-weight:700; color:var(--g-700); background:none; border:none; }
+
+.badge{ font-size:10.5px; font-weight:700; padding:4px 9px; border-radius:999px; text-transform:uppercase; letter-spacing:0.02em; display:inline-block; white-space:nowrap; }
+.badge.track{ background:#E4F7EC; color:var(--g-700); border:1px solid #BFE9D3; }
+.badge.risk{ background:var(--amber-bg); color:#B4720A; border:1px solid var(--amber-line); }
+.badge.breach{ background:var(--red-bg); color:#C24545; border:1px solid var(--red-line); }
+.badge.open{ background:#EFF3FF; color:#3557C4; border:1px solid #D3DEFA; }
+.badge.progress{ background:#FFF6E2; color:#96690A; border:1px solid #F3E1AE; }
+.badge.resolved{ background:#E4F7EC; color:var(--g-700); border:1px solid #BFE9D3; }
+.badge.closed{ background:#F0F1F0; color:#6B7570; border:1px solid #DADEDB; }
+.badge.sev-critical{ background:var(--red-bg); color:#C24545; border:1px solid var(--red-line); }
+.badge.sev-high{ background:var(--amber-bg); color:#B4720A; border:1px solid var(--amber-line); }
+.badge.sev-medium{ background:#EFF3FF; color:#3557C4; border:1px solid #D3DEFA; }
+.badge.sev-low{ background:#F0F1F0; color:#6B7570; border:1px solid #DADEDB; }
+.badge.grad{ background:var(--grad); color:#fff; border:none; }
+.badge.sent-pos{ background:#E4F7EC; color:var(--g-700); border:1px solid #BFE9D3; }
+.badge.sent-neu{ background:#F0F1F0; color:#6B7570; border:1px solid #DADEDB; }
+.badge.sent-neg{ background:var(--red-bg); color:#C24545; border:1px solid var(--red-line); }
+.badge.src-nlp{ background:#EEE9FB; color:#6E4FCB; border:1px solid #D9CDF5; }
+.badge.src-manual{ background:#F0F1F0; color:#6B7570; border:1px solid #DADEDB; }
+.src-row{ margin-top:4px; }
+
+/* tags & alert channels */
+.tag-row{ margin-top:5px; display:flex; flex-wrap:wrap; gap:4px; }
+.tag-chip{ font-size:10px; font-weight:700; color:var(--g-700); background:var(--card-tint); border:1px solid var(--line); border-radius:6px; padding:2px 7px; white-space:nowrap; display:inline-block; }
+.chan-chip{ display:inline-flex; align-items:center; gap:4px; font-size:10.5px; font-weight:700; padding:3px 8px; border-radius:999px; margin-right:4px; white-space:nowrap; }
+.chan-chip.dash{ background:#EFF3FF; color:#3557C4; border:1px solid #D3DEFA; }
+.chan-chip.wa{ background:#DCF8C6; color:#0E6B49; border:1px solid #BFE9D3; }
+.sent-tag-row{ display:flex; flex-direction:column; gap:8px; margin-bottom:18px; }
+.alert-wa-bubble{ background:#DCF8C6; border:1px solid rgba(14,107,73,0.18); border-radius:11px; padding:12px 14px; font-size:12.5px; margin-bottom:18px; }
+.awb-head{ font-size:11px; font-weight:700; color:var(--g-700); margin-bottom:6px; }
+.awb-body{ color:var(--ink); line-height:1.5; }
+.awb-meta{ margin-top:10px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+
+/* dashboard bar chart */
+.bars{ display:flex; align-items:flex-end; gap:6px; height:150px; margin-top:6px; }
+.bars .bar-col{ flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; height:100%; justify-content:flex-end; }
+.bars .bar{ width:100%; max-width:22px; border-radius:5px 5px 2px 2px; background:linear-gradient(180deg,var(--g-300),var(--g-700)); }
+.bars .bar-label{ font-size:10px; color:var(--ink-faint); font-weight:600; }
+
+.hbars{ display:flex; flex-direction:column; gap:12px; margin-top:8px; }
+.hbar-row{ display:grid; grid-template-columns:120px 1fr 44px; align-items:center; gap:10px; font-size:12.5px; }
+.hbar-row .name{ color:var(--ink); font-weight:600; }
+.hbar-track{ height:8px; border-radius:6px; background:var(--card-tint); overflow:hidden; }
+.hbar-fill{ height:100%; border-radius:6px; background:linear-gradient(90deg,var(--g-300),var(--g-500),var(--g-800)); }
+.hbar-row .count{ text-align:right; font-family:var(--font-mono); color:var(--ink-dim); font-size:11.5px; }
+
+.donut-wrap{ display:flex; align-items:center; gap:22px; }
+.donut{ width:120px; height:120px; border-radius:50%; flex:0 0 auto; position:relative; display:grid; place-items:center; }
+.donut::after{ content:''; position:absolute; inset:16px; background:#fff; border-radius:50%; }
+.donut-center{ position:relative; z-index:1; text-align:center; }
+.donut-center .n{ font-family:var(--font-mono); font-size:19px; font-weight:700; color:var(--g-800); }
+.donut-center .t{ font-size:9.5px; color:var(--ink-faint); font-weight:700; text-transform:uppercase; }
+.legend{ display:flex; flex-direction:column; gap:9px; font-size:12.5px; }
+.legend-item{ display:flex; align-items:center; gap:8px; }
+.legend-item .sw{ width:9px; height:9px; border-radius:3px; flex:0 0 auto; }
+.legend-item .lbl{ color:var(--ink-dim); flex:1; }
+.legend-item .val{ font-family:var(--font-mono); font-weight:700; color:var(--g-900); }
+
+/* table */
+.table-wrap{ border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; background:#fff; box-shadow:var(--shadow); }
+table{ width:100%; border-collapse:collapse; font-size:12.8px; }
+thead th{ text-align:left; font-size:10.8px; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-faint); font-weight:700; background:var(--card-tint); padding:11px 14px; border-bottom:1px solid var(--line); white-space:nowrap; }
+tbody td{ padding:12px 14px; border-bottom:1px solid var(--line); color:var(--ink-dim); vertical-align:middle; }
+tbody tr:last-child td{ border-bottom:none; }
+tbody tr{ transition:background .12s; cursor:pointer; }
+tbody tr:hover{ background:var(--card-tint); }
+td.id{ font-family:var(--font-mono); color:var(--g-700); font-weight:600; }
+td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
+
+/* filters */
+.filters{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; align-items:center; }
+.filters select, .filters .search-box{ font-size:12.5px; }
+.filters select{ border:1px solid var(--line); border-radius:9px; padding:8px 10px; background:#fff; color:var(--ink-dim); font-weight:600; }
+.seg{ display:flex; border:1px solid var(--line); border-radius:9px; overflow:hidden; }
+.seg button{ border:none; background:#fff; padding:8px 13px; font-size:12.5px; font-weight:700; color:var(--ink-faint); border-right:1px solid var(--line); }
+.seg button:last-child{ border-right:none; }
+.seg button.active{ background:var(--grad); color:#fff; }
+
+/* whatsapp groups */
+.wa-card{ border:1px solid var(--line); border-radius:var(--radius); padding:18px; background:#fff; box-shadow:var(--shadow); }
+.wa-card-top{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
+.wa-card h4{ font-size:14px; }
+.wa-industry{ font-size:11px; color:var(--ink-faint); font-weight:600; margin-top:2px; }
+.status-dot{ display:flex; align-items:center; gap:6px; font-size:10.5px; font-weight:700; color:var(--g-700); }
+.status-dot span{ width:6px; height:6px; border-radius:50%; background:var(--g-500); }
+.wa-stat-row{ display:flex; justify-content:space-between; padding:8px 0; border-top:1px solid var(--line); font-size:12px; color:var(--ink-dim); }
+.wa-stat-row:first-of-type{ border-top:none; }
+.wa-stat-row b{ color:var(--g-900); font-family:var(--font-mono); }
+.wa-owner{ margin-top:10px; font-size:11px; font-weight:700; color:var(--g-700); background:var(--card-tint); border-radius:8px; padding:6px 9px; display:inline-block; }
+.wa-owner.none{ color:var(--ink-faint); background:#F5F5F4; }
+
+/* insight cards */
+.insight-card{ border:1px solid var(--line); border-radius:var(--radius); padding:20px; background:var(--grad-soft); box-shadow:var(--shadow); }
+.insight-card .tag{ font-size:10.5px; font-weight:700; color:var(--g-700); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:10px; }
+.insight-card p.insight-text{ font-size:14px; color:var(--g-900); font-weight:600; margin-bottom:10px; line-height:1.4; }
+.insight-card p.insight-action{ font-size:12.5px; color:var(--ink-dim); }
+.insight-card .conf{ margin-top:14px; display:flex; align-items:center; gap:8px; font-size:11px; color:var(--ink-faint); font-weight:600; }
+.conf-track{ flex:1; height:5px; border-radius:4px; background:#EDF3EF; overflow:hidden; }
+.conf-fill{ height:100%; background:var(--grad); }
+
+.warn-row{ display:flex; align-items:center; gap:14px; border:1px solid var(--line); border-radius:12px; padding:14px 16px; background:#fff; box-shadow:var(--shadow); }
+.warn-icon{ width:36px; height:36px; border-radius:10px; background:var(--amber-bg); display:grid; place-items:center; flex:0 0 auto; }
+.warn-icon svg{ width:17px; height:17px; color:#B4720A; }
+.warn-row .t{ font-size:13.5px; font-weight:700; color:var(--g-900); }
+.warn-row .d{ font-size:12px; color:var(--ink-dim); margin-top:2px; }
+
+/* leaderboard */
+.lb-row{ display:grid; grid-template-columns:26px 1fr 90px 90px 90px; gap:10px; align-items:center; padding:11px 4px; border-bottom:1px solid var(--line); font-size:12.5px; }
+.lb-row:last-child{ border-bottom:none; }
+.lb-row.head{ font-size:10.5px; text-transform:uppercase; color:var(--ink-faint); font-weight:700; letter-spacing:0.03em; }
+.lb-rank{ font-family:var(--font-mono); color:var(--ink-faint); font-weight:700; }
+.lb-name{ font-weight:700; color:var(--g-900); }
+.lb-val{ font-family:var(--font-mono); color:var(--ink-dim); text-align:right; }
+
+/* ---------------- CONVERSATIONS ---------------- */
+.convo-shell{ display:flex; height:calc(100vh - 168px); min-height:460px; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); background:#fff; }
+.convo-list{ width:290px; flex:0 0 290px; border-right:1px solid var(--line); overflow-y:auto; background:#fff; }
+.convo-list-item{ padding:14px 16px; border-bottom:1px solid var(--line); cursor:pointer; position:relative; }
+.convo-list-item:hover{ background:var(--card-tint); }
+.convo-list-item.active{ background:var(--grad-soft); }
+.convo-list-item.active::before{ content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--grad); }
+.convo-list-item .name{ font-weight:700; font-size:13px; color:var(--g-900); }
+.convo-list-item .preview{ font-size:11.5px; color:var(--ink-faint); margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.convo-list-item .meta-row{ display:flex; justify-content:space-between; align-items:center; margin-top:6px; }
+.convo-list-item .time{ font-size:10.5px; color:var(--ink-faint); }
+.convo-badge{ font-size:10px; font-weight:700; background:var(--grad); color:#fff; border-radius:999px; padding:2px 7px; }
+
+.convo-panel{ flex:1; display:flex; flex-direction:column; background:linear-gradient(180deg, var(--bg-soft), #fff 220px); min-width:0; }
+.convo-header{ padding:15px 22px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; background:#fff; }
+.convo-header .name{ font-size:14.5px; font-weight:700; color:var(--g-900); }
+.convo-header .sub{ font-size:11.5px; color:var(--ink-faint); margin-top:2px; }
+.convo-messages{ flex:1; overflow-y:auto; padding:22px; display:flex; flex-direction:column; gap:16px; }
+.cmsg{ max-width:72%; }
+.cmsg .who{ font-size:11px; color:var(--ink-faint); margin-bottom:4px; font-weight:600; }
+.cmsg .bubble{ background:#fff; border:1px solid var(--line); border-radius:11px 11px 11px 3px; padding:10px 13px; font-size:12.8px; color:var(--ink); box-shadow:0 1px 3px rgba(10,51,39,0.04); }
+.cmsg.flagged .bubble{ background:#DCF8C6; border-color:rgba(14,107,73,0.18); }
+.cmsg .ai-tag{ display:flex; align-items:center; gap:6px; margin-top:7px; font-size:10.8px; font-weight:700; }
+.cmsg .ai-tag.src-nlp{ color:#6E4FCB; }
+.cmsg .ai-tag.src-manual{ color:#6B7570; }
+.cmsg .ai-tag button{ border:none; color:#fff; font-size:10.2px; font-weight:700; padding:3px 9px; border-radius:999px; }
+.cmsg .ai-tag.src-nlp button{ background:#6E4FCB; }
+.cmsg .ai-tag.src-manual button{ background:#6B7570; }
+.cmsg .bubble{ position:relative; cursor:pointer; }
+.cmsg .make-ticket-btn{ display:none; align-items:center; gap:5px; margin-top:8px; border:1px dashed var(--line); background:var(--card-tint); color:var(--g-700); font-size:10.5px; font-weight:700; padding:4px 10px; border-radius:999px; }
+.cmsg .bubble:hover .make-ticket-btn{ display:inline-flex; }
+.convo-date-sep{ text-align:center; margin:4px 0 8px; }
+.convo-date-sep span{ background:var(--card-tint); color:var(--ink-faint); font-size:11px; font-weight:700; padding:4px 13px; border-radius:999px; border:1px solid var(--line); }
+.convo-search{ padding:10px 22px; border-bottom:1px solid var(--line); background:#fff; }
+.convo-search .search-box{ min-width:0; width:100%; }
+
+/* ---------------- SETTINGS ---------------- */
+.company-card{ border:1px solid var(--line); border-radius:var(--radius); padding:20px; background:#fff; box-shadow:var(--shadow); position:relative; overflow:hidden; }
+.company-card::before{ content:''; position:absolute; top:0; left:0; bottom:0; width:3px; background:var(--grad); }
+.company-card h4{ font-size:15px; }
+.chip-row{ display:flex; flex-wrap:wrap; gap:9px; }
+.chip{ border:1px solid var(--line); border-radius:999px; padding:8px 14px; font-size:12.5px; color:var(--g-900); background:var(--card-tint); font-weight:600; }
+.group-chip{ display:inline-flex; align-items:center; gap:8px; }
+.group-chip button{ border:none; background:none; color:var(--ink-faint); font-weight:700; cursor:pointer; font-size:14px; line-height:1; }
+.group-chip button:hover{ color:var(--red); }
+.add-group-btn{ border:1px dashed var(--line); border-radius:999px; padding:8px 14px; font-size:12.5px; font-weight:700; color:var(--g-700); background:#fff; }
+.group-picker{ margin-top:12px; border:1px solid var(--line); border-radius:10px; padding:10px; background:var(--card-tint); display:flex; flex-direction:column; gap:4px; }
+.group-picker button{ text-align:left; border:none; background:none; padding:8px 10px; border-radius:7px; font-size:12.5px; color:var(--ink-dim); font-weight:600; display:flex; justify-content:space-between; }
+.group-picker button:hover{ background:#fff; color:var(--g-900); }
+.group-picker .owner-tag{ font-size:10.5px; color:var(--ink-faint); font-weight:600; }
+.settings-empty{ font-size:12px; color:var(--ink-faint); font-style:italic; }
+
+/* drawer */
+.drawer-overlay{ position:fixed; inset:0; background:rgba(6,35,26,0.35); backdrop-filter:blur(2px); opacity:0; pointer-events:none; transition:opacity .2s; z-index:90; }
+.drawer-overlay.show{ opacity:1; pointer-events:auto; }
+.drawer{
+  position:fixed; top:0; right:0; height:100vh; width:440px; max-width:92vw; background:#fff;
+  border-left:1px solid var(--line); box-shadow:-16px 0 40px rgba(6,35,26,0.12);
+  transform:translateX(100%); transition:transform .28s cubic-bezier(.4,0,.2,1); z-index:95;
+  display:flex; flex-direction:column;
+}
+.drawer.show{ transform:translateX(0); }
+.drawer-head{ padding:20px 22px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:flex-start; position:relative; }
+.drawer-head::after{ content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:var(--grad); }
+.drawer-close{ border:none; background:var(--card-tint); width:28px; height:28px; border-radius:8px; display:grid; place-items:center; color:var(--ink-dim); flex:0 0 auto; }
+.drawer-body{ padding:20px 22px; overflow-y:auto; flex:1; }
+.drawer-id{ font-family:var(--font-mono); font-size:12px; color:var(--g-700); font-weight:700; margin-bottom:6px; }
+.drawer-title{ font-size:17px; margin-bottom:10px; }
+.drawer-badges{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+.meta-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:22px; }
+.meta-item .k{ font-size:10.5px; text-transform:uppercase; letter-spacing:0.03em; color:var(--ink-faint); font-weight:700; margin-bottom:4px; }
+.meta-item .v{ font-size:13px; font-weight:600; color:var(--g-900); }
+.drawer h5{ font-size:11.5px; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-faint); margin:22px 0 12px; font-weight:700; }
+.drawer h5:first-of-type{ margin-top:0; }
+
+.timeline{ display:flex; flex-direction:column; }
+.tl-step{ display:flex; gap:12px; position:relative; padding-bottom:20px; }
+.tl-step:last-child{ padding-bottom:0; }
+.tl-dot{ width:16px; height:16px; border-radius:50%; border:2.5px solid var(--line); background:#fff; flex:0 0 auto; margin-top:2px; position:relative; z-index:1; }
+.tl-step.done .tl-dot{ border-color:var(--g-500); background:var(--grad); }
+.tl-step.active .tl-dot{ border-color:var(--g-700); background:#fff; box-shadow:0 0 0 3px rgba(23,168,116,0.18); }
+.tl-line{ position:absolute; left:7px; top:18px; bottom:0; width:2px; background:var(--line); }
+.tl-step:last-child .tl-line{ display:none; }
+.tl-step.done .tl-line{ background:var(--g-300); }
+.tl-name{ font-size:12.8px; font-weight:700; color:var(--ink-faint); }
+.tl-step.done .tl-name, .tl-step.active .tl-name{ color:var(--g-900); }
+.tl-time{ font-size:11px; color:var(--ink-faint); margin-top:2px; }
+
+.wa-thread{ display:flex; flex-direction:column; gap:10px; }
+.thread-msg{ max-width:88%; }
+.thread-msg .who{ font-size:11px; color:var(--ink-faint); margin-bottom:3px; font-weight:600; }
+.thread-msg .bubble{ background:#DCF8C6; border-radius:10px 10px 10px 2px; padding:9px 12px; font-size:12.8px; color:var(--g-900); }
+
+/* ---------------- MANUAL TICKET MODAL ---------------- */
+.modal-overlay{ position:fixed; inset:0; background:rgba(6,35,26,0.4); backdrop-filter:blur(2px); opacity:0; pointer-events:none; transition:opacity .18s; z-index:120; display:flex; align-items:center; justify-content:center; padding:20px; }
+.modal-overlay.show{ opacity:1; pointer-events:auto; }
+.ticket-modal{ background:#fff; border-radius:16px; width:480px; max-width:100%; max-height:88vh; overflow-y:auto; box-shadow:0 20px 60px rgba(6,35,26,0.25); transform:translateY(10px) scale(.98); opacity:0; transition:transform .2s, opacity .2s; }
+.modal-overlay.show .ticket-modal{ transform:translateY(0) scale(1); opacity:1; }
+.tm-head{ padding:20px 22px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:flex-start; position:relative; }
+.tm-head::after{ content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:var(--grad); }
+.tm-head h3{ font-size:16px; color:var(--g-900); }
+.tm-head .sub{ font-size:12px; color:var(--ink-faint); margin-top:3px; font-weight:500; }
+.tm-close{ border:none; background:var(--card-tint); width:28px; height:28px; border-radius:8px; display:grid; place-items:center; color:var(--ink-dim); flex:0 0 auto; }
+.tm-body{ padding:20px 22px; display:flex; flex-direction:column; gap:14px; }
+.tm-source-note{ background:var(--card-tint); border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:12px; color:var(--ink-dim); }
+.tm-source-note b{ color:var(--g-900); }
+.tm-field label{ display:block; font-size:11.5px; font-weight:700; color:var(--ink-dim); margin-bottom:6px; }
+.tm-field input, .tm-field select, .tm-field textarea{ width:100%; border:1px solid var(--line); border-radius:9px; padding:9px 11px; font-size:13px; color:var(--ink); background:#fff; outline:none; }
+.tm-field input:focus, .tm-field select:focus, .tm-field textarea:focus{ border-color:var(--g-500); box-shadow:0 0 0 3px rgba(23,168,116,0.12); }
+.tm-field textarea{ resize:vertical; min-height:60px; font-family:var(--font); }
+.tm-row2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.tm-err{ font-size:11.5px; color:var(--red); font-weight:600; display:none; }
+.tm-err.show{ display:block; }
+.tm-foot{ padding:16px 22px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px; }
+.tm-btn{ border:none; border-radius:9px; padding:10px 18px; font-size:13px; font-weight:700; cursor:pointer; }
+.tm-btn.ghost{ background:var(--card-tint); color:var(--ink-dim); }
+.tm-btn.primary{ background:var(--grad); color:#fff; box-shadow:0 3px 10px rgba(14,107,73,0.28); }
+
+/* ---------------- AI SUMMARY ---------------- */
+.ai-summary{ margin:14px 20px 0; padding:13px 15px; border-radius:12px; border:1px solid var(--line); background:var(--card-tint); display:flex; gap:10px; align-items:flex-start; cursor:pointer; }
+.ai-summary .icon{ width:26px; height:26px; border-radius:8px; background:var(--grad); display:grid; place-items:center; flex:0 0 auto; font-size:13px; box-shadow:0 2px 8px rgba(14,107,73,0.25); }
+.ai-summary .body{ flex:1; min-width:0; }
+.ai-summary .lbl{ font-size:10.5px; text-transform:uppercase; letter-spacing:0.04em; font-weight:700; color:var(--g-700); margin-bottom:3px; display:flex; align-items:center; gap:6px; }
+.ai-summary .lbl .chev{ font-size:9px; transition:transform .18s; opacity:0.7; }
+.ai-summary.expanded .lbl .chev{ transform:rotate(180deg); }
+.ai-summary .txt{ font-size:12.6px; color:var(--ink); line-height:1.5; }
+.ai-summary.tone-warn{ background:var(--amber-bg); border-color:var(--amber-line); }
+.ai-summary.tone-warn .icon{ background:linear-gradient(135deg,#F4D9A0,var(--amber)); }
+.ai-summary.tone-warn .lbl{ color:#9A6A0C; }
+.ai-summary.tone-critical{ background:var(--red-bg); border-color:var(--red-line); }
+.ai-summary.tone-critical .icon{ background:linear-gradient(135deg,#F4C1C1,var(--red)); }
+.ai-summary.tone-critical .lbl{ color:#B23B37; }
+
+.ai-detail-list{ display:none; flex-direction:column; gap:6px; margin-top:11px; padding-top:11px; border-top:1px solid rgba(10,51,39,0.1); }
+.ai-summary.expanded .ai-detail-list{ display:flex; }
+.ai-detail-item{ display:flex; align-items:center; gap:8px; padding:7px 9px; border-radius:9px; background:#fff; border:1px solid var(--line); cursor:pointer; }
+.ai-detail-item:hover{ border-color:var(--g-500); }
+.ai-detail-item .sev-dot{ width:7px; height:7px; border-radius:50%; flex:0 0 auto; }
+.ai-detail-item .sev-dot.Critical{ background:var(--red); }
+.ai-detail-item .sev-dot.High{ background:var(--amber); }
+.ai-detail-item .sev-dot.Medium{ background:var(--g-500); }
+.ai-detail-item .sev-dot.Low{ background:var(--ink-faint); }
+.ai-detail-item .it{ flex:1; min-width:0; font-size:12px; font-weight:600; color:var(--g-900); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ai-detail-item .arrow{ font-size:12px; color:var(--ink-faint); flex:0 0 auto; }
+.ai-detail-empty{ font-size:11.5px; color:var(--ink-faint); padding:4px 2px; }
+
+.ai-summary-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+.ai-summary-card{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px 17px; box-shadow:var(--shadow); cursor:pointer; }
+.ai-summary-card .top{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:2px; }
+.ai-summary-card .odeva-tag{ font-size:10px; text-transform:uppercase; letter-spacing:0.04em; font-weight:700; color:var(--g-700); margin-bottom:6px; display:flex; align-items:center; gap:5px; }
+.ai-summary-card .odeva-tag .chev{ font-size:9px; opacity:0.7; transition:transform .18s; }
+.ai-summary-card.expanded .odeva-tag .chev{ transform:rotate(180deg); }
+.ai-summary-card .gname{ font-size:13.5px; font-weight:700; color:var(--g-900); }
+.ai-summary-card .dot{ width:8px; height:8px; border-radius:50%; flex:0 0 auto; }
+.ai-summary-card .dot.ok{ background:var(--g-500); }
+.ai-summary-card .dot.warn{ background:var(--amber); }
+.ai-summary-card .dot.critical{ background:var(--red); }
+.ai-summary-card .txt{ font-size:12.3px; color:var(--ink-dim); line-height:1.5; margin-bottom:11px; }
+.ai-summary-card button{ border:none; background:none; color:var(--g-700); font-size:12px; font-weight:700; padding:0; }
+.ai-summary-card .ai-detail-list{ border-top:1px solid var(--line); }
+
+@keyframes msgBlink{
+  0%,100%{ box-shadow:0 0 0 0 rgba(23,168,116,0); background:#DCF8C6; }
+  50%{ box-shadow:0 0 0 5px rgba(23,168,116,0.35); background:#FFF3B0; }
+}
+.cmsg.blink-highlight .bubble{ animation: msgBlink 0.5s ease-in-out 6; }
+
+/* ---------------- CLOSE TICKET PANEL ---------------- */
+.close-actions{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.close-btn{ border:1px solid var(--line); border-radius:11px; padding:12px 13px; background:#fff; text-align:left; cursor:pointer; }
+.close-btn .ttl{ font-size:12.5px; font-weight:700; color:var(--g-900); display:flex; align-items:center; gap:6px; margin-bottom:3px; }
+.close-btn .desc{ font-size:11px; color:var(--ink-faint); line-height:1.4; }
+.close-btn.auto:hover{ border-color:#6E4FCB; background:#F6F3FE; }
+.close-btn.manual:hover{ border-color:var(--g-500); background:var(--card-tint); }
+.close-status{ border-radius:11px; padding:13px 14px; display:flex; flex-direction:column; gap:8px; }
+.close-status.is-closed{ background:var(--card-tint); border:1px solid var(--line); }
+.close-status .row1{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.close-status .who{ font-size:12.5px; font-weight:700; color:var(--g-900); }
+.close-status .when{ font-size:11px; color:var(--ink-faint); }
+.close-status .reopen-btn{ align-self:flex-start; border:none; background:none; color:var(--g-700); font-size:11.5px; font-weight:700; padding:0; }
+
+/* ---------------- CLICKABLE SUMMARY ROWS ---------------- */
+.hbar-row{ cursor:pointer; border-radius:8px; transition:background .12s; }
+.hbar-row:hover{ background:var(--card-tint); }
+.click-row{ cursor:pointer; border-radius:9px; padding:6px 8px; margin:0 -8px; transition:background .12s; }
+.click-row:hover{ background:var(--card-tint); }
+.click-row:hover .row-arrow{ opacity:1; transform:translateX(2px); }
+.row-arrow{ font-size:12px; color:var(--ink-faint); opacity:0; transition:all .12s; margin-left:6px; }
+
+.sla-countdown{ border:1px solid var(--line); border-radius:12px; padding:14px 16px; background:var(--grad-soft); display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+.sla-countdown .lbl{ font-size:11px; color:var(--ink-faint); font-weight:700; text-transform:uppercase; }
+.sla-countdown .cd-val{ font-family:var(--font-mono); font-size:16px; font-weight:700; margin-top:3px; }
+
+/* utility */
+.flex-between{ display:flex; justify-content:space-between; align-items:center; }
+.muted{ color:var(--ink-faint); }
+.empty-state{ text-align:center; padding:60px 20px; color:var(--ink-faint); font-size:13px; }
+
+@media(max-width:900px){
+  .sidebar{ position:fixed; left:0; top:0; height:100vh; transform:translateX(-100%); transition:transform .2s; z-index:100; box-shadow:16px 0 30px rgba(0,0,0,0.15); }
+  .sidebar.show{ transform:translateX(0); }
+  .topbar{ padding:14px 16px; }
+  .content{ padding:18px 16px 60px; }
+  .search-box{ display:none; }
+  .convo-shell{ flex-direction:column; height:auto; }
+  .convo-list{ width:100%; flex:0 0 auto; max-height:220px; }
+}
+</style>
+</head>
+<body>
+
+<div class="glow glow-1"></div>
+<div class="glow glow-2"></div>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="side-accent"></div>
+    <div class="side-brand">
+      <div class="brand-mark">O</div>
+      <div>
+        <div class="name">Odeva IOM</div>
+        <div class="sub">Operations Management</div>
+      </div>
+    </div>
+    <nav class="side-nav">
+      <div class="nav-group-label">Monitor</div>
+      <button class="nav-item active" data-view="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-item" data-view="issues">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Issues &amp; Tickets
+        <span class="nav-badge" id="badge-open">0</span>
+      </button>
+      <button class="nav-item" data-view="sla">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        SLA Monitoring
+      </button>
+      <div class="nav-group-label">Sources &amp; Intelligence</div>
+      <button class="nav-item" data-view="conversations">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        Conversations
+        <span class="nav-badge soft" id="badge-flagged">0</span>
+      </button>
+      <button class="nav-item" data-view="alerts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
+        Alert Log
+        <span class="nav-badge soft" id="badge-alerts">0</span>
+      </button>
+      <button class="nav-item" data-view="whatsapp">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        WhatsApp Groups
+      </button>
+      <button class="nav-item" data-view="insights">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-4 12.7V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.3A7 7 0 0 0 12 2z"/><path d="M9 21h6"/></svg>
+        AI Insights
+      </button>
+      <button class="nav-item" data-view="reports">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-6 3 3 5-7"/></svg>
+        Reports
+      </button>
+      <div class="nav-group-label">Configuration</div>
+      <button class="nav-item" data-view="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Pengelompokan PT
+      </button>
+    </nav>
+    <div class="side-bottom">
+      <div class="user-chip">
+        <div class="avatar-sm">AW</div>
+        <div>
+          <div class="who">Ari Wijaya</div>
+          <div class="role">Operations Director</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div>
+        <h1 id="view-title">Dashboard</h1>
+        <div class="sub" id="view-sub">Ringkasan operasional real-time — hari ini</div>
+      </div>
+      <div class="topbar-right">
+        <div class="pill-live"><span class="dot"></span> Live</div>
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+          <input id="global-search" placeholder="Cari issue, PIC, kategori...">
+        </div>
+        <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg><span class="notif-dot"></span></button>
+        <div class="avatar-sm">AW</div>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- ============ DASHBOARD ============ -->
+      <section class="view active" id="view-dashboard">
+        <div class="grid-4">
+          <div class="card kpi"><div class="label">Total Issues</div><div class="value">1,245</div><div class="delta up">↑ 4.2% vs minggu lalu</div></div>
+          <div class="card kpi"><div class="label">Open Issues</div><div class="value">186</div><div class="delta down">↑ 12 issue baru hari ini</div></div>
+          <div class="card kpi"><div class="label">SLA Achievement</div><div class="value">92%</div><div class="delta up">↑ 1.3% vs minggu lalu</div></div>
+          <div class="card kpi"><div class="label">Avg. Resolution Time</div><div class="value">2.4h</div><div class="delta up">↓ 18 menit lebih cepat</div></div>
+        </div>
+
+        <div class="section-title"><h2>AI Summary per Grup WhatsApp</h2><span class="muted" style="font-size:12px;">Otomatis dari analisis percakapan hari ini · klik kartu untuk detail</span></div>
+        <div class="ai-summary-grid" id="dashboard-ai-summary"></div>
+
+        <div class="section-title"><h2>Volume Issue — 14 Hari Terakhir</h2><span class="muted" style="font-size:12px;">Total 342 issue</span></div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="bars" id="volume-chart"></div>
+          </div>
+          <div class="card">
+            <h3>Distribusi SLA Status</h3>
+            <div class="card-sub">1,245 total issue tercatat</div>
+            <div class="donut-wrap" style="margin-top:18px;">
+              <div class="donut" style="background:conic-gradient(var(--g-500) 0% 76%, var(--amber) 76% 91%, var(--red) 91% 100%);">
+                <div class="donut-center"><div class="n">92%</div><div class="t">On Track</div></div>
+              </div>
+              <div class="legend">
+                <div class="legend-item"><span class="sw" style="background:var(--g-500)"></span><span class="lbl">On Track</span><span class="val">946</span></div>
+                <div class="legend-item"><span class="sw" style="background:var(--amber)"></span><span class="lbl">At Risk</span><span class="val">186</span></div>
+                <div class="legend-item"><span class="sw" style="background:var(--red)"></span><span class="lbl">Breached</span><span class="val">113</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title"><h2>Sentimen &amp; Alert Otomatis</h2><button class="link-btn" onclick="switchView('alerts')">Lihat semua alert →</button></div>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Distribusi Sentimen (NLP)</h3>
+            <div class="card-sub">Hasil analisis sentimen otomatis dari seluruh issue aktif</div>
+            <div class="donut-wrap" style="margin-top:18px;">
+              <div class="donut" id="sentiment-donut">
+                <div class="donut-center"><div class="n" id="sentiment-donut-n">0</div><div class="t" id="sentiment-donut-t">Negatif</div></div>
+              </div>
+              <div class="legend" id="sent-legend"></div>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Alert Terkirim Terbaru</h3>
+            <div class="card-sub">Dikirim otomatis ke Dashboard &amp; WhatsApp PIC terkait</div>
+            <div id="recent-alerts-list" style="margin-top:14px; display:flex; flex-direction:column; gap:12px;"></div>
+          </div>
+        </div>
+
+        <div class="section-title"><h2>Ringkasan Operasional</h2><span class="muted" style="font-size:12px;">Klik untuk lihat detailnya</span></div>
+        <div class="grid-3">
+          <div class="card"><h3>Issue per Kategori</h3><div class="hbars" id="category-hbars"></div></div>
+          <div class="card">
+            <h3>Top Issue Area</h3>
+            <div class="card-sub">Berdasarkan volume 30 hari</div>
+            <div style="margin-top:16px; display:flex; flex-direction:column; gap:12px;" id="top-issue-area"></div>
+          </div>
+          <div class="card">
+            <h3>Most Delayed Team</h3>
+            <div class="card-sub">Rata-rata waktu penyelesaian tertinggi</div>
+            <div style="margin-top:16px; display:flex; flex-direction:column; gap:12px;" id="most-delayed-team"></div>
+          </div>
+        </div>
+
+        <div class="section-title"><h2>Issue Terbaru</h2><button class="link-btn" onclick="switchView('issues')">Lihat semua →</button></div>
+        <div class="table-wrap">
+          <table><thead><tr><th>ID</th><th>Issue</th><th>Kategori</th><th>Severity</th><th>Sentimen</th><th>PIC</th><th>Status</th><th>SLA</th></tr></thead>
+          <tbody id="recent-issues-body"></tbody></table>
+        </div>
+      </section>
+
+      <!-- ============ ISSUES ============ -->
+      <section class="view" id="view-issues">
+        <div class="flex-between" style="margin-bottom:14px;">
+          <span class="muted" style="font-size:12.5px;" id="source-split-info"></span>
+          <button class="link-btn" onclick="addManualTicket()">+ Buat Tiket Manual</button>
+        </div>
+        <div class="filters">
+          <div class="search-box" style="min-width:220px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+            <input id="issue-search" placeholder="Cari ID, judul, PIC...">
+          </div>
+          <div class="seg" id="status-seg">
+            <button class="active" data-status="all">Semua</button>
+            <button data-status="Open">Open</button>
+            <button data-status="In Progress">In Progress</button>
+            <button data-status="Resolved">Resolved</button>
+            <button data-status="Closed">Closed</button>
+          </div>
+          <div class="seg" id="source-seg">
+            <button class="active" data-source="all">Semua Sumber</button>
+            <button data-source="NLP">🤖 NLP Auto-Detect</button>
+            <button data-source="Manual">📝 Tiket Manual</button>
+          </div>
+          <select id="category-filter">
+            <option value="all">Semua Kategori</option>
+            <option>HR</option><option>IT</option><option>Finance</option><option>Fleet</option>
+            <option>Customer</option><option>Procurement</option><option>Operations</option>
+          </select>
+          <select id="sla-filter">
+            <option value="all">Semua SLA</option>
+            <option>On Track</option><option>At Risk</option><option>Breached</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>ID</th><th>Issue</th><th>Kategori</th><th>Severity</th><th>Sentimen</th><th>PIC</th><th>Status</th><th>SLA</th><th>Dibuat</th></tr></thead>
+          <tbody id="issues-body"></tbody></table>
+        </div>
+        <div class="empty-state" id="issues-empty" style="display:none;">Tidak ada issue yang cocok dengan filter.</div>
+      </section>
+
+      <!-- ============ SLA MONITORING ============ -->
+      <section class="view" id="view-sla">
+        <div class="grid-3">
+          <div class="card"><div class="label" style="font-size:11.5px;color:var(--ink-faint);font-weight:700;text-transform:uppercase;">On Track</div><div class="value mono" style="font-size:26px;font-weight:600;color:var(--g-700);margin-top:8px;">946</div><div class="card-sub">76% dari total issue</div></div>
+          <div class="card"><div class="label" style="font-size:11.5px;color:var(--ink-faint);font-weight:700;text-transform:uppercase;">At Risk</div><div class="value mono" style="font-size:26px;font-weight:600;color:#B4720A;margin-top:8px;">186</div><div class="card-sub">Butuh perhatian dalam &lt;2 jam</div></div>
+          <div class="card"><div class="label" style="font-size:11.5px;color:var(--ink-faint);font-weight:700;text-transform:uppercase;">Breached</div><div class="value mono" style="font-size:26px;font-weight:600;color:var(--red);margin-top:8px;">113</div><div class="card-sub">Perlu eskalasi segera</div></div>
+        </div>
+
+        <div class="section-title"><h2>Issue yang Butuh Perhatian</h2><span class="muted" style="font-size:12px;">Diurutkan dari paling mendesak</span></div>
+        <div class="table-wrap">
+          <table><thead><tr><th>ID</th><th>Issue</th><th>PIC</th><th>SLA</th><th>Sisa Waktu / Overdue</th></tr></thead>
+          <tbody id="sla-body"></tbody></table>
+        </div>
+      </section>
+
+      <!-- ============ CONVERSATIONS ============ -->
+      <section class="view" id="view-conversations">
+        <div class="convo-shell">
+          <div class="convo-list" id="convo-list"></div>
+          <div class="convo-panel">
+            <div class="convo-header" id="convo-header"></div>
+            <div class="ai-summary" id="convo-ai-summary"></div>
+            <div class="convo-search">
+              <div class="search-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+                <input id="convo-search-input" placeholder="Cari pesan atau tanggal (mis. 13 Agustus, Kamis, refund)...">
+              </div>
+            </div>
+            <div class="convo-messages" id="convo-messages"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ALERT LOG ============ -->
+      <section class="view" id="view-alerts">
+        <div class="section-title" style="margin-top:0;"><h2>Log Alert Otomatis</h2><span class="muted" style="font-size:12px;">AI mendeteksi issue di WAG → alert otomatis dikirim ke Dashboard &amp; WhatsApp PIC terkait</span></div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Alert ID</th><th>Issue</th><th>Severity</th><th>Kanal</th><th>Penerima / Di-assign ke</th><th>Waktu</th><th>Status</th></tr></thead>
+          <tbody id="alerts-body"></tbody></table>
+        </div>
+      </section>
+
+      <!-- ============ WHATSAPP GROUPS ============ -->
+      <section class="view" id="view-whatsapp">
+        <div class="section-title" style="margin-top:0;"><h2>Grup Terhubung</h2><span class="muted" style="font-size:12px;">7 grup aktif</span></div>
+        <div class="grid-3" id="wa-groups"></div>
+      </section>
+
+      <!-- ============ AI INSIGHTS ============ -->
+      <section class="view" id="view-insights">
+        <div class="section-title" style="margin-top:0;"><h2>Recurring Issue</h2></div>
+        <div class="grid-3" id="insight-cards"></div>
+
+        <div class="section-title"><h2>Early Warning Aktif</h2></div>
+        <div style="display:flex; flex-direction:column; gap:10px;" id="warning-rows"></div>
+      </section>
+
+      <!-- ============ REPORTS ============ -->
+      <section class="view" id="view-reports">
+        <div class="grid-2">
+          <div class="card">
+            <h3>Issue per Kategori</h3>
+            <div class="card-sub">30 hari terakhir</div>
+            <div class="hbars" id="report-category-hbars" style="margin-top:16px;"></div>
+          </div>
+          <div class="card">
+            <h3>Status Ticket</h3>
+            <div class="card-sub">Distribusi status saat ini</div>
+            <div class="hbars" id="report-status-hbars" style="margin-top:16px;"></div>
+          </div>
+        </div>
+
+        <div class="section-title"><h2>Performa Tim / PIC</h2></div>
+        <div class="card">
+          <div class="lb-row head"><div>#</div><div>Tim</div><div style="text-align:right;">Issue</div><div style="text-align:right;">Avg. Resolution</div><div style="text-align:right;">SLA</div></div>
+          <div id="leaderboard"></div>
+        </div>
+      </section>
+
+      <!-- ============ SETTINGS ============ -->
+      <section class="view" id="view-settings">
+        <div class="section-title" style="margin-top:0;">
+          <h2>Pengelompokan Perusahaan (PT)</h2>
+          <button class="link-btn" onclick="addCompany()">+ Tambah Perusahaan</button>
+        </div>
+        <p class="muted" style="font-size:12.5px; margin-bottom:18px; max-width:640px;">Kelompokkan beberapa grup WhatsApp ke dalam satu perusahaan / PT. Satu PT bisa memiliki lebih dari satu grup — misalnya PT Astra Logistics punya grup operasional dan grup maintenance sekaligus.</p>
+        <div style="display:flex; flex-direction:column; gap:14px;" id="company-list"></div>
+
+        <div class="section-title"><h2>Grup Belum Dikelompokkan</h2></div>
+        <div class="chip-row" id="unassigned-groups"></div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<aside class="drawer" id="issue-drawer">
+  <div class="drawer-head">
+    <div>
+      <div class="drawer-id" id="d-id">#OPS-0000</div>
+      <div class="drawer-title" id="d-title">Issue title</div>
+    </div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body">
+    <div class="drawer-badges" id="d-badges"></div>
+
+    <div class="sla-countdown">
+      <div><div class="lbl">SLA Status</div><div class="cd-val" id="d-sla-text">—</div></div>
+      <span class="badge" id="d-sla-badge">On Track</span>
+    </div>
+
+    <h5 style="margin-top:18px;">Tutup Tiket</h5>
+    <div id="d-close-panel"></div>
+
+    <div class="meta-grid">
+      <div class="meta-item"><div class="k">Kategori</div><div class="v" id="d-category">—</div></div>
+      <div class="meta-item"><div class="k">Severity</div><div class="v" id="d-severity">—</div></div>
+      <div class="meta-item"><div class="k">PIC</div><div class="v" id="d-pic">—</div></div>
+      <div class="meta-item"><div class="k">Sumber Deteksi</div><div class="v" id="d-sourcetype">—</div></div>
+      <div class="meta-item"><div class="k">Sumber Grup</div><div class="v" id="d-source">—</div></div>
+      <div class="meta-item"><div class="k">Dibuat</div><div class="v" id="d-created">—</div></div>
+      <div class="meta-item"><div class="k">SLA Target</div><div class="v" id="d-sla-target">—</div></div>
+    </div>
+
+    <h5>Sentimen &amp; Tag (NLP)</h5>
+    <div class="sent-tag-row">
+      <span class="badge" id="d-sentiment">—</span>
+      <div class="tag-row" id="d-tags"></div>
+    </div>
+
+    <h5>Notifikasi Alert Otomatis</h5>
+    <div id="d-alert-panel"></div>
+
+    <h5>Percakapan WhatsApp</h5>
+    <div class="wa-thread" id="d-thread"></div>
+
+    <h5>Issue Lifecycle</h5>
+    <div class="timeline" id="d-timeline"></div>
+  </div>
+</aside>
+
+<!-- ============ MANUAL TICKET MODAL ============ -->
+<div class="modal-overlay" id="tm-overlay" onclick="if(event.target===this) closeManualTicketModal()">
+  <div class="ticket-modal">
+    <div class="tm-head">
+      <div>
+        <h3>Buat Tiket Manual</h3>
+        <div class="sub" id="tm-subtitle">Isi detail tiket di bawah ini</div>
+      </div>
+      <button class="tm-close" onclick="closeManualTicketModal()">✕</button>
+    </div>
+    <div class="tm-body">
+      <div class="tm-source-note" id="tm-source-note" style="display:none;"></div>
+
+      <div class="tm-field" id="tm-group-field">
+        <label>Grup WA Asal</label>
+        <select id="tm-group"></select>
+      </div>
+
+      <div class="tm-field" id="tm-message-field">
+        <label>Isi Pesan WA (akan tampil di tab Percakapan)</label>
+        <textarea id="tm-message" placeholder="Contoh: Invoice vendor belum di-approve..."></textarea>
+      </div>
+
+      <div class="tm-field">
+        <label>Judul Tiket</label>
+        <input id="tm-title" placeholder="Contoh: Invoice Approval Delay">
+        <div class="tm-err" id="tm-title-err">Judul wajib diisi.</div>
+      </div>
+
+      <div class="tm-row2">
+        <div class="tm-field">
+          <label>Kategori</label>
+          <select id="tm-category">
+            <option>Operations</option>
+            <option>IT</option>
+            <option>Fleet</option>
+            <option>Finance</option>
+            <option>HR</option>
+            <option>Customer</option>
+            <option>Procurement</option>
+          </select>
+        </div>
+        <div class="tm-field">
+          <label>Severity</label>
+          <select id="tm-severity">
+            <option>Critical</option>
+            <option selected>Medium</option>
+            <option>High</option>
+            <option>Low</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="tm-row2">
+        <div class="tm-field">
+          <label>PIC / Assign ke</label>
+          <input id="tm-pic" placeholder="Belum ditentukan">
+        </div>
+        <div class="tm-field">
+          <label>Target SLA (jam)</label>
+          <input id="tm-sla" type="number" min="1" value="4">
+        </div>
+      </div>
+    </div>
+    <div class="tm-foot">
+      <button class="tm-btn ghost" onclick="closeManualTicketModal()">Batal</button>
+      <button class="tm-btn primary" onclick="submitManualTicket()">Buat Tiket</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------------- DATA ---------------- */
+const now = Date.now();
+const min = 60*1000, hr = 60*min;
+
+const issues = [
+  {id:"OPS-2291", title:"Vehicle / Driver Delay", category:"Fleet", severity:"High", pic:"Logistics / Fleet Team", status:"Open", sla:"At Risk", created:"08:15", source:"WAG Jakarta Operations", slaTargetHrs:2, deadline: now + 22*min,
+    sentiment:{label:"Negative", score:-0.55}, sourceType:"NLP", tags:["Delay","Fleet","Perlu Assign"],
+    thread:[{who:"Driver Coordinator · 08:15", text:"Mobil DT-104 belum jalan dari gudang, driver-nya belum konfirmasi dari tadi pagi. Delivery jam 9 bisa telat nih 😕"},{who:"Fleet Admin · 08:17", text:"Noted, saya cek posisi unit dan coba hubungi driver sekarang."}],
+    stage:3},
+  {id:"OPS-2290", title:"Server Downtime — Branch System", category:"IT", severity:"Critical", pic:"IT Infrastructure", status:"In Progress", sla:"At Risk", created:"07:42", source:"WAG IT Support", slaTargetHrs:1, deadline: now + 9*min,
+    sentiment:{label:"Negative", score:-0.74}, sourceType:"NLP", tags:["Critical","Downtime","Eskalasi"],
+    thread:[{who:"Branch Ops · 07:42", text:"Sistem kasir di cabang Kelapa Gading down total, kasir gak bisa transaksi sama sekali."},{who:"IT On-call · 07:45", text:"Sudah masuk tiket, tim sedang cek server pusat, ETA 30 menit."}],
+    stage:4},
+  {id:"OPS-2289", title:"Invoice Approval Delay", category:"Finance", severity:"Medium", pic:"Finance Team", status:"Open", sla:"On Track", created:"09:03", source:"WAG Finance & Procurement", slaTargetHrs:8, deadline: now + 6*hr,
+    sentiment:{label:"Negative", score:-0.38}, sourceType:"Manual", tags:["Delay","Approval"],
+    thread:[{who:"Procurement · 09:03", text:"Invoice vendor PT Sumber Jaya masih pending approval dari kemarin, vendor sudah nanya-nanya."}],
+    stage:1},
+  {id:"OPS-2288", title:"Employee Leave Request Stuck", category:"HR", severity:"Low", pic:"HR Team", status:"Resolved", sla:"On Track", created:"Kemarin", source:"WAG HR Central", slaTargetHrs:24, deadline: now - 3*hr,
+    sentiment:{label:"Neutral", score:0.10}, sourceType:"NLP", tags:["HR","Resolved"],
+    thread:[{who:"Staff · Kemarin", text:"Pengajuan cuti saya belum di-approve dari 3 hari lalu, tolong dicek."},{who:"HR Team · Kemarin", text:"Sudah di-approve ya, mohon maaf ada keterlambatan sistem."}],
+    stage:6},
+  {id:"OPS-2287", title:"Customer Complaint — Damaged Delivery", category:"Customer", severity:"High", pic:"Customer Service", status:"Open", sla:"Breached", created:"06:50", source:"WAG Customer Service Jakarta", slaTargetHrs:2, deadline: now - 48*min,
+    sentiment:{label:"Negative", score:-0.82}, sourceType:"NLP", tags:["Komplain","Refund","Urgent"],
+    thread:[{who:"CS Agent · 06:50", text:"Customer komplain barang datang dalam kondisi rusak, minta refund atau ganti unit."},{who:"CS Lead · 07:10", text:"Sudah eskalasi ke warehouse untuk cek proses packing."}],
+    stage:4},
+  {id:"OPS-2286", title:"Procurement PO Delay", category:"Procurement", severity:"Medium", pic:"Procurement Team", status:"In Progress", sla:"On Track", created:"08:30", source:"WAG Finance & Procurement", slaTargetHrs:12, deadline: now + 5*hr,
+    sentiment:{label:"Negative", score:-0.30}, sourceType:"NLP", tags:["Stok","Delay"],
+    thread:[{who:"Site Ops · 08:30", text:"PO spare part belum keluar, stok gudang site mulai menipis."}],
+    stage:2},
+  {id:"OPS-2285", title:"Warehouse Equipment Breakdown", category:"Operations", severity:"High", pic:"Maintenance Team", status:"In Progress", sla:"Breached", created:"05:20", source:"WAG Site Ops Kalimantan", slaTargetHrs:3, deadline: now - 90*min,
+    sentiment:{label:"Negative", score:-0.66}, sourceType:"NLP", tags:["Breakdown","Maintenance","Urgent"],
+    thread:[{who:"Site Supervisor · 05:20", text:"Forklift unit 3 mogok di area loading, proses bongkar muat terhambat."},{who:"Maintenance · 06:00", text:"Teknisi sudah menuju lokasi, part pengganti sedang dicari."}],
+    stage:5},
+  {id:"OPS-2284", title:"Driver License Expired", category:"Fleet", severity:"Medium", pic:"HR / Fleet", status:"Resolved", sla:"On Track", created:"2 hari lalu", source:"WAG Jakarta Operations", slaTargetHrs:24, deadline: now - 20*hr,
+    sentiment:{label:"Neutral", score:-0.12}, sourceType:"NLP", tags:["Compliance","Fleet"],
+    thread:[{who:"Fleet Admin · 2 hari lalu", text:"SIM driver Pak Dedi sudah expired, perlu perpanjangan segera sebelum jadwal berikutnya."}],
+    stage:6},
+  {id:"OPS-2283", title:"Network Outage Branch Bandung", category:"IT", severity:"Critical", pic:"IT Infrastructure", status:"Resolved", sla:"On Track", created:"Kemarin", source:"WAG IT Support", slaTargetHrs:1, deadline: now - 18*hr,
+    sentiment:{label:"Positive", score:0.35}, sourceType:"NLP", tags:["Outage","Resolved Cepat"],
+    thread:[{who:"Branch Manager · Kemarin", text:"Internet cabang Bandung mati total sejak pagi, operasional kacau."},{who:"IT Infra · Kemarin", text:"Sudah diperbaiki, penyebab dari ISP, sudah restore."}],
+    stage:6},
+  {id:"OPS-2282", title:"Late Payment to Vendor", category:"Finance", severity:"Low", pic:"Finance Team", status:"Closed", sla:"On Track", created:"3 hari lalu", source:"WAG Finance & Procurement", slaTargetHrs:48, deadline: now - 40*hr,
+    sentiment:{label:"Negative", score:-0.42}, sourceType:"Manual", tags:["Vendor","Payment"],
+    thread:[{who:"Vendor Relation · 3 hari lalu", text:"Vendor komplain pembayaran termin 2 belum masuk, sudah lewat jatuh tempo."}],
+    stage:6},
+  {id:"OPS-2281", title:"Forklift Maintenance Overdue", category:"Operations", severity:"Medium", pic:"Maintenance Team", status:"Open", sla:"At Risk", created:"07:10", source:"WAG Site Ops Kalimantan", slaTargetHrs:6, deadline: now + 34*min,
+    sentiment:{label:"Neutral", score:-0.20}, sourceType:"NLP", tags:["Maintenance","Overdue"],
+    thread:[{who:"Site Supervisor · 07:10", text:"Jadwal maintenance rutin forklift unit 5 sudah lewat 2 minggu, belum dikerjakan."}],
+    stage:2},
+  {id:"OPS-2280", title:"Customer Refund Request", category:"Customer", severity:"Medium", pic:"Customer Service", status:"In Progress", sla:"On Track", created:"08:45", source:"WAG Customer Service Jakarta", slaTargetHrs:6, deadline: now + 4*hr,
+    sentiment:{label:"Negative", score:-0.48}, sourceType:"NLP", tags:["Refund","Customer"],
+    thread:[{who:"CS Agent · 08:45", text:"Customer minta refund karena barang tidak sesuai deskripsi."}],
+    stage:2},
+  {id:"OPS-2279", title:"New Hire Onboarding Delay", category:"HR", severity:"Low", pic:"HR Team", status:"Open", sla:"On Track", created:"09:15", source:"WAG HR Central", slaTargetHrs:24, deadline: now + 18*hr,
+    sentiment:{label:"Neutral", score:-0.22}, sourceType:"Manual", tags:["Onboarding","HR"],
+    thread:[{who:"Hiring Manager · 09:15", text:"Laptop untuk karyawan baru belum siap, padahal mulai kerja besok."}],
+    stage:1},
+  {id:"OPS-2278", title:"Fuel Card Issue", category:"Fleet", severity:"Medium", pic:"Fleet Team", status:"Resolved", sla:"On Track", created:"Kemarin", source:"WAG Jakarta Operations", slaTargetHrs:4, deadline: now - 15*hr,
+    sentiment:{label:"Neutral", score:-0.05}, sourceType:"NLP", tags:["Fleet","Resolved"],
+    thread:[{who:"Driver · Kemarin", text:"Fuel card unit DT-88 ditolak di SPBU, tidak bisa isi bensin."}],
+    stage:6},
+  {id:"OPS-2277", title:"Vendor Contract Renewal", category:"Procurement", severity:"Low", pic:"Procurement Team", status:"Closed", sla:"On Track", created:"5 hari lalu", source:"WAG Finance & Procurement", slaTargetHrs:72, deadline: now - 60*hr,
+    sentiment:{label:"Positive", score:0.32}, sourceType:"Manual", tags:["Procurement","Renewal"],
+    thread:[{who:"Procurement · 5 hari lalu", text:"Kontrak vendor katering akan habis akhir bulan, perlu review renewal."}],
+    stage:6},
+  {id:"OPS-2276", title:"Forklift Maintenance Overdue — Unit 2", category:"Operations", severity:"Medium", pic:"Maintenance Team", status:"Open", sla:"On Track", created:"3 hari lalu", source:"WAG Fleet Maintenance Jakarta", slaTargetHrs:24, deadline: now + 10*hr,
+    sentiment:{label:"Neutral", score:-0.18}, sourceType:"NLP", tags:["Maintenance"],
+    thread:[{who:"Fleet Supervisor · 3 hari lalu", text:"Unit forklift 2 juga perlu dicek, ada suara kasar di bagian hidrolik."}],
+    stage:1},
+];
+
+/* Alert otomatis: setiap issue kritikal/high langsung memicu alert ke Dashboard & WhatsApp PIC terkait,
+   sekaligus meng-assign PIC. Beberapa hanya lewat Dashboard bila severity lebih rendah. */
+const alerts = [
+  {id:"ALT-3006", issueId:"OPS-2291", channels:["dashboard","whatsapp"], recipient:"Logistics / Fleet Team", group:"WAG Jakarta Operations", time:"08:16", status:"Dibaca"},
+  {id:"ALT-3005", issueId:"OPS-2290", channels:["dashboard","whatsapp"], recipient:"IT Infrastructure", group:"WAG IT Support", time:"07:43", status:"Diteruskan"},
+  {id:"ALT-3004", issueId:"OPS-2287", channels:["dashboard","whatsapp"], recipient:"Customer Service", group:"WAG Customer Service Jakarta", time:"06:51", status:"Terkirim"},
+  {id:"ALT-3003", issueId:"OPS-2285", channels:["dashboard","whatsapp"], recipient:"Maintenance Team", group:"WAG Site Ops Kalimantan", time:"05:21", status:"Dibaca"},
+  {id:"ALT-3002", issueId:"OPS-2281", channels:["dashboard"], recipient:"Maintenance Team", group:"WAG Site Ops Kalimantan", time:"07:11", status:"Terkirim"},
+  {id:"ALT-3001", issueId:"OPS-2280", channels:["dashboard","whatsapp"], recipient:"Customer Service", group:"WAG Customer Service Jakarta", time:"08:46", status:"Dibaca"},
+  {id:"ALT-3000", issueId:"OPS-2286", channels:["dashboard"], recipient:"Procurement Team", group:"WAG Finance & Procurement", time:"08:31", status:"Terkirim"},
+];
+
+const stages = ["Detected","Assigned","In Progress","At Risk","Escalated","Resolved","Closed"];
+
+const categoryCounts = {Fleet:214, IT:98, Customer:141, Finance:87, Operations:176, HR:54, Procurement:63};
+const statusCounts = {Open:186, "In Progress":214, Resolved:1059, Closed:412};
+
+const waGroups = [
+  {id:"g1", name:"WAG Jakarta Operations", industry:"Logistics · Fleet", msgs:342, issues:18, top:"Fleet"},
+  {id:"g2", name:"WAG Fleet Maintenance Jakarta", industry:"Logistics · Maintenance", msgs:97, issues:5, top:"Operations"},
+  {id:"g3", name:"WAG Site Ops Kalimantan", industry:"Mining", msgs:189, issues:11, top:"Operations"},
+  {id:"g4", name:"WAG Customer Service Jakarta", industry:"Retail · Customer", msgs:210, issues:9, top:"Customer"},
+  {id:"g5", name:"WAG IT Support", industry:"Manufacturing · IT", msgs:128, issues:6, top:"IT"},
+  {id:"g6", name:"WAG Finance & Procurement", industry:"Corporate", msgs:76, issues:4, top:"Finance"},
+  {id:"g7", name:"WAG HR Central", industry:"Corporate", msgs:54, issues:2, top:"HR"},
+];
+
+let companies = [
+  {id:"c1", name:"PT Astra Logistics", industry:"Logistics", groupIds:["g1","g2"]},
+  {id:"c2", name:"PT Borneo Mining", industry:"Mining", groupIds:["g3"]},
+  {id:"c3", name:"PT Sumber Retail", industry:"Retail", groupIds:["g4"]},
+  {id:"c4", name:"PT Manufaktur Nusantara", industry:"Manufacturing", groupIds:["g5"]},
+  {id:"c5", name:"Odeva Corporate (HQ)", industry:"Shared Services", groupIds:["g6","g7"]},
+];
+
+const insights = [
+  {tag:"Maintenance Pattern", text:"35% maintenance issues berasal dari Equipment A.", action:"Evaluasi asset dan preventive maintenance.", conf:88},
+  {tag:"Fleet Trend", text:"Driver delay meningkat 24% dibanding bulan sebelumnya.", action:"Review fleet, rute, dan proses keberangkatan.", conf:81},
+  {tag:"SLA Risk", text:"12 issues berpotensi delay dalam 2 jam ke depan.", action:"Prioritaskan eskalasi ke PIC terkait.", conf:93},
+];
+
+const warnings = [
+  {t:"Volume — IT", d:"Jumlah IT issues meningkat 40% dalam 7 hari terakhir."},
+  {t:"SLA — Critical", d:"12 critical issues berpotensi breach dalam 2 jam."},
+  {t:"Recurring Issue", d:"Equipment breakdown terjadi 8 kali dalam 30 hari."},
+  {t:"Severity", d:"Issue dengan potential business impact tinggi terdeteksi di WAG Site Ops Kalimantan."},
+];
+
+const leaderboard = [
+  {team:"Customer Service", n:214, avg:"1.8h", sla:"96%"},
+  {team:"IT Infrastructure", n:104, avg:"3.1h", sla:"89%"},
+  {team:"Finance Team", n:87, avg:"2.6h", sla:"94%"},
+  {team:"HR Team", n:54, avg:"2.2h", sla:"97%"},
+  {team:"Procurement Team", n:63, avg:"4.0h", sla:"85%"},
+  {team:"Maintenance Team", n:98, avg:"3.6h", sla:"82%"},
+  {team:"Logistics / Fleet", n:214, avg:"5.1h", sla:"78%"},
+];
+
+const volume14d = [22,28,19,31,26,34,29,40,33,25,38,45,30,37];
+const dayLabels = ["W1","T","R","F","S","M","T2","W2","T3","R2","F2","S2","M3","T4"];
+
+/* conversations: full chat feed per group */
+const conversations = {
+  g1: {last:"Noted, saya cek posisi unit sekarang.", time:"08:17", msgs:[
+    {who:"Driver Coordinator", time:"08:02", date:"13 Agu 2026", day:"Kamis", text:"Pagi semua, unit DT-104 dan DT-88 siap jalan jam 08:30 ya."},
+    {who:"Warehouse Admin", time:"08:05", date:"13 Agu 2026", day:"Kamis", text:"Siap, barang sudah di-loading semua."},
+    {who:"Driver Coordinator", time:"08:15", date:"13 Agu 2026", day:"Kamis", text:"Mobil DT-104 belum jalan dari gudang, driver-nya belum konfirmasi dari tadi pagi. Delivery jam 9 bisa telat nih 😕", flag:{severity:"High", issueId:"OPS-2291"}},
+    {who:"Fleet Admin", time:"08:17", date:"13 Agu 2026", day:"Kamis", text:"Noted, saya cek posisi unit dan coba hubungi driver sekarang."},
+    {who:"Fleet Admin", time:"08:22", date:"13 Agu 2026", day:"Kamis", text:"Driver sudah dapat, ternyata macet di tol dalam kota."},
+  ]},
+  g2: {last:"Unit forklift 2 juga perlu dicek.", time:"3 hari lalu", msgs:[
+    {who:"Fleet Supervisor", time:"07:40", date:"10 Agu 2026", day:"Senin", text:"Unit forklift 2 juga perlu dicek, ada suara kasar di bagian hidrolik.", flag:{severity:"Medium", issueId:"OPS-2276"}},
+    {who:"Maintenance Team", time:"08:05", date:"10 Agu 2026", day:"Senin", text:"Dicatat, dijadwalkan minggu depan bareng unit lain."},
+    {who:"Fleet Supervisor", time:"16:30", date:"12 Agu 2026", day:"Rabu", text:"Untuk unit 5 kondisinya makin parah, tolong diprioritaskan."},
+  ]},
+  g3: {last:"Teknisi sudah menuju lokasi.", time:"06:00", msgs:[
+    {who:"Site Supervisor", time:"05:20", date:"13 Agu 2026", day:"Kamis", text:"Forklift unit 3 mogok di area loading, proses bongkar muat terhambat.", flag:{severity:"High", issueId:"OPS-2285"}},
+    {who:"Maintenance", time:"06:00", date:"13 Agu 2026", day:"Kamis", text:"Teknisi sudah menuju lokasi, part pengganti sedang dicari."},
+    {who:"Site Supervisor", time:"07:10", date:"13 Agu 2026", day:"Kamis", text:"Jadwal maintenance rutin forklift unit 5 sudah lewat 2 minggu, belum dikerjakan.", flag:{severity:"Medium", issueId:"OPS-2281"}},
+    {who:"HSE Officer", time:"07:20", date:"13 Agu 2026", day:"Kamis", text:"Tolong pastikan area loading di-barrier dulu selama unit 3 belum jalan."},
+  ]},
+  g4: {last:"Sudah eskalasi ke warehouse.", time:"07:10", msgs:[
+    {who:"CS Agent", time:"06:50", date:"13 Agu 2026", day:"Kamis", text:"Customer komplain barang datang dalam kondisi rusak, minta refund atau ganti unit.", flag:{severity:"High", issueId:"OPS-2287"}},
+    {who:"CS Lead", time:"07:10", date:"13 Agu 2026", day:"Kamis", text:"Sudah eskalasi ke warehouse untuk cek proses packing."},
+    {who:"CS Agent", time:"08:45", date:"13 Agu 2026", day:"Kamis", text:"Customer lain minta refund karena barang tidak sesuai deskripsi.", flag:{severity:"Medium", issueId:"OPS-2280"}},
+  ]},
+  g5: {last:"ETA 30 menit.", time:"07:45", msgs:[
+    {who:"Branch Ops", time:"07:42", date:"13 Agu 2026", day:"Kamis", text:"Sistem kasir di cabang Kelapa Gading down total, kasir gak bisa transaksi sama sekali.", flag:{severity:"Critical", issueId:"OPS-2290"}},
+    {who:"IT On-call", time:"07:45", date:"13 Agu 2026", day:"Kamis", text:"Sudah masuk tiket, tim sedang cek server pusat, ETA 30 menit."},
+    {who:"Branch Ops", time:"07:50", date:"13 Agu 2026", day:"Kamis", text:"Oke ditunggu ya, antrian customer mulai panjang."},
+  ]},
+  g6: {last:"PO spare part belum keluar.", time:"08:30", msgs:[
+    {who:"Site Ops", time:"08:30", date:"13 Agu 2026", day:"Kamis", text:"PO spare part belum keluar, stok gudang site mulai menipis.", flag:{severity:"Medium", issueId:"OPS-2286"}},
+    {who:"Procurement", time:"09:03", date:"12 Agu 2026", day:"Rabu", text:"Invoice vendor PT Sumber Jaya masih pending approval dari kemarin, vendor sudah nanya-nanya."},
+    {who:"Finance Team", time:"09:20", date:"13 Agu 2026", day:"Kamis", text:"Invoice sudah kami proses, dijadikan tiket manual untuk ditindaklanjuti approval-nya hari ini.", flag:{severity:"Medium", issueId:"OPS-2289"}},
+  ]},
+  g7: {last:"Sudah di-approve ya.", time:"Kemarin", msgs:[
+    {who:"Staff", time:"10:05", date:"12 Agu 2026", day:"Rabu", text:"Pengajuan cuti saya belum di-approve dari 3 hari lalu, tolong dicek.", flag:{severity:"Low", issueId:"OPS-2288"}},
+    {who:"HR Team", time:"10:40", date:"12 Agu 2026", day:"Rabu", text:"Sudah di-approve ya, mohon maaf ada keterlambatan sistem."},
+    {who:"Hiring Manager", time:"09:15", date:"13 Agu 2026", day:"Kamis", text:"Laptop untuk karyawan baru belum siap, padahal mulai kerja besok. Sudah saya buatkan tiket manual ke IT Asset.", flag:{severity:"Low", issueId:"OPS-2279"}},
+  ]},
+};
+
+/* ---------------- HELPERS ---------------- */
+function statusBadgeClass(s){ return {"Open":"open","In Progress":"progress","Resolved":"resolved","Closed":"closed"}[s]||"open"; }
+function slaBadgeClass(s){ return {"On Track":"track","At Risk":"risk","Breached":"breach"}[s]||"track"; }
+function sevBadgeClass(s){ return {"Critical":"sev-critical","High":"sev-high","Medium":"sev-medium","Low":"sev-low"}[s]||"sev-low"; }
+function companyOfGroup(groupId){ return companies.find(c=>c.groupIds.includes(groupId)); }
+function sentimentBadgeClass(l){ return {"Positive":"sent-pos","Neutral":"sent-neu","Negative":"sent-neg"}[l]||"sent-neu"; }
+function sentimentIcon(l){ return {"Positive":"🙂","Neutral":"😐","Negative":"☹️"}[l]||"😐"; }
+function tagsChips(tags){ return (tags||[]).map(t=>`<span class="tag-chip">${t}</span>`).join(''); }
+function channelChips(channels){ return (channels||[]).map(c=> c==='whatsapp' ? '<span class="chan-chip wa">📱 WhatsApp</span>' : '<span class="chan-chip dash">🖥 Dashboard</span>').join(''); }
+function alertStatusBadgeClass(s){ return {"Terkirim":"open","Diteruskan":"progress","Dibaca":"resolved"}[s]||"open"; }
+function alertForIssue(issueId){ return alerts.find(a=>a.issueId===issueId); }
+function sentimentCounts(){ const c={Positive:0,Neutral:0,Negative:0}; issues.forEach(it=>c[it.sentiment.label]++); return c; }
+function sourceBadgeClass(t){ return t==='Manual' ? 'src-manual' : 'src-nlp'; }
+function sourceIcon(t){ return t==='Manual' ? '📝' : '🤖'; }
+function sourceLabel(t){ return t==='Manual' ? 'Tiket Manual' : 'NLP Auto-Detect'; }
+
+function formatCountdown(deadline){
+  const diff = deadline - Date.now();
+  const overdue = diff < 0;
+  const abs = Math.abs(diff);
+  const h = Math.floor(abs/hr);
+  const m = Math.floor((abs%hr)/min);
+  const txt = (h>0? h+"h ":"") + m+"m";
+  return overdue ? "Overdue by "+txt : txt+" left";
+}
+
+function issueRowHtml(it, showCreated){
+  return `<tr onclick="openDrawer('${it.id}')">
+    <td class="id">${it.id}<div class="src-row"><span class="badge ${sourceBadgeClass(it.sourceType)}">${sourceIcon(it.sourceType)} ${sourceLabel(it.sourceType)}</span></div></td>
+    <td class="title">${it.title}<div class="tag-row">${tagsChips(it.tags)}</div></td>
+    <td>${it.category}</td>
+    <td><span class="badge ${sevBadgeClass(it.severity)}">${it.severity}</span></td>
+    <td><span class="badge ${sentimentBadgeClass(it.sentiment.label)}">${sentimentIcon(it.sentiment.label)} ${it.sentiment.label}</span></td>
+    <td>${it.pic}</td>
+    <td><span class="badge ${statusBadgeClass(it.status)}">${it.status}</span></td>
+    <td><span class="badge ${slaBadgeClass(it.sla)}">${it.sla}</span></td>
+    ${showCreated ? `<td class="mono" style="font-size:11.5px;">${it.created}</td>` : ''}
+  </tr>`;
+}
+
+/* ---------------- RENDER: DASHBOARD ---------------- */
+function renderVolumeChart(){
+  const max = Math.max(...volume14d);
+  const el = document.getElementById('volume-chart');
+  el.innerHTML = volume14d.map((v,i)=>`
+    <div class="bar-col">
+      <div class="bar" style="height:${(v/max*100).toFixed(0)}%"></div>
+      <div class="bar-label">${dayLabels[i]}</div>
+    </div>`).join('');
+}
+
+function renderCategoryBars(targetId){
+  const max = Math.max(...Object.values(categoryCounts));
+  const el = document.getElementById(targetId);
+  el.innerHTML = Object.entries(categoryCounts).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
+    <div class="hbar-row" onclick="goToIssuesByCategory('${k}')">
+      <div class="name">${k}</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:${(v/max*100).toFixed(0)}%"></div></div>
+      <div class="count">${v}</div>
+    </div>`).join('');
+}
+
+function renderTopIssueArea(){
+  const top = waGroups.slice().sort((a,b)=>b.issues-a.issues).slice(0,4);
+  document.getElementById('top-issue-area').innerHTML = top.map(g=>`
+    <div class="flex-between click-row" onclick="switchView('conversations'); selectConvo('${g.id}');">
+      <span style="font-size:13px; font-weight:600;">${g.name}</span>
+      <span style="display:flex; align-items:center;">
+        <span class="mono" style="font-size:12px; color:var(--g-700); font-weight:700;">${g.top} · ${g.issues}</span>
+        <span class="row-arrow">→</span>
+      </span>
+    </div>`).join('');
+}
+
+function renderMostDelayedTeam(){
+  const parseHrs = s => parseFloat(s);
+  const top = leaderboard.slice().sort((a,b)=> parseHrs(b.avg)-parseHrs(a.avg)).slice(0,4);
+  document.getElementById('most-delayed-team').innerHTML = top.map(l=>{
+    const hrs = parseHrs(l.avg);
+    const color = hrs>=4 ? 'var(--red)' : (hrs>=3 ? 'var(--amber)' : 'var(--g-700)');
+    return `<div class="flex-between click-row" onclick="goToIssuesBySearch('${l.team.replace(/'/g,"\\'")}')">
+      <span style="font-size:13px; font-weight:600;">${l.team}</span>
+      <span style="display:flex; align-items:center;">
+        <span class="mono" style="font-size:12px; color:${color}; font-weight:700;">${l.avg} avg</span>
+        <span class="row-arrow">→</span>
+      </span>
+    </div>`;
+  }).join('');
+}
+
+function resetIssueFilterControls(){
+  document.querySelectorAll('#status-seg button').forEach(x=>x.classList.remove('active'));
+  document.querySelector('#status-seg button[data-status="all"]').classList.add('active');
+  filterState.status = 'all';
+  document.querySelectorAll('#source-seg button').forEach(x=>x.classList.remove('active'));
+  document.querySelector('#source-seg button[data-source="all"]').classList.add('active');
+  filterState.source = 'all';
+  document.getElementById('sla-filter').value = 'all';
+  filterState.sla = 'all';
+}
+
+function goToIssuesByCategory(cat){
+  switchView('issues');
+  resetIssueFilterControls();
+  document.getElementById('category-filter').value = cat;
+  filterState.category = cat;
+  document.getElementById('issue-search').value = '';
+  filterState.search = '';
+  renderIssuesTable();
+}
+
+function goToIssuesBySearch(term){
+  switchView('issues');
+  resetIssueFilterControls();
+  document.getElementById('category-filter').value = 'all';
+  filterState.category = 'all';
+  document.getElementById('issue-search').value = term;
+  filterState.search = term;
+  renderIssuesTable();
+}
+
+function renderStatusBars(){
+  const max = Math.max(...Object.values(statusCounts));
+  const el = document.getElementById('report-status-hbars');
+  el.innerHTML = Object.entries(statusCounts).map(([k,v])=>`
+    <div class="hbar-row">
+      <div class="name">${k}</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:${(v/max*100).toFixed(0)}%"></div></div>
+      <div class="count">${v}</div>
+    </div>`).join('');
+}
+
+function renderRecentIssues(){
+  const recent = issues.slice(0,6);
+  document.getElementById('recent-issues-body').innerHTML = recent.map(it=>issueRowHtml(it,false)).join('');
+}
+
+/* ---------------- RENDER: SENTIMENT & ALERTS (dashboard) ---------------- */
+function renderSentimentDonut(){
+  const c = sentimentCounts();
+  const total = issues.length;
+  const posPct = c.Positive/total*100, neuPct = c.Neutral/total*100;
+  const el = document.getElementById('sentiment-donut');
+  el.style.background = `conic-gradient(var(--g-500) 0% ${posPct}%, var(--ink-faint) ${posPct}% ${posPct+neuPct}%, var(--red) ${posPct+neuPct}% 100%)`;
+  document.getElementById('sentiment-donut-n').textContent = c.Negative;
+  document.getElementById('sentiment-donut-t').textContent = 'Negatif';
+  document.getElementById('sent-legend').innerHTML = `
+    <div class="legend-item"><span class="sw" style="background:var(--g-500)"></span><span class="lbl">Positive</span><span class="val">${c.Positive}</span></div>
+    <div class="legend-item"><span class="sw" style="background:var(--ink-faint)"></span><span class="lbl">Neutral</span><span class="val">${c.Neutral}</span></div>
+    <div class="legend-item"><span class="sw" style="background:var(--red)"></span><span class="lbl">Negative</span><span class="val">${c.Negative}</span></div>`;
+}
+function renderRecentAlertsList(){
+  document.getElementById('recent-alerts-list').innerHTML = alerts.slice(0,4).map(a=>{
+    const it = issues.find(x=>x.id===a.issueId);
+    return `<div class="flex-between" style="cursor:pointer;" onclick="openDrawer('${a.issueId}')">
+      <div>
+        <div style="font-size:12.5px; font-weight:700; color:var(--g-900);">${it?it.title:a.issueId}</div>
+        <div style="font-size:11px; color:var(--ink-faint); margin-top:4px;">${channelChips(a.channels)}<span style="margin-left:2px;">→ ${a.recipient}</span></div>
+      </div>
+      <span class="badge ${alertStatusBadgeClass(a.status)}" style="flex:0 0 auto;">${a.status}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ---------------- RENDER: ALERT LOG ---------------- */
+function renderAlerts(){
+  document.getElementById('alerts-body').innerHTML = alerts.map(a=>{
+    const it = issues.find(x=>x.id===a.issueId);
+    return `<tr onclick="openDrawer('${a.issueId}')">
+      <td class="id">${a.id}</td>
+      <td class="title">${it? it.title : a.issueId}</td>
+      <td><span class="badge ${sevBadgeClass(it? it.severity:'Low')}">${it? it.severity:'—'}</span></td>
+      <td>${channelChips(a.channels)}</td>
+      <td>${a.recipient}<div style="font-size:10.5px; color:var(--ink-faint); margin-top:2px;">${a.group}</div></td>
+      <td class="mono" style="font-size:11.5px;">${a.time}</td>
+      <td><span class="badge ${alertStatusBadgeClass(a.status)}">${a.status}</span></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('badge-alerts').textContent = alerts.length;
+}
+
+/* ---------------- RENDER: ISSUES TABLE ---------------- */
+let filterState = {status:'all', category:'all', sla:'all', source:'all', search:''};
+function renderIssuesTable(){
+  const filtered = issues.filter(it=>{
+    if(filterState.status!=='all' && it.status!==filterState.status) return false;
+    if(filterState.category!=='all' && it.category!==filterState.category) return false;
+    if(filterState.sla!=='all' && it.sla!==filterState.sla) return false;
+    if(filterState.source!=='all' && it.sourceType!==filterState.source) return false;
+    if(filterState.search){
+      const q = filterState.search.toLowerCase();
+      if(!(it.id.toLowerCase().includes(q) || it.title.toLowerCase().includes(q) || it.pic.toLowerCase().includes(q))) return false;
+    }
+    return true;
+  });
+  document.getElementById('issues-body').innerHTML = filtered.map(it=>issueRowHtml(it,true)).join('');
+  document.getElementById('issues-empty').style.display = filtered.length ? 'none':'block';
+  const nlpCount = issues.filter(i=>i.sourceType==='NLP').length;
+  const manualCount = issues.filter(i=>i.sourceType==='Manual').length;
+  document.getElementById('source-split-info').textContent = `🤖 ${nlpCount} issue dari NLP Auto-Detect (WAG)  ·  📝 ${manualCount} Tiket Manual`;
+}
+
+/* ---------------- MANUAL TICKET MODAL ---------------- */
+let tmContext = null; // {mode:'button'} atau {mode:'message', groupId, msgIndex}
+
+function addManualTicket(){
+  openManualTicketModal({mode:'button'});
+}
+
+/* Jadikan tiket manual langsung dari sebuah pesan WA di tab Percakapan */
+function createTicketFromMessage(groupId, msgIndex){
+  const c = conversations[groupId];
+  const m = c && c.msgs[msgIndex];
+  if(!m) return;
+  if(m.flag){
+    openDrawer(m.flag.issueId);
+    return;
+  }
+  openManualTicketModal({mode:'message', groupId, msgIndex});
+}
+
+function openManualTicketModal(ctx){
+  tmContext = ctx;
+  document.getElementById('tm-title-err').classList.remove('show');
+  document.getElementById('tm-title').value = '';
+  document.getElementById('tm-category').value = 'Operations';
+  document.getElementById('tm-severity').value = 'Medium';
+  document.getElementById('tm-pic').value = '';
+  document.getElementById('tm-sla').value = 4;
+
+  const groupField = document.getElementById('tm-group-field');
+  const msgField = document.getElementById('tm-message-field');
+  const sourceNote = document.getElementById('tm-source-note');
+  const groupSelect = document.getElementById('tm-group');
+
+  if(ctx.mode === 'message'){
+    const c = conversations[ctx.groupId];
+    const m = c.msgs[ctx.msgIndex];
+    const group = waGroups.find(g=>g.id===ctx.groupId);
+    document.getElementById('tm-subtitle').textContent = 'Dibuat dari pesan WhatsApp';
+    sourceNote.style.display = 'block';
+    sourceNote.innerHTML = `Grup: <b>${group ? group.name : ctx.groupId}</b><br>Pesan: “${m.text}”`;
+    groupField.style.display = 'none';
+    msgField.style.display = 'none';
+    document.getElementById('tm-title').value = m.text.length>60 ? m.text.slice(0,60)+'…' : m.text;
+    document.getElementById('tm-pic').value = m.who;
+  } else {
+    document.getElementById('tm-subtitle').textContent = 'Pilih grup WA asal pesan, lalu isi detail tiket';
+    sourceNote.style.display = 'none';
+    groupField.style.display = 'block';
+    msgField.style.display = 'block';
+    groupSelect.innerHTML = waGroups.map(g=>`<option value="${g.id}">${g.name}</option>`).join('');
+    document.getElementById('tm-message').value = '';
+    document.getElementById('tm-pic').value = 'Belum ditentukan';
+  }
+
+  document.getElementById('tm-overlay').classList.add('show');
+  setTimeout(()=>document.getElementById('tm-title').focus(), 50);
+}
+
+function closeManualTicketModal(){
+  document.getElementById('tm-overlay').classList.remove('show');
+  tmContext = null;
+}
+
+function submitManualTicket(){
+  const title = document.getElementById('tm-title').value.trim();
+  if(!title){
+    document.getElementById('tm-title-err').classList.add('show');
+    return;
+  }
+  const category = document.getElementById('tm-category').value;
+  const severity = document.getElementById('tm-severity').value;
+  const pic = document.getElementById('tm-pic').value.trim() || 'Belum ditentukan';
+  const slaTargetHrs = parseInt(document.getElementById('tm-sla').value, 10) || 4;
+
+  let group = null, messageText = null, existingMsg = null;
+  if(tmContext.mode === 'message'){
+    group = waGroups.find(g=>g.id===tmContext.groupId);
+    existingMsg = conversations[tmContext.groupId].msgs[tmContext.msgIndex];
+  } else {
+    const groupId = document.getElementById('tm-group').value;
+    group = waGroups.find(g=>g.id===groupId);
+    messageText = document.getElementById('tm-message').value.trim() || title;
+  }
+
+  const newId = "OPS-"+(2300+issues.length+1);
+  issues.unshift({
+    id:newId, title:title, category:category, severity:severity, pic:pic, status:"Open", sla:"On Track",
+    created:"Baru saja", source: group ? group.name : "Tiket Manual", slaTargetHrs:slaTargetHrs, deadline: now + slaTargetHrs*hr,
+    sentiment:{label:"Neutral", score:0}, sourceType:"Manual", tags:["Manual Entry"],
+    thread:[], stage:1
+  });
+
+  if(existingMsg){
+    existingMsg.flag = {severity: severity, issueId: newId};
+    if(group) group.issues = (group.issues||0) + 1;
+  } else if(group && messageText){
+    const nowStr = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+    const c = conversations[group.id];
+    c.msgs.push({
+      who: pic!=="Belum ditentukan" ? pic : "Staff",
+      time: nowStr,
+      date: "13 Agu 2026",
+      day: "Kamis",
+      text: messageText,
+      flag: {severity: severity, issueId: newId}
+    });
+    c.last = messageText;
+    c.time = nowStr;
+    group.issues = (group.issues||0) + 1;
+  }
+
+  renderConvoList();
+  if(group && activeGroupId === group.id) renderConvoMessages();
+  renderIssuesTable();
+  renderRecentIssues();
+  renderSlaTable();
+  renderDashboardAiSummary();
+  document.getElementById('badge-open').textContent = issues.filter(i=>i.status==='Open').length;
+
+  closeManualTicketModal();
+}
+
+/* ---------------- RENDER: SLA VIEW ---------------- */
+function renderSlaTable(){
+  const relevant = issues.slice().sort((a,b)=>a.deadline-b.deadline);
+  document.getElementById('sla-body').innerHTML = relevant.map(it=>`
+    <tr onclick="openDrawer('${it.id}')">
+      <td class="id">${it.id}</td>
+      <td class="title">${it.title}</td>
+      <td>${it.pic}</td>
+      <td><span class="badge ${slaBadgeClass(it.sla)}">${it.sla}</span></td>
+      <td class="mono" style="font-size:11.5px; color:${it.sla==='Breached'?'var(--red)':(it.sla==='At Risk'?'#B4720A':'var(--ink-dim)')}; font-weight:700;">${formatCountdown(it.deadline)}</td>
+    </tr>`).join('');
+}
+
+/* ---------------- RENDER: WHATSAPP GROUPS ---------------- */
+function renderWaGroups(){
+  document.getElementById('wa-groups').innerHTML = waGroups.map(g=>{
+    const owner = companyOfGroup(g.id);
+    return `
+    <div class="wa-card">
+      <div class="wa-card-top">
+        <div><h4>${g.name}</h4><div class="wa-industry">${g.industry}</div></div>
+        <div class="status-dot"><span></span>Connected</div>
+      </div>
+      <div class="wa-stat-row"><span>Pesan / hari</span><b>${g.msgs}</b></div>
+      <div class="wa-stat-row"><span>Issue terdeteksi hari ini</span><b>${g.issues}</b></div>
+      <div class="wa-stat-row"><span>Kategori dominan</span><b>${g.top}</b></div>
+      <div class="wa-owner ${owner?'':'none'}">${owner? owner.name : 'Belum dikelompokkan'}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ---------------- RENDER: INSIGHTS ---------------- */
+function renderInsights(){
+  document.getElementById('insight-cards').innerHTML = insights.map(i=>`
+    <div class="insight-card">
+      <div class="tag">${i.tag}</div>
+      <p class="insight-text">${i.text}</p>
+      <p class="insight-action">→ ${i.action}</p>
+      <div class="conf"><span>AI Confidence</span><div class="conf-track"><div class="conf-fill" style="width:${i.conf}%"></div></div><span>${i.conf}%</span></div>
+    </div>`).join('');
+
+  document.getElementById('warning-rows').innerHTML = warnings.map(w=>`
+    <div class="warn-row">
+      <div class="warn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
+      <div><div class="t">${w.t}</div><div class="d">${w.d}</div></div>
+    </div>`).join('');
+}
+
+/* ---------------- RENDER: REPORTS ---------------- */
+function renderLeaderboard(){
+  document.getElementById('leaderboard').innerHTML = leaderboard.slice().sort((a,b)=>b.n-a.n).map((l,i)=>`
+    <div class="lb-row">
+      <div class="lb-rank">${i+1}</div>
+      <div class="lb-name">${l.team}</div>
+      <div class="lb-val">${l.n}</div>
+      <div class="lb-val">${l.avg}</div>
+      <div class="lb-val">${l.sla}</div>
+    </div>`).join('');
+}
+
+/* ---------------- RENDER: CONVERSATIONS ---------------- */
+let activeGroupId = "g1";
+let convoSearch = '';
+/* ---------------- AI SUMMARY (per grup WA) ---------------- */
+const sevRank = {Critical:4, High:3, Medium:2, Low:1};
+
+function buildGroupAiSummary(groupId){
+  const c = conversations[groupId];
+  const flaggedMsgs = c.msgs.filter(m=>m.flag);
+  const items = flaggedMsgs.map(m=>{
+    const issue = issues.find(i=>i.id===m.flag.issueId);
+    if(!issue) return null;
+    return { issue, msgIndex: c.msgs.indexOf(m) };
+  }).filter(Boolean).filter(x=> x.issue.status==='Open' || x.issue.status==='In Progress');
+
+  items.sort((a,b)=> sevRank[b.issue.severity]-sevRank[a.issue.severity]);
+
+  if(items.length===0){
+    return { text:"Tidak ada issue aktif yang terdeteksi di grup ini. Percakapan berjalan normal, belum ada yang perlu ditindaklanjuti.", tone:'ok', count:0, items:[] };
+  }
+
+  const top = items[0].issue;
+  const others = items.length - 1;
+
+  const catCounts = {};
+  items.forEach(x=> catCounts[x.issue.category] = (catCounts[x.issue.category]||0)+1);
+  const topCat = Object.entries(catCounts).sort((a,b)=>b[1]-a[1])[0][0];
+
+  const breached = items.filter(x=>x.issue.sla==='Breached').length;
+
+  let text = `Sedang ada ${items.length} issue aktif di grup ini. Paling mendesak: "${top.title}" (${top.severity}${top.sla==='Breached'?', SLA sudah lewat':top.sla==='At Risk'?', SLA hampir habis':''}).`;
+  if(others>0) text += ` Ditambah ${others} issue lain, mayoritas terkait ${topCat}.`;
+  if(breached>1) text += ` ${breached} issue sudah melewati target SLA — perlu perhatian segera.`;
+
+  const tone = (top.severity==='Critical' || breached>0) ? 'critical' : (top.severity==='High' ? 'warn' : 'ok');
+  return { text, tone, count: items.length, items };
+}
+
+function detailListHtml(items, groupId){
+  if(items.length===0){
+    return `<div class="ai-detail-list" style="display:none;"></div>`;
+  }
+  const rows = items.map(x=>`
+    <div class="ai-detail-item" onclick="event.stopPropagation(); jumpToIssueMessage('${groupId}', ${x.msgIndex})">
+      <span class="sev-dot ${x.issue.severity}"></span>
+      <span class="it">${x.issue.id} · ${x.issue.title}</span>
+      <span class="arrow">→</span>
+    </div>`).join('');
+  return `<div class="ai-detail-list">${rows}</div>`;
+}
+
+let convoAiExpanded = false;
+function toggleConvoAiSummary(){
+  convoAiExpanded = !convoAiExpanded;
+  document.getElementById('convo-ai-summary').classList.toggle('expanded', convoAiExpanded);
+}
+
+function renderConvoAiSummary(groupId){
+  const s = buildGroupAiSummary(groupId);
+  const el = document.getElementById('convo-ai-summary');
+  el.className = 'ai-summary' + (s.tone!=='ok' ? ' tone-'+s.tone : '') + (convoAiExpanded ? ' expanded' : '');
+  el.setAttribute('onclick','toggleConvoAiSummary()');
+  el.innerHTML = `
+    <div class="icon">✨</div>
+    <div class="body">
+      <div class="lbl">AI Summary <span class="chev">▾</span></div>
+      <div class="txt">${s.text}</div>
+      ${detailListHtml(s.items, groupId)}
+    </div>`;
+}
+
+const dashboardAiExpanded = new Set();
+function toggleDashboardAiCard(groupId){
+  if(dashboardAiExpanded.has(groupId)) dashboardAiExpanded.delete(groupId);
+  else dashboardAiExpanded.add(groupId);
+  renderDashboardAiSummary();
+}
+
+function renderDashboardAiSummary(){
+  document.getElementById('dashboard-ai-summary').innerHTML = waGroups.map(g=>{
+    const s = buildGroupAiSummary(g.id);
+    const dotClass = s.tone;
+    const expanded = dashboardAiExpanded.has(g.id);
+    return `<div class="ai-summary-card ${expanded?'expanded':''}" onclick="toggleDashboardAiCard('${g.id}')">
+      <div class="top">
+        <span class="gname">${g.name}</span>
+        <span class="dot ${dotClass}"></span>
+      </div>
+      <div class="odeva-tag">✨ AI Summary <span class="chev">▾</span></div>
+      <div class="txt">${s.text}</div>
+      ${detailListHtml(s.items, g.id)}
+      <button onclick="event.stopPropagation(); switchView('conversations'); selectConvo('${g.id}');">Lihat percakapan →</button>
+    </div>`;
+  }).join('');
+}
+
+/* Loncat ke pesan tertentu di tab Percakapan lalu sorot kelap-kelip 3 detik */
+function jumpToIssueMessage(groupId, msgIndex){
+  switchView('conversations');
+  convoSearch = '';
+  const searchInput = document.getElementById('convo-search-input');
+  if(searchInput) searchInput.value = '';
+  selectConvo(groupId);
+  setTimeout(()=>{
+    const el = document.querySelector(`#convo-messages .cmsg[data-msg-index="${msgIndex}"]`);
+    if(!el) return;
+    el.scrollIntoView({behavior:'smooth', block:'center'});
+    el.classList.add('blink-highlight');
+    setTimeout(()=> el.classList.remove('blink-highlight'), 3000);
+  }, 80);
+}
+
+function renderConvoList(){
+  document.getElementById('convo-list').innerHTML = waGroups.map(g=>{
+    const c = conversations[g.id];
+    const flaggedCount = c.msgs.filter(m=>m.flag).length;
+    return `<div class="convo-list-item ${g.id===activeGroupId?'active':''}" onclick="selectConvo('${g.id}')">
+      <div class="name">${g.name}</div>
+      <div class="preview">${c.last}</div>
+      <div class="meta-row"><span class="time">${c.time}</span>${flaggedCount? `<span class="convo-badge">${flaggedCount} AI</span>`:''}</div>
+    </div>`;
+  }).join('');
+}
+function selectConvo(groupId){
+  activeGroupId = groupId;
+  convoSearch = '';
+  convoAiExpanded = false;
+  document.getElementById('convo-search-input').value = '';
+  renderConvoList();
+  renderConvoMessages();
+}
+function renderConvoMessages(){
+  const g = waGroups.find(x=>x.id===activeGroupId);
+  const c = conversations[activeGroupId];
+  const owner = companyOfGroup(activeGroupId);
+  renderConvoAiSummary(activeGroupId);
+  document.getElementById('convo-header').innerHTML = `
+    <div><div class="name">${g.name}</div><div class="sub">${owner? owner.name+' · ':''}${g.msgs} pesan hari ini · ${g.issues} issue terdeteksi</div></div>
+    <span class="badge grad">Live</span>`;
+
+  const q = convoSearch.trim().toLowerCase();
+  const filtered = q ? c.msgs.filter(m=>
+    m.text.toLowerCase().includes(q) ||
+    m.who.toLowerCase().includes(q) ||
+    m.date.toLowerCase().includes(q) ||
+    m.day.toLowerCase().includes(q)
+  ) : c.msgs;
+
+  if(!filtered.length){
+    document.getElementById('convo-messages').innerHTML = '<div class="empty-state">Tidak ada pesan yang cocok dengan pencarian.</div>';
+    return;
+  }
+
+  let lastDate = null;
+  const rows = [];
+  filtered.forEach(m=>{
+    if(m.date !== lastDate){
+      rows.push(`<div class="convo-date-sep"><span>${m.day}, ${m.date}</span></div>`);
+      lastDate = m.date;
+    }
+    let aiTag = '';
+    if(m.flag){
+      const it = issues.find(x=>x.id===m.flag.issueId);
+      const src = it ? it.sourceType : 'NLP';
+      const cls = src==='Manual' ? 'src-manual' : 'src-nlp';
+      const label = src==='Manual'
+        ? `📝 Pesan ini dijadikan Tiket Manual (${m.flag.severity})`
+        : `🤖 NLP mendeteksi issue otomatis (${m.flag.severity})`;
+      aiTag = `<div class="ai-tag ${cls}">${label} <button onclick="event.stopPropagation(); openDrawer('${m.flag.issueId}')">Lihat Tiket →</button></div>`;
+    } else {
+      const msgIdx = c.msgs.indexOf(m);
+      aiTag = `<button class="make-ticket-btn" onclick="event.stopPropagation(); createTicketFromMessage('${activeGroupId}', ${msgIdx})">📝 + Jadikan Tiket Manual</button>`;
+    }
+    rows.push(`<div class="cmsg ${m.flag?'flagged':''}" data-msg-index="${c.msgs.indexOf(m)}">
+      <div class="who">${m.who} · ${m.time}</div>
+      <div class="bubble" ${m.flag?'':`onclick="createTicketFromMessage('${activeGroupId}', ${c.msgs.indexOf(m)})"`}>${m.text}${aiTag}</div>
+    </div>`);
+  });
+  document.getElementById('convo-messages').innerHTML = rows.join('');
+}
+document.getElementById('convo-search-input').addEventListener('input', e=>{
+  convoSearch = e.target.value;
+  renderConvoMessages();
+});
+function countFlaggedToday(){
+  return Object.values(conversations).reduce((sum,c)=> sum + c.msgs.filter(m=>m.flag).length, 0);
+}
+
+/* ---------------- RENDER: SETTINGS ---------------- */
+let openPickerFor = null;
+function renderSettings(){
+  document.getElementById('company-list').innerHTML = companies.map(c=>{
+    const groups = waGroups.filter(g=>c.groupIds.includes(g.id));
+    return `<div class="company-card">
+      <div class="flex-between">
+        <div><h4>${c.name}</h4><div class="wa-industry">${c.industry}</div></div>
+        <button class="add-group-btn" onclick="togglePicker('${c.id}')">+ Tambah Grup</button>
+      </div>
+      <div class="chip-row" style="margin-top:14px;">
+        ${groups.length ? groups.map(g=>`<div class="chip group-chip">${g.name}<button onclick="unassignGroup('${c.id}','${g.id}')">×</button></div>`).join('') : '<span class="settings-empty">Belum ada grup terhubung.</span>'}
+      </div>
+      <div class="group-picker" id="picker-${c.id}" style="display:${openPickerFor===c.id?'flex':'none'};">
+        ${waGroups.filter(g=>!c.groupIds.includes(g.id)).map(g=>{
+          const owner = companyOfGroup(g.id);
+          return `<button onclick="assignGroup('${c.id}','${g.id}')"><span>${g.name}</span><span class="owner-tag">${owner? 'dari '+owner.name : 'belum dikelompokkan'}</span></button>`;
+        }).join('') || '<span class="settings-empty" style="padding:6px 10px;">Semua grup sudah ditambahkan.</span>'}
+      </div>
+    </div>`;
+  }).join('');
+
+  const unassigned = waGroups.filter(g=>!companyOfGroup(g.id));
+  document.getElementById('unassigned-groups').innerHTML = unassigned.length
+    ? unassigned.map(g=>`<div class="chip">${g.name}</div>`).join('')
+    : '<span class="settings-empty">Semua grup sudah dikelompokkan ke perusahaan.</span>';
+}
+function togglePicker(companyId){
+  openPickerFor = openPickerFor===companyId ? null : companyId;
+  renderSettings();
+}
+function assignGroup(companyId, groupId){
+  companies.forEach(c=> c.groupIds = c.groupIds.filter(id=>id!==groupId));
+  const target = companies.find(c=>c.id===companyId);
+  target.groupIds.push(groupId);
+  openPickerFor = null;
+  renderSettings();
+  renderWaGroups();
+}
+function unassignGroup(companyId, groupId){
+  const c = companies.find(x=>x.id===companyId);
+  c.groupIds = c.groupIds.filter(id=>id!==groupId);
+  renderSettings();
+  renderWaGroups();
+}
+function addCompany(){
+  const name = prompt("Nama perusahaan / PT baru:");
+  if(!name) return;
+  const industry = prompt("Industri (contoh: Logistics, Mining, Retail):", "Lainnya") || "Lainnya";
+  companies.push({id:"c"+(companies.length+1)+"_"+Date.now(), name:name, industry:industry, groupIds:[]});
+  renderSettings();
+}
+
+/* ---------------- DRAWER ---------------- */
+function openDrawer(id){
+  const it = issues.find(x=>x.id===id);
+  if(!it) return;
+  document.getElementById('d-id').textContent = "#"+it.id;
+  document.getElementById('d-title').textContent = it.title;
+  document.getElementById('d-badges').innerHTML = `
+    <span class="badge ${sevBadgeClass(it.severity)}">${it.severity}</span>
+    <span class="badge ${statusBadgeClass(it.status)}">${it.status}</span>
+    <span class="badge ${slaBadgeClass(it.sla)}">${it.sla}</span>`;
+  document.getElementById('d-sla-text').textContent = formatCountdown(it.deadline);
+  document.getElementById('d-sla-text').style.color = it.sla==='Breached'?'var(--red)':(it.sla==='At Risk'?'#B4720A':'var(--g-700)');
+  document.getElementById('d-sla-badge').className = 'badge '+slaBadgeClass(it.sla);
+  document.getElementById('d-sla-badge').textContent = it.sla;
+  renderClosePanel(it);
+  document.getElementById('d-category').textContent = it.category;
+  document.getElementById('d-severity').textContent = it.severity;
+  document.getElementById('d-pic').textContent = it.pic;
+  document.getElementById('d-sourcetype').innerHTML = `<span class="badge ${sourceBadgeClass(it.sourceType)}">${sourceIcon(it.sourceType)} ${sourceLabel(it.sourceType)}</span>`;
+  document.getElementById('d-source').textContent = it.source;
+  document.getElementById('d-created').textContent = it.created;
+  document.getElementById('d-sla-target').textContent = it.slaTargetHrs + " jam";
+
+  document.getElementById('d-sentiment').className = 'badge ' + sentimentBadgeClass(it.sentiment.label);
+  document.getElementById('d-sentiment').textContent = sentimentIcon(it.sentiment.label) + ' Sentimen ' + it.sentiment.label + ' (skor ' + it.sentiment.score.toFixed(2) + ')';
+  document.getElementById('d-tags').innerHTML = tagsChips(it.tags);
+
+  const relAlert = alertForIssue(it.id);
+  document.getElementById('d-alert-panel').innerHTML = relAlert ? `
+    <div class="alert-wa-bubble">
+      <div class="awb-head">🤖 Odeva IOM Bot → ${relAlert.group}</div>
+      <div class="awb-body">⚠️ Alert baru [${it.severity}] ${it.title}<br>Di-assign ke: <b>${relAlert.recipient}</b><br>Target SLA: ${it.slaTargetHrs} jam — mohon segera ditindaklanjuti.</div>
+      <div class="awb-meta">${channelChips(relAlert.channels)}<span class="badge ${alertStatusBadgeClass(relAlert.status)}">${relAlert.status}</span></div>
+    </div>` : `<div class="settings-empty" style="padding:10px 0 18px; text-align:left;">Belum ada alert otomatis terkirim untuk issue ini.</div>`;
+
+  document.getElementById('d-thread').innerHTML = it.thread.length ? it.thread.map(m=>`
+    <div class="thread-msg"><div class="who">${m.who}</div><div class="bubble">${m.text}</div></div>`).join('')
+    : '<div class="settings-empty" style="padding:10px 0; text-align:left;">Tiket ini dibuat manual, tidak berasal dari percakapan WhatsApp.</div>';
+
+  document.getElementById('d-timeline').innerHTML = stages.map((s,i)=>{
+    const cls = i < it.stage ? 'done' : (i===it.stage ? 'active':'');
+    return `<div class="tl-step ${cls}"><div class="tl-line"></div><div class="tl-dot"></div><div><div class="tl-name">${s}</div>${i<=it.stage?`<div class="tl-time">${i===0?it.created:''}</div>`:''}</div></div>`;
+  }).join('');
+
+  document.getElementById('issue-drawer').classList.add('show');
+  document.getElementById('drawer-overlay').classList.add('show');
+}
+function closeDrawer(){
+  document.getElementById('issue-drawer').classList.remove('show');
+  document.getElementById('drawer-overlay').classList.remove('show');
+}
+
+/* ---------------- TUTUP TIKET (Otomatis / Manual) ---------------- */
+function renderClosePanel(it){
+  const el = document.getElementById('d-close-panel');
+  if(it.status === 'Closed'){
+    const methodLabel = it.closeMethod === 'auto' ? '🤖 Ditutup otomatis oleh Odeva AI' : '📝 Ditutup manual';
+    el.innerHTML = `
+      <div class="close-status is-closed">
+        <div class="row1"><span class="who">${methodLabel}</span><span class="when">${it.closedAt||''}</span></div>
+        ${it.closedBy ? `<div class="when">oleh ${it.closedBy}</div>` : ''}
+        <button class="reopen-btn" onclick="reopenIssue('${it.id}')">↺ Buka Kembali Tiket</button>
+      </div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div class="close-actions">
+      <button class="close-btn auto" onclick="closeIssueAuto('${it.id}')">
+        <div class="ttl">🤖 Tutup Otomatis</div>
+        <div class="desc">Odeva AI mendeteksi issue ini sudah selesai dari percakapan WA</div>
+      </button>
+      <button class="close-btn manual" onclick="closeIssueManual('${it.id}')">
+        <div class="ttl">📝 Tutup Manual</div>
+        <div class="desc">Ditutup langsung oleh ${it.pic||'PIC'} tanpa menunggu deteksi AI</div>
+      </button>
+    </div>`;
+}
+
+function nowTimeStr(){
+  return new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+}
+
+function finalizeIssueClose(it){
+  it.status = 'Closed';
+  it.sla = 'On Track';
+  it.stage = stages.length - 1;
+  refreshAfterIssueChange(it);
+}
+
+function closeIssueAuto(id){
+  const it = issues.find(x=>x.id===id);
+  if(!it) return;
+  it.closeMethod = 'auto';
+  it.closedBy = 'Odeva AI';
+  it.closedAt = nowTimeStr();
+  finalizeIssueClose(it);
+}
+
+function closeIssueManual(id){
+  const it = issues.find(x=>x.id===id);
+  if(!it) return;
+  it.closeMethod = 'manual';
+  it.closedBy = it.pic || 'PIC';
+  it.closedAt = nowTimeStr();
+  finalizeIssueClose(it);
+}
+
+function reopenIssue(id){
+  const it = issues.find(x=>x.id===id);
+  if(!it) return;
+  it.status = 'Open';
+  it.stage = 2; // kembali ke tahap "In Progress"
+  delete it.closeMethod;
+  delete it.closedBy;
+  delete it.closedAt;
+  refreshAfterIssueChange(it);
+}
+
+function refreshAfterIssueChange(it){
+  openDrawer(it.id);
+  renderIssuesTable();
+  renderRecentIssues();
+  renderSlaTable();
+  renderDashboardAiSummary();
+  if(document.getElementById('view-conversations').classList.contains('active')) renderConvoMessages();
+  document.getElementById('badge-open').textContent = issues.filter(i=>i.status==='Open').length;
+}
+
+/* ---------------- NAV / VIEW SWITCH ---------------- */
+function switchView(view){
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active', b.dataset.view===view));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active', v.id==='view-'+view));
+  const titles = {
+    dashboard:["Dashboard","Ringkasan operasional real-time — hari ini"],
+    issues:["Issues & Tickets","Seluruh issue yang terdeteksi dari WhatsApp"],
+    sla:["SLA Monitoring","Pantau status SLA seluruh issue aktif"],
+    conversations:["Conversations","Lihat langsung percakapan WhatsApp per grup"],
+    alerts:["Alert Log","Riwayat alert otomatis ke Dashboard dan WhatsApp PIC"],
+    whatsapp:["WhatsApp Groups","Grup WhatsApp yang terhubung ke Odeva IOM"],
+    insights:["AI Insights","Pola berulang dan early warning dari AI"],
+    reports:["Reports","Analisis performa operasional"],
+    settings:["Pengelompokan PT","Atur grup WhatsApp ke dalam perusahaan / PT"],
+  };
+  document.getElementById('view-title').textContent = titles[view][0];
+  document.getElementById('view-sub').textContent = titles[view][1];
+  document.getElementById('sidebar').classList.remove('show');
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.nav-item').forEach(b=> b.addEventListener('click', ()=> switchView(b.dataset.view)) );
+
+/* ---------------- FILTER EVENTS ---------------- */
+document.querySelectorAll('#status-seg button').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('#status-seg button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    filterState.status = b.dataset.status;
+    renderIssuesTable();
+  });
+});
+document.querySelectorAll('#source-seg button').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('#source-seg button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    filterState.source = b.dataset.source;
+    renderIssuesTable();
+  });
+});
+document.getElementById('category-filter').addEventListener('change', e=>{ filterState.category = e.target.value; renderIssuesTable(); });
+document.getElementById('sla-filter').addEventListener('change', e=>{ filterState.sla = e.target.value; renderIssuesTable(); });
+document.getElementById('issue-search').addEventListener('input', e=>{ filterState.search = e.target.value; renderIssuesTable(); });
+document.getElementById('global-search').addEventListener('input', e=>{
+  switchView('issues');
+  document.querySelector('#status-seg button[data-status="all"]').click();
+  document.querySelectorAll('#source-seg button').forEach(x=>x.classList.remove('active'));
+  document.querySelector('#source-seg button[data-source="all"]').classList.add('active');
+  filterState.source = 'all';
+  document.getElementById('issue-search').value = e.target.value;
+  filterState.search = e.target.value;
+  renderIssuesTable();
+});
+
+/* ---------------- INIT ---------------- */
+function init(){
+  renderVolumeChart();
+  renderCategoryBars('category-hbars');
+  renderCategoryBars('report-category-hbars');
+  renderTopIssueArea();
+  renderMostDelayedTeam();
+  renderStatusBars();
+  renderRecentIssues();
+  renderSentimentDonut();
+  renderRecentAlertsList();
+  renderDashboardAiSummary();
+  renderIssuesTable();
+  renderSlaTable();
+  renderAlerts();
+  renderWaGroups();
+  renderInsights();
+  renderLeaderboard();
+  renderConvoList();
+  renderConvoMessages();
+  renderSettings();
+  document.getElementById('badge-open').textContent = issues.filter(i=>i.status==='Open').length;
+  document.getElementById('badge-flagged').textContent = countFlaggedToday();
+  setInterval(()=>{ renderSlaTable(); }, 30000);
+}
+init();
+</script>
+<!-- ============================================================
+     DEMO SIMULATOR PANEL HTML
+     ============================================================ -->
+<div id="dp-toast" class="dp-toast"></div>
+
+<button id="demo-fab" onclick="demoShowPanel()">
+  ▶ Demo: Open → Close Tiket
+</button>
+
+<div id="demo-panel">
+  <div class="dp-accent"></div>
+  <div class="dp-header">
+    <div>
+      <div class="dp-title">
+        <span class="dp-icon">🎬</span>
+        Demo Simulasi End-to-End
+      </div>
+      <div class="dp-subtitle">Open Tiket → Proses → Close · 1 skenario nyata</div>
+    </div>
+    <button class="dp-close-btn" onclick="demoHidePanel()" title="Tutup panel">×</button>
+  </div>
+
+  <div class="dp-progress-bar">
+    <div class="dp-progress-fill" id="dp-progress" style="width:0%"></div>
+  </div>
+
+  <div class="dp-steps" id="dp-steps-list"></div>
+
+  <div class="dp-callout" id="dp-callout">
+    <div class="dp-callout-title" id="dp-callout-title"></div>
+    <div id="dp-callout-body"></div>
+  </div>
+
+  <div class="dp-footer">
+    <button class="dp-btn-reset" onclick="demoReset()" title="Mulai ulang">↺ Reset</button>
+    <span class="dp-step-counter" id="dp-step-counter">Langkah 0 / 7</span>
+    <button class="dp-btn-next" id="dp-next-btn" onclick="demoNext()">
+      <span id="dp-next-label">Mulai Demo</span>
+      <span>→</span>
+    </button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   DEMO SIMULATOR ENGINE
+   ============================================================ */
+
+// The ONE scenario we demo:
+// Pesan masuk di WAG Customer Service → AI deteksi → tiket open → assign PIC →
+// in progress → escalate → resolved → close (AI auto)
+const DEMO_ISSUE_ID = "OPS-DEMO1";
+
+const demoSteps = [
+  {
+    label: "Pesan masuk di WAG Customer Service",
+    desc: "Pelanggan mengeluh via WhatsApp grup",
+    view: "conversations",
+    group: "g4",
+    calloutTitle: "📱 Tahap 1 — Pesan Masuk",
+    callout: "Buka tab Conversations dan pilih grup <b>WAG Customer Service Jakarta</b>. Pesan baru masuk dari pelanggan tentang barang rusak. Odeva AI langsung membaca dan menganalisis percakapan ini.",
+    action: () => {
+      switchView('conversations');
+      selectConvo('g4');
+      // Add a fresh message to g4
+      const nowStr = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+      conversations.g4.msgs.push({
+        who:"Customer Service Agent",
+        time: nowStr,
+        date:"13 Agu 2026",
+        day:"Kamis",
+        text:"🚨 Ada customer baru komplain — Laptop yang dikirim tidak menyala sama sekali, sudah dicek kardus penyok. Minta ganti unit atau refund penuh.",
+        _demoNew: true
+      });
+      conversations.g4.last = "Customer komplain laptop tidak menyala, kardus penyok.";
+      conversations.g4.time = nowStr;
+      renderConvoList();
+      renderConvoMessages();
+      setTimeout(() => {
+        const msgs = document.getElementById('convo-messages');
+        if(msgs) msgs.scrollTop = msgs.scrollHeight;
+      }, 200);
+      demoToast("📱 Pesan baru masuk di WAG Customer Service Jakarta");
+    }
+  },
+  {
+    label: "AI NLP mendeteksi issue otomatis",
+    desc: "Odeva AI mengklasifikasikan severity & membuat tiket",
+    view: "conversations",
+    group: "g4",
+    calloutTitle: "🤖 Tahap 2 — NLP Auto-Detect",
+    callout: "Odeva AI menganalisis sentimen pesan (<b>Negative, skor −0.87</b>) dan langsung membuat tiket dengan severity <b>High</b>. Tiket muncul otomatis tanpa input manual.",
+    action: () => {
+      const nowStr = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+      // Update the last message to have a flag
+      const msgs = conversations.g4.msgs;
+      const last = msgs[msgs.length - 1];
+      last.flag = { severity: "High", issueId: DEMO_ISSUE_ID };
+
+      // Add the new issue
+      const existing = issues.find(x=>x.id===DEMO_ISSUE_ID);
+      if(!existing){
+        issues.unshift({
+          id: DEMO_ISSUE_ID,
+          title: "Laptop Pelanggan Rusak — Pengiriman Bermasalah",
+          category: "Customer",
+          severity: "High",
+          pic: "Customer Service",
+          status: "Open",
+          sla: "On Track",
+          created: nowStr,
+          source: "WAG Customer Service Jakarta",
+          slaTargetHrs: 4,
+          deadline: Date.now() + 4*3600*1000,
+          sentiment: { label: "Negative", score: -0.87 },
+          sourceType: "NLP",
+          tags: ["Refund","Kerusakan","Pengiriman","Auto-Detect"],
+          thread: [
+            { who: "Customer Service Agent · " + nowStr, text: "Customer komplain laptop tidak menyala, kardus penyok. Minta ganti unit atau refund." }
+          ],
+          stage: 1
+        });
+      }
+
+      // Add alert
+      alerts.unshift({
+        id: "ALT-DEMO1",
+        issueId: DEMO_ISSUE_ID,
+        channels: ["dashboard","whatsapp"],
+        recipient: "Customer Service",
+        group: "WAG Customer Service Jakarta",
+        time: nowStr,
+        status: "Terkirim"
+      });
+
+      renderConvoMessages();
+      renderIssuesTable();
+      renderRecentIssues();
+      renderAlerts();
+      renderRecentAlertsList();
+      renderDashboardAiSummary();
+      document.getElementById('badge-open').textContent = issues.filter(i=>i.status==='Open').length;
+      document.getElementById('badge-alerts').textContent = alerts.length;
+      document.getElementById('badge-flagged').textContent = countFlaggedToday();
+      setTimeout(() => {
+        const msgs2 = document.getElementById('convo-messages');
+        if(msgs2) msgs2.scrollTop = msgs2.scrollHeight;
+      }, 200);
+      demoToast("🤖 AI NLP membuat tiket " + DEMO_ISSUE_ID + " secara otomatis");
+    }
+  },
+  {
+    label: "Lihat Tiket Baru di Issues & Alert Log",
+    desc: "Tiket OPS-DEMO1 muncul dengan status Open",
+    view: "issues",
+    calloutTitle: "📋 Tahap 3 — Tiket Open",
+    callout: "Buka halaman <b>Issues & Tickets</b>. Tiket <b>OPS-DEMO1</b> sudah muncul di baris paling atas dengan status <b>Open</b>. Alert otomatis sudah dikirim ke Dashboard dan WhatsApp PIC. Klik tiket untuk lihat drawer detail.",
+    action: () => {
+      switchView('issues');
+      setTimeout(() => {
+        // highlight the new row
+        const tbody = document.getElementById('issues-body');
+        const firstRow = tbody && tbody.querySelector('tr');
+        if(firstRow){
+          firstRow.classList.add('dp-highlight');
+          setTimeout(() => firstRow.classList.remove('dp-highlight'), 3500);
+        }
+        openDrawer(DEMO_ISSUE_ID);
+      }, 300);
+      demoToast("📋 Tiket OPS-DEMO1 sudah Open — drawer dibuka");
+    }
+  },
+  {
+    label: "PIC merespon & status berubah ke In Progress",
+    desc: "Tim CS mulai menangani, stage diperbarui",
+    view: "issues",
+    calloutTitle: "⚙️ Tahap 4 — In Progress",
+    callout: "Customer Service sudah mengonfirmasi penanganan. Status berubah ke <b>In Progress</b>. Pesan update masuk di thread tiket, dan stage timeline bergerak maju.",
+    action: () => {
+      const it = issues.find(x=>x.id===DEMO_ISSUE_ID);
+      if(!it) return;
+      it.status = "In Progress";
+      it.stage = 2;
+      it.sla = "On Track";
+      const nowStr = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+      it.thread.push({ who: "CS Lead · " + nowStr, text: "Sudah koordinasi dengan gudang dan tim pengiriman. Foto kerusakan sudah diminta ke customer, proses pengecekan berjalan." });
+      // Update alert status
+      const al = alerts.find(a=>a.issueId===DEMO_ISSUE_ID);
+      if(al) al.status = "Dibaca";
+
+      switchView('issues');
+      renderIssuesTable();
+      renderRecentIssues();
+      renderAlerts();
+      renderDashboardAiSummary();
+      setTimeout(() => openDrawer(DEMO_ISSUE_ID), 300);
+      demoToast("⚙️ Status berubah ke In Progress — CS sedang menangani");
+    }
+  },
+  {
+    label: "SLA hampir habis — eskalasi otomatis",
+    desc: "Odeva AI mendeteksi risiko SLA dan eskalasi ke manager",
+    view: "sla",
+    calloutTitle: "⚠️ Tahap 5 — Eskalasi SLA",
+    callout: "Odeva AI mendeteksi tiket ini berisiko melewati SLA. Status SLA berubah ke <b>At Risk</b> dan otomatis mengirim eskalasi ke Manager CS. Terlihat di halaman SLA Monitoring.",
+    action: () => {
+      const it = issues.find(x=>x.id===DEMO_ISSUE_ID);
+      if(!it) return;
+      it.sla = "At Risk";
+      it.stage = 3;
+      it.deadline = Date.now() + 20*60*1000; // 20 menit lagi
+      const nowStr = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+      it.thread.push({ who: "🤖 Odeva AI · " + nowStr, text: "⚠️ Auto-escalation: SLA hampir habis (sisa 20 menit). Notifikasi dikirim ke CS Manager." });
+
+      alerts.unshift({
+        id: "ALT-DEMO2",
+        issueId: DEMO_ISSUE_ID,
+        channels: ["dashboard","whatsapp"],
+        recipient: "CS Manager",
+        group: "WAG Customer Service Jakarta",
+        time: nowStr,
+        status: "Terkirim"
+      });
+
+      switchView('sla');
+      renderSlaTable();
+      renderAlerts();
+      renderDashboardAiSummary();
+      document.getElementById('badge-alerts').textContent = alerts.length;
+      setTimeout(() => openDrawer(DEMO_ISSUE_ID), 300);
+      demoToast("⚠️ SLA At Risk — eskalasi otomatis ke CS Manager");
+    }
+  },
+  {
+    label: "Issue diselesaikan oleh tim CS",
+    desc: "Solusi ditemukan, unit pengganti dikirim ke pelanggan",
+    view: "issues",
+    calloutTitle: "✅ Tahap 6 — Resolved",
+    callout: "Tim CS berhasil menyelesaikan issue. Unit pengganti sudah dikirim, pelanggan konfirmasi puas. Status berubah ke <b>Resolved</b> dan stage timeline mencapai titik Resolved.",
+    action: () => {
+      const it = issues.find(x=>x.id===DEMO_ISSUE_ID);
+      if(!it) return;
+      it.status = "Resolved";
+      it.stage = 5;
+      it.sla = "On Track";
+      it.deadline = Date.now() + 3600*1000;
+      it.sentiment = { label: "Positive", score: 0.72 };
+      const nowStr = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+      it.thread.push({ who: "CS Lead · " + nowStr, text: "✅ Unit pengganti sudah dikirim via kurir express, nomor resi terlampir. Customer mengonfirmasi puas dan sudah diterima dengan baik." });
+
+      switchView('issues');
+      renderIssuesTable();
+      renderRecentIssues();
+      renderSlaTable();
+      renderDashboardAiSummary();
+      setTimeout(() => openDrawer(DEMO_ISSUE_ID), 300);
+      demoToast("✅ Issue Resolved — customer sudah puas, unit pengganti terkirim");
+    }
+  },
+  {
+    label: "Tiket ditutup — Odeva AI Auto-Close",
+    desc: "AI mendeteksi konfirmasi selesai & menutup tiket",
+    view: "issues",
+    calloutTitle: "🔒 Tahap 7 — Tiket Closed!",
+    callout: "Odeva AI mendeteksi percakapan WhatsApp menunjukkan konfirmasi selesai dari semua pihak. Tiket ditutup secara <b>otomatis oleh AI</b>. Status menjadi <b>Closed</b>, SLA <b>On Track</b>. Demo selesai! 🎉",
+    action: () => {
+      const it = issues.find(x=>x.id===DEMO_ISSUE_ID);
+      if(!it) return;
+      it.status = "Closed";
+      it.stage = 6;
+      it.sla = "On Track";
+      it.closeMethod = "auto";
+      it.closedBy = "Odeva AI";
+      it.closedAt = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+
+      // Update WA conversation with close confirmation
+      const nowStr = it.closedAt;
+      conversations.g4.msgs.push({
+        who: "🤖 Odeva IOM Bot",
+        time: nowStr,
+        date: "13 Agu 2026",
+        day: "Kamis",
+        text: "✅ Tiket OPS-DEMO1 telah ditutup otomatis. Durasi penyelesaian: dalam SLA. Terima kasih tim CS atas penanganan yang cepat!"
+      });
+
+      switchView('issues');
+      renderIssuesTable();
+      renderRecentIssues();
+      renderSlaTable();
+      renderDashboardAiSummary();
+      document.getElementById('badge-open').textContent = issues.filter(i=>i.status==='Open').length;
+      setTimeout(() => openDrawer(DEMO_ISSUE_ID), 300);
+      demoToast("🔒 Tiket CLOSED — Odeva AI auto-close berhasil! 🎉");
+    }
+  }
+];
+
+let demoCurrentStep = -1;
+let demoPanelVisible = false;
+
+function demoShowPanel() {
+  demoPanelVisible = true;
+  document.getElementById('demo-panel').classList.remove('collapsed');
+  document.getElementById('demo-fab').classList.add('hidden');
+  if(demoCurrentStep < 0) demoRenderSteps();
+}
+
+function demoHidePanel() {
+  demoPanelVisible = false;
+  document.getElementById('demo-panel').classList.add('collapsed');
+  document.getElementById('demo-fab').classList.remove('hidden');
+}
+
+function demoReset() {
+  // Remove demo issue and alerts
+  const idx = issues.findIndex(x=>x.id===DEMO_ISSUE_ID);
+  if(idx !== -1) issues.splice(idx, 1);
+  // Remove demo alerts
+  while(true){
+    const ai = alerts.findIndex(a=>a.issueId===DEMO_ISSUE_ID);
+    if(ai === -1) break;
+    alerts.splice(ai, 1);
+  }
+  // Remove demo messages from g4
+  conversations.g4.msgs = conversations.g4.msgs.filter(m => !m._demoNew && !(m.flag && m.flag.issueId===DEMO_ISSUE_ID) && !(m.who==='🤖 Odeva IOM Bot'));
+  conversations.g4.last = "Sudah eskalasi ke warehouse.";
+  conversations.g4.time = "07:10";
+
+  renderIssuesTable();
+  renderRecentIssues();
+  renderAlerts();
+  renderRecentAlertsList();
+  renderDashboardAiSummary();
+  renderSlaTable();
+  document.getElementById('badge-open').textContent = issues.filter(i=>i.status==='Open').length;
+  document.getElementById('badge-alerts').textContent = alerts.length;
+  document.getElementById('badge-flagged').textContent = countFlaggedToday();
+
+  demoCurrentStep = -1;
+  demoRenderSteps();
+  closeDrawer();
+  demoToast("↺ Demo direset — siap mulai dari awal");
+}
+
+function demoRenderSteps() {
+  const container = document.getElementById('dp-steps-list');
+  container.innerHTML = demoSteps.map((s, i) => {
+    let cls = 'pending';
+    let dotContent = i + 1;
+    if(i < demoCurrentStep) { cls = 'done'; dotContent = '✓'; }
+    else if(i === demoCurrentStep) cls = 'active';
+    return `<div class="dp-step-item ${cls}">
+      <div class="dp-step-dot">${dotContent}</div>
+      <div class="dp-step-text">
+        <div class="dp-step-label">${s.label}</div>
+        ${cls === 'active' || cls === 'done' ? `<div class="dp-step-desc">${s.desc}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Progress bar
+  const pct = demoCurrentStep < 0 ? 0 : Math.round(((demoCurrentStep + 1) / demoSteps.length) * 100);
+  document.getElementById('dp-progress').style.width = pct + '%';
+
+  // Counter
+  const step = demoCurrentStep < 0 ? 0 : demoCurrentStep + 1;
+  document.getElementById('dp-step-counter').textContent = `Langkah ${step} / ${demoSteps.length}`;
+
+  // Next button label
+  const nextLabel = document.getElementById('dp-next-label');
+  const nextBtn = document.getElementById('dp-next-btn');
+  if(demoCurrentStep < 0) {
+    nextLabel.textContent = 'Mulai Demo';
+    nextBtn.disabled = false;
+  } else if(demoCurrentStep >= demoSteps.length - 1) {
+    nextLabel.textContent = 'Selesai! 🎉';
+    nextBtn.disabled = true;
+  } else {
+    nextLabel.textContent = 'Langkah Berikutnya';
+    nextBtn.disabled = false;
+  }
+
+  // Callout
+  const callout = document.getElementById('dp-callout');
+  if(demoCurrentStep >= 0 && demoCurrentStep < demoSteps.length) {
+    const s = demoSteps[demoCurrentStep];
+    document.getElementById('dp-callout-title').innerHTML = s.calloutTitle;
+    document.getElementById('dp-callout-body').innerHTML = s.callout;
+    callout.classList.add('show');
+  } else {
+    callout.classList.remove('show');
+  }
+
+  // Scroll active step into view
+  setTimeout(() => {
+    const items = container.querySelectorAll('.dp-step-item');
+    if(items[demoCurrentStep]) {
+      items[demoCurrentStep].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  }, 100);
+}
+
+function demoNext() {
+  demoCurrentStep++;
+  if(demoCurrentStep >= demoSteps.length) return;
+  const step = demoSteps[demoCurrentStep];
+  step.action();
+  demoRenderSteps();
+}
+
+function demoToast(msg) {
+  const el = document.getElementById('dp-toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// Initialize panel in collapsed state
+document.getElementById('demo-panel').classList.add('collapsed');
+</script>
+</body>
+</html>
