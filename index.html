@@ -730,6 +730,350 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
   .convo-shell{ flex-direction:column; height:auto; }
   .convo-list{ width:100%; flex:0 0 auto; max-height:220px; }
 }
+
+/* ============================================================
+   TAG SETTINGS
+   ============================================================ */
+.tag-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fff;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: box-shadow .2s;
+}
+.tag-card:hover { box-shadow: 0 4px 20px rgba(10,51,39,0.10); }
+.tag-card-head {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  background: var(--card-tint);
+}
+.tag-color-dot {
+  width: 14px; height: 14px; border-radius: 50%; flex: 0 0 auto;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+.tag-card-head .tag-name {
+  font-size: 14.5px; font-weight: 700; color: var(--g-900); flex: 1;
+}
+.tag-card-head .tag-count {
+  font-size: 11.5px; font-weight: 700; color: var(--ink-faint);
+  background: var(--card-tint); border: 1px solid var(--line);
+  border-radius: 999px; padding: 2px 10px;
+}
+.tag-card-head .tag-toggle-icon {
+  font-size: 12px; color: var(--ink-faint); transition: transform .2s;
+}
+.tag-card.expanded .tag-toggle-icon { transform: rotate(180deg); }
+.tag-card-head .tag-actions { display: flex; gap: 6px; }
+.tag-action-btn {
+  border: 1px solid var(--line); background: #fff; border-radius: 7px;
+  padding: 5px 10px; font-size: 11.5px; font-weight: 700;
+  color: var(--ink-dim); cursor: pointer; transition: background .15s, border-color .15s;
+}
+.tag-action-btn:hover { background: var(--card-tint); border-color: var(--g-300); }
+.tag-action-btn.danger:hover { background: var(--red-bg); border-color: var(--red-line); color: var(--red); }
+
+.tag-card-body { padding: 18px 20px; display: none; }
+.tag-card.expanded .tag-card-body { display: block; }
+
+.tag-keyword-section { margin-bottom: 18px; }
+.tag-keyword-section label {
+  font-size: 11.5px; font-weight: 700; color: var(--ink-dim);
+  display: block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: .03em;
+}
+.tag-keyword-chips {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; min-height: 28px;
+}
+.tag-keyword-chip {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--card-tint); border: 1px solid var(--line);
+  border-radius: 999px; padding: 4px 10px 4px 12px;
+  font-size: 12.5px; font-weight: 600; color: var(--g-900);
+}
+.tag-keyword-chip .kw-remove {
+  width: 16px; height: 16px; border-radius: 50%; background: var(--ink-faint);
+  color: #fff; border: none; font-size: 9px; display: grid; place-items: center;
+  cursor: pointer; line-height: 1; transition: background .15s;
+}
+.tag-keyword-chip .kw-remove:hover { background: var(--red); }
+.tag-add-keyword-row {
+  display: flex; gap: 8px; align-items: center;
+}
+.tag-kw-input {
+  flex: 1; border: 1.5px solid var(--line); border-radius: 9px;
+  padding: 8px 12px; font-size: 13px; font-family: var(--font);
+  background: #fff; color: var(--ink); outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.tag-kw-input:focus {
+  border-color: var(--g-500); box-shadow: 0 0 0 3px rgba(23,168,116,0.14);
+}
+.tag-kw-add-btn {
+  border: none; border-radius: 9px; padding: 8px 14px;
+  background: var(--grad); color: #fff; font-size: 12.5px; font-weight: 700; cursor: pointer;
+  transition: opacity .15s;
+}
+.tag-kw-add-btn:hover { opacity: 0.88; }
+
+.tag-preview-section label {
+  font-size: 11.5px; font-weight: 700; color: var(--ink-dim);
+  display: block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: .03em;
+}
+.tag-hit-count {
+  font-size: 12.5px; color: var(--ink-dim);
+  background: var(--amber-bg); border: 1px solid var(--amber-line);
+  border-radius: 8px; padding: 6px 12px; font-weight: 600;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.tag-hit-count .tc-num { font-size: 14px; font-weight: 800; color: var(--amber); }
+
+/* Tag badge on conversation message */
+.cmsg-tag-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  border-radius: 999px; padding: 2px 9px;
+  font-size: 11px; font-weight: 700; margin-right: 4px;
+  border: 1px solid; vertical-align: middle;
+}
+.cmsg-tags-row {
+  display: flex; flex-wrap: wrap; gap: 5px; margin: 3px 0 4px;
+}
+
+/* Tag chip in conversations */
+.tag-issue-banner {
+  display: flex; align-items: flex-start; flex-wrap: wrap; gap: 6px;
+  padding: 8px 10px; border-radius: 9px; margin-top: 6px;
+  font-size: 12px; font-weight: 600; line-height: 1.4;
+}
+.tag-issue-banner.tag-banner-flag {
+  background: #FFF8E7; border: 1px solid var(--amber-line); color: #7A5100;
+}
+
+/* Tag preview cards in settings */
+.tag-preview-item {
+  border: 1px solid var(--line); border-radius: 11px; background: #fff;
+  padding: 14px 16px; display: flex; flex-direction: column; gap: 8px;
+}
+.tag-preview-item .tpi-meta {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.tag-preview-item .tpi-group {
+  font-size: 11px; font-weight: 700; color: var(--ink-faint);
+  background: var(--card-tint); border: 1px solid var(--line);
+  border-radius: 999px; padding: 2px 9px;
+}
+.tag-preview-item .tpi-who { font-size: 12px; font-weight: 700; color: var(--g-900); }
+.tag-preview-item .tpi-time { font-size: 11px; color: var(--ink-faint); margin-left: auto; }
+.tag-preview-item .tpi-text {
+  font-size: 12.5px; color: var(--ink); line-height: 1.5;
+  background: var(--card-tint); border-radius: 8px; padding: 8px 10px;
+}
+.tag-preview-item .tpi-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* Tag color swatch row */
+.tag-color-row {
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 14px;
+}
+.tag-color-swatch {
+  width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
+  border: 2px solid transparent; transition: transform .15s, border-color .15s;
+}
+.tag-color-swatch:hover { transform: scale(1.2); }
+.tag-color-swatch.selected { border-color: var(--g-900); transform: scale(1.15); }
+
+/* ============================================================
+   TAG POPUP MODALS (no JS prompt/confirm)
+   ============================================================ */
+.tag-modal-overlay {
+  position: fixed; inset: 0; z-index: 10000;
+  background: rgba(6,35,26,0.45); backdrop-filter: blur(3px);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .2s;
+}
+.tag-modal-overlay.show { opacity: 1; pointer-events: auto; }
+
+.tag-modal-box {
+  background: #fff;
+  border-radius: 18px;
+  width: 420px; max-width: 100%;
+  box-shadow: 0 24px 80px rgba(10,51,39,0.2), 0 4px 16px rgba(10,51,39,0.08);
+  overflow: hidden;
+  transform: translateY(12px) scale(.97);
+  transition: transform .22s cubic-bezier(.4,0,.2,1), opacity .22s;
+  opacity: 0;
+}
+.tag-modal-overlay.show .tag-modal-box { transform: translateY(0) scale(1); opacity: 1; }
+
+.tag-modal-accent { height: 4px; background: var(--grad); }
+.tag-modal-head {
+  padding: 18px 22px 14px;
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.tag-modal-head h3 { font-size: 16px; color: var(--g-900); }
+.tag-modal-head .sub { font-size: 12px; color: var(--ink-faint); margin-top: 3px; font-weight: 500; }
+.tag-modal-close {
+  border: none; background: var(--card-tint); width: 28px; height: 28px;
+  border-radius: 8px; display: grid; place-items: center; color: var(--ink-dim); flex: 0 0 auto; cursor: pointer;
+}
+.tag-modal-body { padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; }
+.tag-modal-field label { display: block; font-size: 11.5px; font-weight: 700; color: var(--ink-dim); margin-bottom: 6px; letter-spacing: .01em; }
+.tag-modal-input {
+  width: 100%; border: 1.5px solid var(--line); border-radius: 10px;
+  padding: 10px 13px; font-size: 14px; color: var(--ink);
+  background: #fff; outline: none; font-family: var(--font);
+  transition: border-color .15s, box-shadow .15s;
+}
+.tag-modal-input:focus { border-color: var(--g-500); box-shadow: 0 0 0 3px rgba(23,168,116,0.14); }
+.tag-modal-err { font-size: 11.5px; color: var(--red); font-weight: 600; display: none; margin-top: -8px; }
+.tag-modal-err.show { display: block; }
+
+.tag-modal-color-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.tag-modal-swatch {
+  width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
+  border: 2.5px solid transparent; transition: transform .15s, border-color .15s;
+}
+.tag-modal-swatch:hover { transform: scale(1.18); }
+.tag-modal-swatch.selected { border-color: var(--g-900); transform: scale(1.15); }
+
+.tag-modal-foot {
+  padding: 14px 22px 18px; border-top: 1px solid var(--line);
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+.tag-modal-btn { border: none; border-radius: 9px; padding: 10px 18px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: var(--font); }
+.tag-modal-btn.ghost { background: var(--card-tint); color: var(--ink-dim); }
+.tag-modal-btn.primary { background: var(--grad); color: #fff; box-shadow: 0 3px 10px rgba(14,107,73,0.28); }
+.tag-modal-btn.danger { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-line); }
+
+/* Confirm modal */
+.tag-confirm-icon { font-size: 32px; text-align: center; margin-bottom: 4px; }
+.tag-confirm-msg { font-size: 13.5px; color: var(--ink); text-align: center; line-height: 1.6; }
+
+/* ============================================================
+   SLA SETTING
+   ============================================================ */
+.sla-set-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+.sla-set-card {
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: #fff; box-shadow: var(--shadow);
+  padding: 16px 18px; transition: box-shadow .2s;
+}
+.sla-set-card:hover { box-shadow: 0 4px 20px rgba(10,51,39,0.10); }
+.sla-set-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.sla-set-card-head .name { font-size: 14.5px; font-weight: 700; color: var(--g-900); line-height: 1.35; }
+.sla-set-target-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11.5px; font-weight: 700; color: var(--g-700);
+  background: var(--card-tint); border: 1px solid var(--line);
+  border-radius: 999px; padding: 3px 10px; margin-top: 6px;
+}
+.sla-set-card-body { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.sla-set-row { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: var(--ink-dim); line-height: 1.5; }
+.sla-set-row .k { font-weight: 700; color: var(--ink-faint); min-width: 78px; flex: 0 0 auto; text-transform: uppercase; font-size: 10.5px; letter-spacing: .03em; margin-top: 2px; }
+.sla-set-day-chip {
+  display: inline-flex; align-items: center; font-size: 11px; font-weight: 700;
+  background: var(--grad-soft); color: var(--g-800);
+  border-radius: 6px; padding: 2px 7px; margin: 0 4px 4px 0;
+}
+.sla-set-shift-line { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-dim); }
+.sla-set-card-foot { display: flex; gap: 6px; border-top: 1px solid var(--line); padding-top: 10px; }
+
+/* ============================================================
+   PIC SETTING
+   ============================================================ */
+.pic-set-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+.pic-card { border:1px solid var(--line); border-radius:var(--radius); background:#fff; box-shadow:var(--shadow); padding:16px 18px; transition:box-shadow .2s; }
+.pic-card:hover { box-shadow: 0 4px 20px rgba(10,51,39,0.10); }
+.pic-card-top { display:flex; align-items:flex-start; gap:12px; margin-bottom:12px; }
+.pic-avatar { width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,var(--g-300),var(--g-700) 60%,var(--g-900)); color:#fff; display:grid; place-items:center; font-size:13px; font-weight:700; flex:0 0 auto; }
+.pic-card-top .pic-info { flex:1; min-width:0; }
+.pic-card-top .name { font-size:14.5px; font-weight:700; color:var(--g-900); line-height:1.3; }
+.pic-team { font-size:11.5px; color:var(--ink-faint); font-weight:600; margin-top:2px; }
+.pic-card-body { display:flex; flex-direction:column; gap:7px; margin-bottom:12px; }
+.pic-row { display:flex; align-items:flex-start; gap:8px; font-size:12px; color:var(--ink-dim); line-height:1.5; }
+.pic-row .k { font-weight:700; color:var(--ink-faint); min-width:78px; flex:0 0 auto; text-transform:uppercase; font-size:10.5px; letter-spacing:.03em; margin-top:2px; }
+.pic-row .v.mono { font-family: var(--font-mono); font-weight:700; color:var(--g-900); }
+.pic-detect { display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:600; }
+.pic-detect .dot { width:7px; height:7px; border-radius:50%; flex:0 0 auto; }
+.pic-detect.on .dot { background: var(--g-500); box-shadow:0 0 0 3px rgba(69,148,113,0.18); }
+.pic-detect.off .dot { background: #C24545; box-shadow:0 0 0 3px rgba(194,69,69,0.14); }
+.pic-detect.on { color: var(--g-700); }
+.pic-detect.off { color: #C24545; }
+.pic-card-foot { display:flex; gap:6px; border-top:1px solid var(--line); padding-top:10px; flex-wrap:wrap; }
+.pic-verify-btn { background: var(--grad); color:#fff; border:none; }
+.pic-verify-btn:hover { opacity:.92; background: var(--grad); }
+
+/* Modal-specific bits for SLA */
+.sla-modal-box { width: 460px; }
+.sla-radio-row { display: flex; gap: 18px; }
+.sla-radio-opt { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--ink); cursor: pointer; font-weight: 600; }
+.sla-radio-opt input[type="radio"] { display: none; }
+.sla-radio-dot {
+  width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--line);
+  display: inline-block; position: relative; transition: border-color .15s;
+}
+.sla-radio-opt input[type="radio"]:checked + .sla-radio-dot { border-color: var(--g-500); }
+.sla-radio-opt input[type="radio"]:checked + .sla-radio-dot::after {
+  content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--g-500);
+}
+.req-star { color: var(--red); margin-right: 2px; }
+.sla-modal-row2 { display: flex; gap: 12px; }
+
+.sla-day-select {
+  position: relative; border: 1.5px solid var(--line); border-radius: 10px;
+  padding: 8px 12px; min-height: 40px; display: flex; align-items: center;
+  justify-content: space-between; gap: 8px; cursor: pointer; background: #fff;
+}
+.sla-day-select:hover { border-color: var(--g-300); }
+.sla-day-chips { display: flex; flex-wrap: wrap; gap: 5px; flex: 1; }
+.sla-day-placeholder { font-size: 13px; color: var(--ink-faint); }
+.sla-day-chip {
+  display: inline-flex; align-items: center; font-size: 11.5px; font-weight: 700;
+  background: var(--card-tint); color: var(--g-800); border-radius: 6px; padding: 2px 7px;
+}
+.sla-day-caret { font-size: 10px; color: var(--ink-faint); flex: 0 0 auto; }
+.sla-day-dropdown {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 30;
+  background: #fff; border: 1px solid var(--line); border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(10,51,39,0.14); padding: 6px; display: none;
+  max-height: 220px; overflow-y: auto;
+}
+.sla-day-dropdown.show { display: block; }
+.sla-day-dropdown-opt {
+  display: flex; align-items: center; gap: 8px; padding: 7px 9px; border-radius: 7px;
+  font-size: 13px; color: var(--ink); cursor: pointer; transition: background .12s;
+}
+.sla-day-dropdown-opt:hover { background: var(--card-tint); }
+.sla-day-dropdown-opt .chk {
+  width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid var(--line);
+  display: grid; place-items: center; font-size: 10px; color: #fff; flex: 0 0 auto;
+}
+.sla-day-dropdown-opt.selected .chk { background: var(--grad); border-color: transparent; }
+
+.sla-shift-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.sla-shift-row .sla-shift-label { font-size: 11.5px; font-weight: 700; color: var(--ink-faint); flex: 0 0 44px; }
+.sla-shift-row input[type="time"] {
+  flex: 1; border: 1.5px solid var(--line); border-radius: 9px; padding: 7px 10px;
+  font-size: 13px; font-family: var(--font); color: var(--ink); background: #fff; outline: none;
+}
+.sla-shift-row input[type="time"]:focus { border-color: var(--g-500); box-shadow: 0 0 0 3px rgba(23,168,116,0.14); }
+.sla-shift-row .sep { color: var(--ink-faint); font-size: 12px; }
+.sla-shift-row .sla-shift-remove {
+  border: none; background: var(--card-tint); width: 26px; height: 26px; border-radius: 7px;
+  color: var(--ink-faint); flex: 0 0 auto; display: grid; place-items: center; cursor: pointer;
+}
+.sla-shift-row .sla-shift-remove:hover { background: var(--red-bg); color: var(--red); }
+.sla-add-shift-btn {
+  width: 100%; border: 1.5px dashed var(--line); border-radius: 9px; background: none;
+  padding: 8px; font-size: 12.5px; font-weight: 700; color: var(--g-700); cursor: pointer;
+  transition: background .15s, border-color .15s; margin-top: 2px;
+}
+.sla-add-shift-btn:hover { background: var(--card-tint); border-color: var(--g-300); }
 </style>
 </head>
 <body>
@@ -1325,6 +1669,21 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         Pengelompokan PT
       </button>
+      <button class="nav-item" data-view="tag-settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        Setting Tag
+        <span class="nav-badge soft" id="badge-tags">0</span>
+      </button>
+      <button class="nav-item" data-view="sla-setting">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/><path d="M12 2v1.5M12 20.5V22M2 12h1.5M20.5 12H22"/></svg>
+        Setting SLA
+        <span class="nav-badge soft" id="badge-sla-setting">0</span>
+      </button>
+      <button class="nav-item" data-view="pic-setting">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Setting PIC
+        <span class="nav-badge soft" id="badge-pic-setting">0</span>
+      </button>
     </nav>
     <div class="side-bottom">
       <div class="user-chip">
@@ -1478,11 +1837,20 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
           <div class="card"><div class="label" style="font-size:11.5px;color:var(--ink-faint);font-weight:700;text-transform:uppercase;">Breached</div><div class="value mono" style="font-size:26px;font-weight:600;color:var(--red);margin-top:8px;">113</div><div class="card-sub">Perlu eskalasi segera</div></div>
         </div>
 
-        <div class="section-title"><h2>Issue yang Butuh Perhatian</h2><span class="muted" style="font-size:12px;">Diurutkan dari paling mendesak</span></div>
+        <div class="section-title">
+          <h2>Issue yang Butuh Perhatian</h2>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <select id="sla-pic-filter" style="border:1px solid var(--line); border-radius:9px; padding:8px 10px; background:#fff; color:var(--ink-dim); font-weight:600; font-size:12.5px;">
+              <option value="all">Semua PIC</option>
+            </select>
+            <span class="muted" style="font-size:12px;">Diurutkan dari paling mendesak</span>
+          </div>
+        </div>
         <div class="table-wrap">
           <table><thead><tr><th>ID</th><th>Issue</th><th>PIC</th><th>SLA</th><th>Sisa Waktu / Overdue</th></tr></thead>
           <tbody id="sla-body"></tbody></table>
         </div>
+        <div class="empty-state" id="sla-empty" style="display:none;">Tidak ada issue untuk PIC ini.</div>
       </section>
 
       <!-- ============ CONVERSATIONS ============ -->
@@ -1546,6 +1914,75 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
         <div class="card">
           <div class="lb-row head"><div>#</div><div>Tim</div><div style="text-align:right;">Issue</div><div style="text-align:right;">Avg. Resolution</div><div style="text-align:right;">SLA</div></div>
           <div id="leaderboard"></div>
+        </div>
+      </section>
+
+      <!-- ============ TAG SETTINGS ============ -->
+      <section class="view" id="view-tag-settings">
+        <div class="section-title" style="margin-top:0;">
+          <h2>Setting Tag</h2>
+          <button class="link-btn" onclick="addNewTag()">+ Tambah Tag Baru</button>
+        </div>
+        <p class="muted" style="font-size:12.5px; margin-bottom:18px; max-width:680px;">
+          Tambahkan tag beserta daftar kata kunci (keywords). Setiap percakapan di Conversations yang mengandung salah satu keyword akan otomatis ditandai dengan tag tersebut sebagai <b>issue</b>. Tag baru bisa ditambah kapan saja dan langsung memperbarui semua percakapan.
+        </p>
+
+        <!-- Tag list -->
+        <div id="tag-settings-list" style="display:flex; flex-direction:column; gap:16px;"></div>
+
+        <!-- Empty state -->
+        <div id="tag-settings-empty" class="empty-state" style="display:none;">
+          <div style="font-size:32px; margin-bottom:12px;">🏷️</div>
+          <div style="font-weight:700; font-size:14px; color:var(--g-900); margin-bottom:6px;">Belum ada tag dibuat</div>
+          <div style="font-size:13px;">Klik "+ Tambah Tag Baru" untuk mulai membuat tag dan keyword pendeteksinya.</div>
+        </div>
+
+        <div class="section-title" style="margin-top:32px;">
+          <h2>Preview — Percakapan Terdeteksi</h2>
+          <span class="muted" style="font-size:12px;">Pesan yang mengandung keyword dari tag aktif</span>
+        </div>
+        <div id="tag-preview-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+        <div id="tag-preview-empty" class="empty-state" style="display:none; padding:30px 20px;">
+          <div style="font-size:13px;">Belum ada percakapan yang cocok dengan keyword tag yang aktif.</div>
+        </div>
+      </section>
+
+      <!-- ============ SLA SETTING ============ -->
+      <section class="view" id="view-sla-setting">
+        <div class="section-title" style="margin-top:0;">
+          <h2>Setting SLA</h2>
+          <button class="link-btn" onclick="addNewSla()">+ Tambah SLA</button>
+        </div>
+        <p class="muted" style="font-size:12.5px; margin-bottom:18px; max-width:680px;">
+          Atur target waktu respons (SLA) beserta jam kerja tim/agent. Satu SLA bisa punya beberapa shift jam kerja
+          berbeda di hari yang sama (misalnya Shift 1, Shift 2, Shift 3) — SLA hanya berjalan selama jam kerja yang aktif.
+        </p>
+
+        <div class="sla-set-grid" id="sla-set-list"></div>
+
+        <div id="sla-set-empty" class="empty-state" style="display:none;">
+          <div style="font-size:32px; margin-bottom:12px;">⏱️</div>
+          <div style="font-weight:700; font-size:14px; color:var(--g-900); margin-bottom:6px;">Belum ada SLA dibuat</div>
+          <div style="font-size:13px;">Klik "+ Tambah SLA" untuk mulai membuat aturan SLA dan jam kerjanya.</div>
+        </div>
+      </section>
+
+      <!-- ============ PIC SETTING ============ -->
+      <section class="view" id="view-pic-setting">
+        <div class="section-title" style="margin-top:0;">
+          <h2>Setting PIC</h2>
+          <button class="link-btn" onclick="addNewPic()">+ Tambah PIC</button>
+        </div>
+        <p class="muted" style="font-size:12.5px; margin-bottom:18px; max-width:680px;">
+          Daftarkan nama, tim, dan nomor WhatsApp setiap PIC. Nomor yang sudah <b>diverifikasi</b> akan otomatis terdeteksi sistem sehingga alert dan notifikasi tiket bisa terkirim ke nomor tersebut, dan PIC-nya bisa dipilih langsung dari halaman SLA Monitoring maupun saat memindahkan tiket.
+        </p>
+
+        <div class="pic-set-grid" id="pic-set-list"></div>
+
+        <div id="pic-set-empty" class="empty-state" style="display:none;">
+          <div style="font-size:32px; margin-bottom:12px;">👤</div>
+          <div style="font-weight:700; font-size:14px; color:var(--g-900); margin-bottom:6px;">Belum ada PIC terdaftar</div>
+          <div style="font-size:13px;">Klik "+ Tambah PIC" untuk mendaftarkan PIC dan nomor WhatsApp-nya.</div>
         </div>
       </section>
 
@@ -1618,6 +2055,205 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
     <div class="timeline" id="d-timeline"></div>
   </div>
 </aside>
+
+<!-- ============ TAG MODALS ============ -->
+<!-- Add / Edit Tag Modal -->
+<div class="tag-modal-overlay" id="tag-add-modal-overlay" onclick="if(event.target===this) closeTagModal()">
+  <div class="tag-modal-box">
+    <div class="tag-modal-accent"></div>
+    <div class="tag-modal-head">
+      <div>
+        <h3 id="tag-modal-title">Tambah Tag Baru</h3>
+        <div class="sub" id="tag-modal-sub">Buat tag dan pilih warnanya</div>
+      </div>
+      <button class="tag-modal-close" onclick="closeTagModal()">✕</button>
+    </div>
+    <div class="tag-modal-body">
+      <div class="tag-modal-field">
+        <label>Nama Tag</label>
+        <input class="tag-modal-input" id="tag-modal-name-input"
+          placeholder="Contoh: Complaint, PICA, Urgent..."
+          onkeydown="if(event.key==='Enter') submitTagModal()">
+        <div class="tag-modal-err" id="tag-modal-name-err">Nama tag tidak boleh kosong.</div>
+      </div>
+      <div class="tag-modal-field">
+        <label>Warna Tag</label>
+        <div class="tag-modal-color-row" id="tag-modal-color-row"></div>
+      </div>
+    </div>
+    <div class="tag-modal-foot">
+      <button class="tag-modal-btn ghost" onclick="closeTagModal()">Batal</button>
+      <button class="tag-modal-btn primary" onclick="submitTagModal()" id="tag-modal-submit-btn">Simpan Tag</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Delete Tag Modal -->
+<div class="tag-modal-overlay" id="tag-confirm-modal-overlay" onclick="if(event.target===this) closeConfirmTagModal()">
+  <div class="tag-modal-box" style="width:360px;">
+    <div class="tag-modal-accent" style="background:var(--red);"></div>
+    <div class="tag-modal-head">
+      <div><h3>Hapus Tag</h3></div>
+      <button class="tag-modal-close" onclick="closeConfirmTagModal()">✕</button>
+    </div>
+    <div class="tag-modal-body" style="text-align:center;">
+      <div class="tag-confirm-icon">🗑️</div>
+      <div class="tag-confirm-msg" id="tag-confirm-msg">Yakin hapus tag ini?</div>
+    </div>
+    <div class="tag-modal-foot" style="justify-content:center;">
+      <button class="tag-modal-btn ghost" onclick="closeConfirmTagModal()">Batal</button>
+      <button class="tag-modal-btn danger" onclick="confirmDeleteTag()" id="tag-confirm-del-btn">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SLA SETTING MODALS ============ -->
+<!-- Add / Edit SLA Modal -->
+<div class="tag-modal-overlay" id="sla-modal-overlay" onclick="if(event.target===this) closeSlaModal()">
+  <div class="tag-modal-box sla-modal-box">
+    <div class="tag-modal-accent"></div>
+    <div class="tag-modal-head">
+      <div>
+        <h3 id="sla-modal-title">Tambah SLA</h3>
+        <div class="sub" id="sla-modal-sub">Setting SLA for Agents here!</div>
+      </div>
+      <button class="tag-modal-close" onclick="closeSlaModal()">✕</button>
+    </div>
+    <div class="tag-modal-body">
+
+      <div class="tag-modal-field">
+        <label>Nama SLA</label>
+        <input class="tag-modal-input" id="sla-modal-name-input" placeholder="Contoh: SLA Customer Service - Prioritas Tinggi">
+        <div class="tag-modal-err" id="sla-modal-name-err">Nama SLA tidak boleh kosong.</div>
+      </div>
+
+      <div class="tag-modal-field">
+        <label><span class="req-star">*</span> SLA Target</label>
+        <select class="tag-modal-input" id="sla-modal-target-select"></select>
+      </div>
+
+      <div class="tag-modal-field">
+        <label>PIC Penanggung Jawab <span class="muted" style="font-weight:500;text-transform:none;letter-spacing:0;">— bisa pilih lebih dari satu</span></label>
+        <div class="sla-day-select" id="sla-pic-select" onclick="toggleSlaPicDropdown(event)">
+          <div class="sla-day-chips" id="sla-pic-chips"><span class="sla-day-placeholder">— Pilih PIC —</span></div>
+          <span class="sla-day-caret">▾</span>
+          <div class="sla-day-dropdown" id="sla-pic-dropdown"></div>
+        </div>
+      </div>
+
+      <div class="tag-modal-field">
+        <label><span class="req-star">*</span> Status Working</label>
+        <div class="sla-radio-row">
+          <label class="sla-radio-opt">
+            <input type="radio" name="sla-status-working" value="working" onchange="onSlaStatusChange()" checked>
+            <span class="sla-radio-dot"></span> Working Day
+          </label>
+          <label class="sla-radio-opt">
+            <input type="radio" name="sla-status-working" value="not-working" onchange="onSlaStatusChange()">
+            <span class="sla-radio-dot"></span> Not Working Day
+          </label>
+        </div>
+      </div>
+
+      <div id="sla-modal-working-section">
+        <div class="sla-modal-row2">
+          <div class="tag-modal-field" style="margin-bottom:0;">
+            <label><span class="req-star">*</span> Working Day</label>
+            <div class="sla-day-select" id="sla-day-select" onclick="toggleSlaDayDropdown(event)">
+              <div class="sla-day-chips" id="sla-day-chips"><span class="sla-day-placeholder">Select Day</span></div>
+              <span class="sla-day-caret">▾</span>
+              <div class="sla-day-dropdown" id="sla-day-dropdown"></div>
+            </div>
+            <div class="tag-modal-err" id="sla-modal-day-err">Pilih minimal 1 hari kerja.</div>
+          </div>
+        </div>
+
+        <div class="tag-modal-field">
+          <label>Working Hour <span class="muted" style="font-weight:500;text-transform:none;letter-spacing:0;">— bisa lebih dari satu shift per hari</span></label>
+          <div id="sla-shift-list"></div>
+          <button type="button" class="sla-add-shift-btn" onclick="addSlaShift()">+ Tambah Jam Kerja (Shift)</button>
+          <div class="tag-modal-err" id="sla-modal-shift-err">Lengkapi jam mulai &amp; selesai untuk setiap shift.</div>
+        </div>
+      </div>
+
+    </div>
+    <div class="tag-modal-foot">
+      <button class="tag-modal-btn ghost" onclick="closeSlaModal()">Batal</button>
+      <button class="tag-modal-btn primary" onclick="submitSlaModal()" id="sla-modal-submit-btn">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Delete SLA Modal -->
+<div class="tag-modal-overlay" id="sla-confirm-modal-overlay" onclick="if(event.target===this) closeConfirmSlaModal()">
+  <div class="tag-modal-box" style="width:360px;">
+    <div class="tag-modal-accent" style="background:var(--red);"></div>
+    <div class="tag-modal-head">
+      <div><h3>Hapus SLA</h3></div>
+      <button class="tag-modal-close" onclick="closeConfirmSlaModal()">✕</button>
+    </div>
+    <div class="tag-modal-body" style="text-align:center;">
+      <div class="tag-confirm-icon">🗑️</div>
+      <div class="tag-confirm-msg" id="sla-confirm-msg">Yakin hapus SLA ini?</div>
+    </div>
+    <div class="tag-modal-foot" style="justify-content:center;">
+      <button class="tag-modal-btn ghost" onclick="closeConfirmSlaModal()">Batal</button>
+      <button class="tag-modal-btn danger" onclick="confirmDeleteSla()" id="sla-confirm-del-btn">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PIC SETTING MODALS ============ -->
+<!-- Add / Edit PIC Modal -->
+<div class="tag-modal-overlay" id="pic-modal-overlay" onclick="if(event.target===this) closePicModal()">
+  <div class="tag-modal-box">
+    <div class="tag-modal-accent"></div>
+    <div class="tag-modal-head">
+      <div>
+        <h3 id="pic-modal-title">Tambah PIC</h3>
+        <div class="sub" id="pic-modal-sub">Daftarkan PIC baru beserta nomor WhatsApp-nya</div>
+      </div>
+      <button class="tag-modal-close" onclick="closePicModal()">✕</button>
+    </div>
+    <div class="tag-modal-body">
+
+      <div class="tag-modal-field">
+        <label><span class="req-star">*</span> Nama PIC</label>
+        <input class="tag-modal-input" id="pic-modal-name-input" placeholder="Contoh: Dewi Anggraini">
+        <div class="tag-modal-err" id="pic-modal-name-err">Nama PIC tidak boleh kosong.</div>
+      </div>
+
+      <div class="tag-modal-field">
+        <label><span class="req-star">*</span> Tim / Divisi</label>
+        <select class="tag-modal-input" id="pic-modal-team-input"></select>
+        <div class="tag-modal-err" id="pic-modal-team-err">Pilih tim / divisi PIC.</div>
+      </div>
+
+      <div class="tag-modal-field">
+        <label><span class="req-star">*</span> Nomor WhatsApp</label>
+        <input class="tag-modal-input" id="pic-modal-phone-input" placeholder="Contoh: +62 812-3456-7890">
+        <div class="tag-modal-err" id="pic-modal-phone-err">Nomor WhatsApp tidak boleh kosong.</div>
+      </div>
+
+    </div>
+    <div class="tag-modal-foot">
+      <button class="tag-modal-btn ghost" onclick="closePicModal()">Batal</button>
+      <button class="tag-modal-btn primary" onclick="submitPicModal()" id="pic-modal-submit-btn">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Delete PIC Modal -->
+<div class="tag-modal-overlay" id="pic-confirm-modal-overlay" onclick="if(event.target===this) closeConfirmPicModal()">
+  <div class="tag-modal-box" style="width:360px;">
+    <div class="tag-confirm-icon">🗑️</div>
+    <div class="tag-confirm-msg" id="pic-confirm-msg">Yakin hapus PIC ini?</div>
+    <div class="tag-modal-foot" style="justify-content:center;">
+      <button class="tag-modal-btn ghost" onclick="closeConfirmPicModal()">Batal</button>
+      <button class="tag-modal-btn danger" onclick="confirmDeletePic()" id="pic-confirm-del-btn">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
 
 <!-- ============ MANUAL TICKET MODAL ============ -->
 <div class="modal-overlay" id="tm-overlay" onclick="if(event.target===this) closeManualTicketModal()">
@@ -1996,23 +2632,23 @@ const min = 60*1000, hr = 60*min;
 const issues = [
   {id:"OPS-2291", title:"Vehicle / Driver Delay", category:"Fleet", severity:"High", pic:"Logistics / Fleet Team", status:"Open", sla:"At Risk", created:"08:15", source:"WAG Jakarta Operations", slaTargetHrs:2, deadline: now + 22*min,
     sentiment:{label:"Negative", score:-0.55}, sourceType:"NLP", tags:["Delay","Fleet","Perlu Assign"],
-    thread:[{who:"Driver Coordinator · 08:15", text:"Mobil DT-104 belum jalan dari gudang, driver-nya belum konfirmasi dari tadi pagi. Delivery jam 9 bisa telat nih 😕"},{who:"Fleet Admin · 08:17", text:"Noted, saya cek posisi unit dan coba hubungi driver sekarang."}],
+    thread:[{who:"Driver Coordinator · 08:15", text:"Mobil DT-104 belum jalan dari gudang, driver-nya belum konfirmasi dari tadi pagi. Delivery jam 9 bisa telat nih 😕"},{who:"Bagus Setiawan · 08:17", text:"Noted, saya cek posisi unit dan coba hubungi driver sekarang."}],
     stage:3},
   {id:"OPS-2290", title:"Server Downtime — Branch System", category:"IT", severity:"Critical", pic:"IT Infrastructure", status:"In Progress", sla:"At Risk", created:"07:42", source:"WAG IT Support", slaTargetHrs:1, deadline: now + 9*min,
     sentiment:{label:"Negative", score:-0.74}, sourceType:"NLP", tags:["Critical","Downtime","Eskalasi"],
-    thread:[{who:"Branch Ops · 07:42", text:"Sistem kasir di cabang Kelapa Gading down total, kasir gak bisa transaksi sama sekali."},{who:"IT On-call · 07:45", text:"Sudah masuk tiket, tim sedang cek server pusat, ETA 30 menit."}],
+    thread:[{who:"Branch Ops · 07:42", text:"Sistem kasir di cabang Kelapa Gading down total, kasir gak bisa transaksi sama sekali."},{who:"Rizky Pratama · 07:45", text:"Sudah masuk tiket, tim sedang cek server pusat, ETA 30 menit."}],
     stage:4},
   {id:"OPS-2289", title:"Invoice Approval Delay", category:"Finance", severity:"Medium", pic:"Finance Team", status:"Open", sla:"On Track", created:"09:03", source:"WAG Finance & Procurement", slaTargetHrs:8, deadline: now + 6*hr,
     sentiment:{label:"Negative", score:-0.38}, sourceType:"Manual", tags:["Delay","Approval"],
-    thread:[{who:"Procurement · 09:03", text:"Invoice vendor PT Sumber Jaya masih pending approval dari kemarin, vendor sudah nanya-nanya."}],
+    thread:[{who:"Nadia Putri · 09:03", text:"Invoice vendor PT Sumber Jaya masih pending approval dari kemarin, vendor sudah nanya-nanya."}],
     stage:1},
   {id:"OPS-2288", title:"Employee Leave Request Stuck", category:"HR", severity:"Low", pic:"HR Team", status:"Resolved", sla:"On Track", created:"Kemarin", source:"WAG HR Central", slaTargetHrs:24, deadline: now - 3*hr,
     sentiment:{label:"Neutral", score:0.10}, sourceType:"NLP", tags:["HR","Resolved"],
-    thread:[{who:"Staff · Kemarin", text:"Pengajuan cuti saya belum di-approve dari 3 hari lalu, tolong dicek."},{who:"HR Team · Kemarin", text:"Sudah di-approve ya, mohon maaf ada keterlambatan sistem."}],
+    thread:[{who:"Staff · Kemarin", text:"Pengajuan cuti saya belum di-approve dari 3 hari lalu, tolong dicek."},{who:"Andi Wijaya · Kemarin", text:"Sudah di-approve ya, mohon maaf ada keterlambatan sistem."}],
     stage:6},
   {id:"OPS-2287", title:"Customer Complaint — Damaged Delivery", category:"Customer", severity:"High", pic:"Customer Service", status:"Open", sla:"Breached", created:"06:50", source:"WAG Customer Service Jakarta", slaTargetHrs:2, deadline: now - 48*min,
     sentiment:{label:"Negative", score:-0.82}, sourceType:"NLP", tags:["Komplain","Refund","Urgent"],
-    thread:[{who:"CS Agent · 06:50", text:"Customer komplain barang datang dalam kondisi rusak, minta refund atau ganti unit."},{who:"CS Lead · 07:10", text:"Sudah eskalasi ke warehouse untuk cek proses packing."}],
+    thread:[{who:"CS Agent · 06:50", text:"Customer komplain barang datang dalam kondisi rusak, minta refund atau ganti unit."},{who:"Dewi Anggraini · 07:10", text:"Sudah eskalasi ke warehouse untuk cek proses packing."}],
     stage:4},
   {id:"OPS-2286", title:"Procurement PO Delay", category:"Procurement", severity:"Medium", pic:"Procurement Team", status:"In Progress", sla:"On Track", created:"08:30", source:"WAG Finance & Procurement", slaTargetHrs:12, deadline: now + 5*hr,
     sentiment:{label:"Negative", score:-0.30}, sourceType:"NLP", tags:["Stok","Delay"],
@@ -2063,13 +2699,13 @@ const issues = [
 /* Alert otomatis: setiap issue kritikal/high langsung memicu alert ke Dashboard & WhatsApp PIC terkait,
    sekaligus meng-assign PIC. Beberapa hanya lewat Dashboard bila severity lebih rendah. */
 const alerts = [
-  {id:"ALT-3006", issueId:"OPS-2291", channels:["dashboard","whatsapp"], recipient:"Logistics / Fleet Team", group:"WAG Jakarta Operations", time:"08:16", status:"Dibaca"},
-  {id:"ALT-3005", issueId:"OPS-2290", channels:["dashboard","whatsapp"], recipient:"IT Infrastructure", group:"WAG IT Support", time:"07:43", status:"Diteruskan"},
-  {id:"ALT-3004", issueId:"OPS-2287", channels:["dashboard","whatsapp"], recipient:"Customer Service", group:"WAG Customer Service Jakarta", time:"06:51", status:"Terkirim"},
-  {id:"ALT-3003", issueId:"OPS-2285", channels:["dashboard","whatsapp"], recipient:"Maintenance Team", group:"WAG Site Ops Kalimantan", time:"05:21", status:"Dibaca"},
-  {id:"ALT-3002", issueId:"OPS-2281", channels:["dashboard"], recipient:"Maintenance Team", group:"WAG Site Ops Kalimantan", time:"07:11", status:"Terkirim"},
-  {id:"ALT-3001", issueId:"OPS-2280", channels:["dashboard","whatsapp"], recipient:"Customer Service", group:"WAG Customer Service Jakarta", time:"08:46", status:"Dibaca"},
-  {id:"ALT-3000", issueId:"OPS-2286", channels:["dashboard"], recipient:"Procurement Team", group:"WAG Finance & Procurement", time:"08:31", status:"Terkirim"},
+  {id:"ALT-3006", issueId:"OPS-2291", channels:["dashboard","whatsapp"], recipient:"Logistics / Fleet Team", group:"WAG Jakarta Operations", time:"08:16", status:"Resolved"},
+  {id:"ALT-3005", issueId:"OPS-2290", channels:["dashboard","whatsapp"], recipient:"IT Infrastructure", group:"WAG IT Support", time:"07:43", status:"In Progress"},
+  {id:"ALT-3004", issueId:"OPS-2287", channels:["dashboard","whatsapp"], recipient:"Customer Service", group:"WAG Customer Service Jakarta", time:"06:51", status:"Open"},
+  {id:"ALT-3003", issueId:"OPS-2285", channels:["dashboard","whatsapp"], recipient:"Maintenance Team", group:"WAG Site Ops Kalimantan", time:"05:21", status:"Resolved"},
+  {id:"ALT-3002", issueId:"OPS-2281", channels:["dashboard"], recipient:"Maintenance Team", group:"WAG Site Ops Kalimantan", time:"07:11", status:"Open"},
+  {id:"ALT-3001", issueId:"OPS-2280", channels:["dashboard","whatsapp"], recipient:"Customer Service", group:"WAG Customer Service Jakarta", time:"08:46", status:"Resolved"},
+  {id:"ALT-3000", issueId:"OPS-2286", channels:["dashboard"], recipient:"Procurement Team", group:"WAG Finance & Procurement", time:"08:31", status:"Open"},
 ];
 
 const stages = ["Detected","Assigned","In Progress","At Risk","Escalated","Resolved","Closed"];
@@ -2092,6 +2728,27 @@ const waGroups = [
 /* Daftar Tim/PIC yang bisa dipilih saat memindahkan penanggung jawab tiket */
 const PIC_TEAMS = ["Customer Service","Finance Team","Fleet Team","HR / Fleet","HR Team","IT Infrastructure","Logistics / Fleet Team","Maintenance Team","Procurement Team"];
 const PIC_TRANSFER_GROUP = "g9";
+
+/* Kategori tiket yang valid (sesuai opsi di form Buat Tiket Manual) */
+const TICKET_CATEGORIES = ["Operations","IT","Fleet","Finance","HR","Customer","Procurement"];
+
+/* PIC/tim default per kategori — dipakai supaya PIC di detail tiket konsisten
+   antar tiket, baik yang dibuat dari NLP maupun dibuat manual dari Conversations. */
+const CATEGORY_PIC_DEFAULT = {
+  Fleet: "Logistics / Fleet Team",
+  IT: "IT Infrastructure",
+  Finance: "Finance Team",
+  HR: "HR Team",
+  Customer: "Customer Service",
+  Procurement: "Procurement Team",
+  Operations: "Maintenance Team"
+};
+
+/* Kategori default untuk sebuah grup WA, dipakai saat membuat tiket manual dari pesan grup itu */
+function defaultCategoryForGroup(groupId){
+  const g = waGroups.find(x=>x.id===groupId);
+  return (g && TICKET_CATEGORIES.includes(g.top)) ? g.top : "Operations";
+}
 
 /* Mapping kategori issue -> grup WA tujuan eskalasi default (selain WAG FU Issue umum) */
 const escalationGroupMap = {
@@ -2145,38 +2802,43 @@ const conversations = {
     {who:"Driver Coordinator", time:"08:02", date:"13 Agu 2026", day:"Kamis", text:"Pagi semua, unit DT-104 dan DT-88 siap jalan jam 08:30 ya."},
     {who:"Warehouse Admin", time:"08:05", date:"13 Agu 2026", day:"Kamis", text:"Siap, barang sudah di-loading semua."},
     {who:"Driver Coordinator", time:"08:15", date:"13 Agu 2026", day:"Kamis", text:"Mobil DT-104 belum jalan dari gudang, driver-nya belum konfirmasi dari tadi pagi. Delivery jam 9 bisa telat nih 😕", flag:{severity:"High", issueId:"OPS-2291"}},
-    {who:"Fleet Admin", time:"08:17", date:"13 Agu 2026", day:"Kamis", text:"Noted, saya cek posisi unit dan coba hubungi driver sekarang."},
-    {who:"Fleet Admin", time:"08:22", date:"13 Agu 2026", day:"Kamis", text:"Driver sudah dapat, ternyata macet di tol dalam kota."},
+    {who:"Bagus Setiawan", time:"08:17", date:"13 Agu 2026", day:"Kamis", text:"Noted, saya cek posisi unit dan coba hubungi driver sekarang."},
+    {who:"Bagus Setiawan", time:"08:22", date:"13 Agu 2026", day:"Kamis", text:"Driver sudah dapat, ternyata macet di tol dalam kota."},
   ]},
   g2: {last:"Unit forklift 2 juga perlu dicek.", time:"3 hari lalu", msgs:[
     {who:"Fleet Supervisor", time:"07:40", date:"10 Agu 2026", day:"Senin", text:"Unit forklift 2 juga perlu dicek, ada suara kasar di bagian hidrolik.", flag:{severity:"Medium", issueId:"OPS-2276"}},
-    {who:"Maintenance Team", time:"08:05", date:"10 Agu 2026", day:"Senin", text:"Dicatat, dijadwalkan minggu depan bareng unit lain."},
+    {who:"Hendra Saputra", time:"08:05", date:"10 Agu 2026", day:"Senin", text:"Dicatat, dijadwalkan minggu depan bareng unit lain."},
     {who:"Fleet Supervisor", time:"16:30", date:"12 Agu 2026", day:"Rabu", text:"Untuk unit 5 kondisinya makin parah, tolong diprioritaskan."},
+    {who:"Hendra Saputra", time:"09:15", date:"13 Agu 2026", day:"Kamis", text:"Kami buatkan PICA untuk masalah ini — hasil investigasi awal menunjukkan root cause-nya di seal hidrolik yang aus."},
+    {who:"Fleet Supervisor", time:"09:30", date:"13 Agu 2026", day:"Kamis", text:"Oke, tolong susun juga corrective action-nya biar gak terulang di unit lain."},
   ]},
   g3: {last:"Teknisi sudah menuju lokasi.", time:"06:00", msgs:[
     {who:"Site Supervisor", time:"05:20", date:"13 Agu 2026", day:"Kamis", text:"Forklift unit 3 mogok di area loading, proses bongkar muat terhambat.", flag:{severity:"High", issueId:"OPS-2285"}},
-    {who:"Maintenance", time:"06:00", date:"13 Agu 2026", day:"Kamis", text:"Teknisi sudah menuju lokasi, part pengganti sedang dicari."},
+    {who:"Hendra Saputra", time:"06:00", date:"13 Agu 2026", day:"Kamis", text:"Teknisi sudah menuju lokasi, part pengganti sedang dicari."},
     {who:"Site Supervisor", time:"07:10", date:"13 Agu 2026", day:"Kamis", text:"Jadwal maintenance rutin forklift unit 5 sudah lewat 2 minggu, belum dikerjakan.", flag:{severity:"Medium", issueId:"OPS-2281"}},
     {who:"HSE Officer", time:"07:20", date:"13 Agu 2026", day:"Kamis", text:"Tolong pastikan area loading di-barrier dulu selama unit 3 belum jalan."},
+    {who:"Site Supervisor", time:"07:35", date:"13 Agu 2026", day:"Kamis", text:"Ini sudah kejadian ke-3 bulan ini, perlu investigasi akar masalah supaya gak terus berulang."},
+    {who:"Hendra Saputra", time:"08:00", date:"13 Agu 2026", day:"Kamis", text:"Setuju, kami siapkan analisis penyebab dan tindakan korektif, urgent karena berdampak ke jadwal bongkar muat harian."},
   ]},
   g4: {last:"Sudah eskalasi ke warehouse.", time:"07:10", msgs:[
     {who:"CS Agent", time:"06:50", date:"13 Agu 2026", day:"Kamis", text:"Customer komplain barang datang dalam kondisi rusak, minta refund atau ganti unit.", flag:{severity:"High", issueId:"OPS-2287"}},
-    {who:"CS Lead", time:"07:10", date:"13 Agu 2026", day:"Kamis", text:"Sudah eskalasi ke warehouse untuk cek proses packing."},
+    {who:"Dewi Anggraini", time:"07:10", date:"13 Agu 2026", day:"Kamis", text:"Sudah eskalasi ke warehouse untuk cek proses packing."},
     {who:"CS Agent", time:"08:45", date:"13 Agu 2026", day:"Kamis", text:"Customer lain minta refund karena barang tidak sesuai deskripsi.", flag:{severity:"Medium", issueId:"OPS-2280"}},
   ]},
   g5: {last:"ETA 30 menit.", time:"07:45", msgs:[
     {who:"Branch Ops", time:"07:42", date:"13 Agu 2026", day:"Kamis", text:"Sistem kasir di cabang Kelapa Gading down total, kasir gak bisa transaksi sama sekali.", flag:{severity:"Critical", issueId:"OPS-2290"}},
-    {who:"IT On-call", time:"07:45", date:"13 Agu 2026", day:"Kamis", text:"Sudah masuk tiket, tim sedang cek server pusat, ETA 30 menit."},
+    {who:"Rizky Pratama", time:"07:45", date:"13 Agu 2026", day:"Kamis", text:"Sudah masuk tiket, tim sedang cek server pusat, ETA 30 menit."},
     {who:"Branch Ops", time:"07:50", date:"13 Agu 2026", day:"Kamis", text:"Oke ditunggu ya, antrian customer mulai panjang."},
   ]},
   g6: {last:"PO spare part belum keluar.", time:"08:30", msgs:[
     {who:"Site Ops", time:"08:30", date:"13 Agu 2026", day:"Kamis", text:"PO spare part belum keluar, stok gudang site mulai menipis.", flag:{severity:"Medium", issueId:"OPS-2286"}},
     {who:"Procurement", time:"09:03", date:"12 Agu 2026", day:"Rabu", text:"Invoice vendor PT Sumber Jaya masih pending approval dari kemarin, vendor sudah nanya-nanya."},
-    {who:"Finance Team", time:"09:20", date:"13 Agu 2026", day:"Kamis", text:"Invoice sudah kami proses, dijadikan tiket manual untuk ditindaklanjuti approval-nya hari ini.", flag:{severity:"Medium", issueId:"OPS-2289"}},
+    {who:"Siti Nurhaliza", time:"09:20", date:"13 Agu 2026", day:"Kamis", text:"Invoice sudah kami proses, dijadikan tiket manual untuk ditindaklanjuti approval-nya hari ini.", flag:{severity:"Medium", issueId:"OPS-2289"}},
+    {who:"Procurement", time:"09:35", date:"13 Agu 2026", day:"Kamis", text:"Ini urgent ya, kalau tidak segera di-approve hari ini pengiriman spare part ke site bisa mundur seminggu."},
   ]},
   g7: {last:"Sudah di-approve ya.", time:"Kemarin", msgs:[
     {who:"Staff", time:"10:05", date:"12 Agu 2026", day:"Rabu", text:"Pengajuan cuti saya belum di-approve dari 3 hari lalu, tolong dicek.", flag:{severity:"Low", issueId:"OPS-2288"}},
-    {who:"HR Team", time:"10:40", date:"12 Agu 2026", day:"Rabu", text:"Sudah di-approve ya, mohon maaf ada keterlambatan sistem."},
+    {who:"Andi Wijaya", time:"10:40", date:"12 Agu 2026", day:"Rabu", text:"Sudah di-approve ya, mohon maaf ada keterlambatan sistem."},
     {who:"Hiring Manager", time:"09:15", date:"13 Agu 2026", day:"Kamis", text:"Laptop untuk karyawan baru belum siap, padahal mulai kerja besok. Sudah saya buatkan tiket manual ke IT Asset.", flag:{severity:"Low", issueId:"OPS-2279"}},
   ]},
   g8: {last:"Sudah dieskalasi ke tim terkait.", time:"09:40", msgs:[
@@ -2195,7 +2857,7 @@ function sentimentBadgeClass(l){ return {"Positive":"sent-pos","Neutral":"sent-n
 function sentimentIcon(l){ return {"Positive":"🙂","Neutral":"😐","Negative":"☹️"}[l]||"😐"; }
 function tagsChips(tags){ return (tags||[]).map(t=>`<span class="tag-chip">${t}</span>`).join(''); }
 function channelChips(channels){ return (channels||[]).map(c=> c==='whatsapp' ? '<span class="chan-chip wa">📱 WhatsApp</span>' : '<span class="chan-chip dash">🖥 Dashboard</span>').join(''); }
-function alertStatusBadgeClass(s){ return {"Terkirim":"open","Diteruskan":"progress","Dibaca":"resolved"}[s]||"open"; }
+function alertStatusBadgeClass(s){ return {"Open":"open","In Progress":"progress","Resolved":"resolved"}[s]||"open"; }
 function alertForIssue(issueId){ return alerts.find(a=>a.issueId===issueId); }
 function sentimentCounts(){ const c={Positive:0,Neutral:0,Negative:0}; issues.forEach(it=>c[it.sentiment.label]++); return c; }
 function sourceBadgeClass(t){ return t==='Manual' ? 'src-manual' : 'src-nlp'; }
@@ -2425,21 +3087,30 @@ function openManualTicketModal(ctx){
     const c = conversations[ctx.groupId];
     const m = c.msgs[ctx.msgIndex];
     const group = waGroups.find(g=>g.id===ctx.groupId);
+    const defaultCategory = defaultCategoryForGroup(ctx.groupId);
     document.getElementById('tm-subtitle').textContent = 'Dibuat dari pesan WhatsApp';
     sourceNote.style.display = 'block';
-    sourceNote.innerHTML = `Grup: <b>${group ? group.name : ctx.groupId}</b><br>Pesan: “${m.text}”`;
+    sourceNote.innerHTML = `Grup: <b>${group ? group.name : ctx.groupId}</b><br>Pengirim: <b>${m.who}</b><br>Pesan: “${m.text}”`;
     groupField.style.display = 'none';
     msgField.style.display = 'none';
     document.getElementById('tm-title').value = m.text.length>60 ? m.text.slice(0,60)+'…' : m.text;
-    document.getElementById('tm-pic').value = m.who;
+    document.getElementById('tm-category').value = defaultCategory;
+    document.getElementById('tm-pic').value = CATEGORY_PIC_DEFAULT[defaultCategory] || 'Belum ditentukan';
   } else {
     document.getElementById('tm-subtitle').textContent = 'Pilih grup WA asal pesan, lalu isi detail tiket';
     sourceNote.style.display = 'none';
     groupField.style.display = 'block';
     msgField.style.display = 'block';
     groupSelect.innerHTML = waGroups.map(g=>`<option value="${g.id}">${g.name}</option>`).join('');
+    groupSelect.onchange = function(){
+      const defaultCategory = defaultCategoryForGroup(groupSelect.value);
+      document.getElementById('tm-category').value = defaultCategory;
+      document.getElementById('tm-pic').value = CATEGORY_PIC_DEFAULT[defaultCategory] || 'Belum ditentukan';
+    };
     document.getElementById('tm-message').value = '';
-    document.getElementById('tm-pic').value = 'Belum ditentukan';
+    const defaultCategory = defaultCategoryForGroup(groupSelect.value);
+    document.getElementById('tm-category').value = defaultCategory;
+    document.getElementById('tm-pic').value = CATEGORY_PIC_DEFAULT[defaultCategory] || 'Belum ditentukan';
   }
 
   document.getElementById('tm-overlay').classList.add('show');
@@ -2743,8 +3414,16 @@ function renderConvoMessages(){
       const msgIdx = c.msgs.indexOf(m);
       aiTag = `<button class="make-ticket-btn" onclick="event.stopPropagation(); createTicketFromMessage('${activeGroupId}', ${msgIdx})">📝 + Jadikan Tiket Manual</button>`;
     }
+    /* Tampilkan tag (dari Tag Settings) yang cocok dengan pesan ini, langsung di tab Conversations */
+    const matchedTags = tagsForMessageText(m.text);
+    const tagBadges = matchedTags.length
+      ? `<div class="cmsg-tags-row">${matchedTags.map(t=>
+          `<span class="cmsg-tag-badge" style="background:${t.color}22;color:${t.color};border-color:${t.color}55;">🏷 ${t.name}</span>`
+        ).join('')}</div>`
+      : '';
     rows.push(`<div class="cmsg ${m.flag?'flagged':''}" data-msg-index="${c.msgs.indexOf(m)}">
       <div class="who">${m.who} · ${m.time}</div>
+      ${tagBadges}
       <div class="bubble" ${m.flag?'':`onclick="createTicketFromMessage('${activeGroupId}', ${c.msgs.indexOf(m)})"`}>${m.text}${aiTag}</div>
     </div>`);
   });
@@ -2756,6 +3435,388 @@ document.getElementById('convo-search-input').addEventListener('input', e=>{
 });
 function countFlaggedToday(){
   return Object.values(conversations).reduce((sum,c)=> sum + c.msgs.filter(m=>m.flag).length, 0);
+}
+
+/* ============================================================
+   TAG SETTINGS — Data & Logic
+   ============================================================ */
+
+/* Default tag definitions */
+const TAG_COLORS = [
+  '#E74C3C','#E67E22','#F1C40F','#2ECC71','#1ABC9C',
+  '#3498DB','#9B59B6','#E91E63','#FF5722','#607D8B'
+];
+
+let tagSettings = [
+  {
+    id: 'tag_complaint',
+    name: 'Complaint',
+    color: '#E74C3C',
+    keywords: ['komplain', 'complaint', 'kecewa', 'tidak puas', 'marah', 'protes', 'refund', 'ganti rugi', 'klaim'],
+    expanded: true
+  },
+  {
+    id: 'tag_pica',
+    name: 'PICA',
+    color: '#3498DB',
+    keywords: ['pica', 'root cause', 'akar masalah', 'investigasi', 'analisis penyebab', 'corrective action', 'tindakan korektif'],
+    expanded: false
+  },
+  {
+    id: 'tag_urgent',
+    name: 'Urgent',
+    color: '#E67E22',
+    keywords: ['urgent', 'segera', 'darurat', 'emergency', 'critical', 'kritis', 'asap', 'mendesak'],
+    expanded: false
+  }
+];
+
+function getTagById(id){ return tagSettings.find(t=>t.id===id); }
+
+/* Cek tag mana saja yang cocok dengan sebuah teks pesan — dipakai bareng
+   oleh tab Conversations dan halaman Tag Settings supaya hasilnya selalu sama. */
+function tagsForMessageText(text){
+  const lower = (text||'').toLowerCase();
+  return tagSettings.filter(tag => tag.keywords.some(kw => lower.includes(kw.toLowerCase())));
+}
+
+/* Find all messages across all conversations that match any tag keyword */
+function findTagMatches(){
+  const results = []; // [{msg, groupId, groupName, tagIds}]
+  Object.entries(conversations).forEach(([gid, convo])=>{
+    const grp = waGroups.find(g=>g.id===gid);
+    convo.msgs.forEach((msg, idx)=>{
+      const matchedTags = tagsForMessageText(msg.text);
+      if(matchedTags.length > 0){
+        results.push({
+          msg, msgIdx: idx, groupId: gid,
+          groupName: grp ? grp.name : gid,
+          tags: matchedTags
+        });
+      }
+    });
+  });
+  return results;
+}
+
+/* Count total unique tagged messages */
+function countTaggedMessages(){
+  return findTagMatches().length;
+}
+
+/* Update nav badge */
+function updateTagBadge(){
+  const n = countTaggedMessages();
+  const el = document.getElementById('badge-tags');
+  if(el) el.textContent = n;
+}
+
+/* ---- Render Tag Settings View ---- */
+function renderTagSettings(){
+  updateTagBadge();
+  const list = document.getElementById('tag-settings-list');
+  const empty = document.getElementById('tag-settings-empty');
+
+  if(tagSettings.length === 0){
+    list.innerHTML = '';
+    empty.style.display = '';
+  } else {
+    empty.style.display = 'none';
+    list.innerHTML = tagSettings.map(tag => renderTagCard(tag)).join('');
+  }
+
+  renderTagPreview();
+}
+
+function renderTagCard(tag){
+  const matches = findTagMatchesForTag(tag);
+  const kwChips = tag.keywords.map((kw,ki) => `
+    <div class="tag-keyword-chip">
+      <span>${kw}</span>
+      <button class="kw-remove" onclick="removeKeyword('${tag.id}', ${ki})" title="Hapus keyword">✕</button>
+    </div>`).join('');
+
+  const colorSwatches = TAG_COLORS.map(c => `
+    <div class="tag-color-swatch ${c===tag.color?'selected':''}"
+      style="background:${c};"
+      onclick="setTagColor('${tag.id}','${c}')"
+      title="${c}"></div>`).join('');
+
+  return `<div class="tag-card ${tag.expanded?'expanded':''}" id="tagcard-${tag.id}">
+    <div class="tag-card-head" onclick="toggleTagCard('${tag.id}')">
+      <div class="tag-color-dot" style="background:${tag.color};"></div>
+      <div class="tag-name">${tag.name}</div>
+      <div class="tag-count">${matches.length} pesan terdeteksi</div>
+      <div class="tag-actions" onclick="event.stopPropagation()">
+        <button class="tag-action-btn" onclick="editTagName('${tag.id}')">✏️ Rename</button>
+        <button class="tag-action-btn danger" onclick="deleteTag('${tag.id}')">🗑 Hapus</button>
+      </div>
+      <span class="tag-toggle-icon">▾</span>
+    </div>
+    <div class="tag-card-body">
+      <div class="tag-keyword-section">
+        <label>🔑 Warna Tag</label>
+        <div class="tag-color-row">${colorSwatches}</div>
+        <label>🔑 Kata Kunci (Keywords)</label>
+        <div class="tag-keyword-chips" id="kw-chips-${tag.id}">${kwChips || '<span style="font-size:12px;color:var(--ink-faint);">Belum ada keyword — tambahkan di bawah.</span>'}</div>
+        <div class="tag-add-keyword-row">
+          <input class="tag-kw-input" id="kw-input-${tag.id}"
+            placeholder="Tambah keyword baru (Enter atau klik +)"
+            onkeydown="if(event.key==='Enter') addKeyword('${tag.id}')">
+          <button class="tag-kw-add-btn" onclick="addKeyword('${tag.id}')">+ Tambah</button>
+        </div>
+      </div>
+      <div class="tag-preview-section">
+        <label>📋 Pesan Terdeteksi (${matches.length})</label>
+        ${matches.length > 0
+          ? matches.slice(0,3).map(m=>`
+            <div class="tag-preview-item" style="margin-bottom:8px;">
+              <div class="tpi-meta">
+                <span class="tpi-group">${m.groupName}</span>
+                <span class="tpi-who">${m.msg.who}</span>
+                <span class="tpi-time">${m.msg.time}</span>
+              </div>
+              <div class="tpi-text">${highlightKeywordsInText(m.msg.text, tag.keywords)}</div>
+            </div>`).join('') + (matches.length>3 ? `<div style="font-size:12px;color:var(--ink-faint);padding:4px 0;">… dan ${matches.length-3} pesan lainnya</div>` : '')
+          : '<div style="font-size:12px;color:var(--ink-faint);padding:6px 0;">Belum ada pesan yang cocok dengan keyword di atas.</div>'
+        }
+      </div>
+    </div>
+  </div>`;
+}
+
+function findTagMatchesForTag(tag){
+  const results = [];
+  Object.entries(conversations).forEach(([gid, convo])=>{
+    const grp = waGroups.find(g=>g.id===gid);
+    convo.msgs.forEach((msg, idx)=>{
+      const matched = tagsForMessageText(msg.text).some(t=>t.id===tag.id);
+      if(matched) results.push({ msg, msgIdx: idx, groupId: gid, groupName: grp ? grp.name : gid });
+    });
+  });
+  return results;
+}
+
+function highlightKeywordsInText(text, keywords){
+  let result = text;
+  keywords.forEach(kw => {
+    const regex = new RegExp('('+kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')', 'gi');
+    result = result.replace(regex, '<mark style="background:#FFFBE6;color:#7A5100;border-radius:3px;padding:0 2px;font-weight:700;">$1</mark>');
+  });
+  return result;
+}
+
+function renderTagPreview(){
+  const allMatches = findTagMatches();
+  const previewEl = document.getElementById('tag-preview-list');
+  const previewEmpty = document.getElementById('tag-preview-empty');
+
+  if(allMatches.length === 0){
+    previewEl.innerHTML = '';
+    previewEmpty.style.display = '';
+    return;
+  }
+  previewEmpty.style.display = 'none';
+
+  previewEl.innerHTML = allMatches.slice(0,8).map(m => {
+    const tagChips = m.tags.map(t =>
+      `<span class="cmsg-tag-badge" style="background:${t.color}22;color:${t.color};border-color:${t.color}55;">🏷 ${t.name}</span>`
+    ).join('');
+    const allKws = m.tags.flatMap(t=>t.keywords);
+    return `<div class="tag-preview-item">
+      <div class="tpi-meta">
+        <span class="tpi-group">${m.groupName}</span>
+        <span class="tpi-who">${m.msg.who}</span>
+        <span class="tpi-time">${m.msg.time || ''}</span>
+      </div>
+      <div class="tpi-tags">${tagChips}</div>
+      <div class="tpi-text">${highlightKeywordsInText(m.msg.text, allKws)}</div>
+      <div style="margin-top:4px;">
+        <button onclick="switchView('conversations'); selectConvo('${m.groupId}'); setTimeout(()=>{const el=document.querySelector('#convo-messages .cmsg[data-msg-index=\\'${m.msgIdx}\\']');if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('blink-highlight');setTimeout(()=>el.classList.remove('blink-highlight'),3000);}},120);"
+          style="font-size:11.5px;font-weight:700;color:var(--g-700);background:none;border:none;cursor:pointer;padding:0;">
+          Lihat di Conversations →
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+
+  if(allMatches.length > 8){
+    previewEl.innerHTML += `<div style="font-size:12.5px;color:var(--ink-faint);text-align:center;padding:10px;">… dan ${allMatches.length-8} pesan lainnya terdeteksi</div>`;
+  }
+}
+
+/* ---- Tag CRUD actions ---- */
+function toggleTagCard(id){
+  const tag = getTagById(id);
+  if(!tag) return;
+  tag.expanded = !tag.expanded;
+  renderTagSettings();
+}
+
+/* ---- Tag Modal State ---- */
+let _tagModalMode = 'add'; // 'add' | 'edit'
+let _tagModalEditId = null;
+let _tagModalSelectedColor = TAG_COLORS[0];
+let _tagConfirmDeleteId = null;
+
+function _buildTagModalSwatches(selectedColor){
+  const row = document.getElementById('tag-modal-color-row');
+  if(!row) return;
+  row.innerHTML = TAG_COLORS.map(c=>`
+    <div class="tag-modal-swatch ${c===selectedColor?'selected':''}"
+      style="background:${c};"
+      onclick="selectTagModalColor('${c}')"
+      title="${c}"></div>`).join('');
+}
+
+function selectTagModalColor(c){
+  _tagModalSelectedColor = c;
+  _buildTagModalSwatches(c);
+}
+
+function openTagModal(mode, editId){
+  _tagModalMode = mode;
+  _tagModalEditId = editId || null;
+
+  const titleEl = document.getElementById('tag-modal-title');
+  const subEl   = document.getElementById('tag-modal-sub');
+  const input   = document.getElementById('tag-modal-name-input');
+  const submitBtn = document.getElementById('tag-modal-submit-btn');
+  const errEl   = document.getElementById('tag-modal-name-err');
+  errEl.classList.remove('show');
+
+  if(mode === 'edit' && editId){
+    const tag = getTagById(editId);
+    titleEl.textContent = 'Edit Nama Tag';
+    subEl.textContent = 'Ubah nama atau warna tag';
+    input.value = tag ? tag.name : '';
+    _tagModalSelectedColor = tag ? tag.color : TAG_COLORS[0];
+    submitBtn.textContent = 'Simpan Perubahan';
+  } else {
+    titleEl.textContent = 'Tambah Tag Baru';
+    subEl.textContent = 'Buat tag dan pilih warnanya';
+    input.value = '';
+    _tagModalSelectedColor = TAG_COLORS[tagSettings.length % TAG_COLORS.length];
+    submitBtn.textContent = 'Buat Tag';
+  }
+
+  _buildTagModalSwatches(_tagModalSelectedColor);
+  document.getElementById('tag-add-modal-overlay').classList.add('show');
+  setTimeout(()=> input.focus(), 100);
+}
+
+function closeTagModal(){
+  document.getElementById('tag-add-modal-overlay').classList.remove('show');
+}
+
+function submitTagModal(){
+  const input = document.getElementById('tag-modal-name-input');
+  const errEl = document.getElementById('tag-modal-name-err');
+  const name = input.value.trim();
+  if(!name){ errEl.classList.add('show'); input.focus(); return; }
+  errEl.classList.remove('show');
+
+  if(_tagModalMode === 'edit' && _tagModalEditId){
+    const tag = getTagById(_tagModalEditId);
+    if(tag){
+      tag.name = name;
+      tag.color = _tagModalSelectedColor;
+      renderTagSettings();
+      renderConvoMessages();
+      demoToast('✏️ Tag diperbarui!');
+    }
+  } else {
+    const newTag = {
+      id: 'tag_' + Date.now(),
+      name,
+      color: _tagModalSelectedColor,
+      keywords: [],
+      expanded: true
+    };
+    tagSettings.push(newTag);
+    renderTagSettings();
+    renderConvoMessages();
+    demoToast('🏷 Tag "' + newTag.name + '" berhasil dibuat!');
+  }
+
+  closeTagModal();
+}
+
+function addNewTag(){
+  openTagModal('add');
+}
+
+function editTagName(id){
+  openTagModal('edit', id);
+}
+
+function openConfirmDeleteTag(id){
+  const tag = getTagById(id);
+  if(!tag) return;
+  _tagConfirmDeleteId = id;
+  document.getElementById('tag-confirm-msg').innerHTML =
+    'Hapus tag <b>"' + tag.name + '"</b>?<br><span style="font-size:12.5px;color:var(--ink-faint);">Semua penandaan dari tag ini akan hilang.</span>';
+  document.getElementById('tag-confirm-modal-overlay').classList.add('show');
+}
+
+function closeConfirmTagModal(){
+  document.getElementById('tag-confirm-modal-overlay').classList.remove('show');
+  _tagConfirmDeleteId = null;
+}
+
+function confirmDeleteTag(){
+  const id = _tagConfirmDeleteId;
+  if(!id) return;
+  const tag = getTagById(id);
+  const name = tag ? tag.name : '';
+  tagSettings = tagSettings.filter(t=>t.id!==id);
+  renderTagSettings();
+  renderConvoMessages();
+  updateTagBadge();
+  closeConfirmTagModal();
+  demoToast('🗑 Tag "' + name + '" dihapus');
+}
+
+function deleteTag(id){
+  openConfirmDeleteTag(id);
+}
+
+function setTagColor(id, color){
+  const tag = getTagById(id);
+  if(!tag) return;
+  tag.color = color;
+  renderTagSettings();
+  renderConvoMessages();
+}
+
+function addKeyword(tagId){
+  const input = document.getElementById('kw-input-' + tagId);
+  if(!input) return;
+  const kw = input.value.trim();
+  if(!kw) return;
+  const tag = getTagById(tagId);
+  if(!tag) return;
+  if(tag.keywords.includes(kw)){
+    input.value = '';
+    return;
+  }
+  tag.keywords.push(kw);
+  input.value = '';
+  renderTagSettings();
+  renderConvoMessages(); // auto-update conversations
+  updateTagBadge();
+  demoToast('🔑 Keyword "' + kw + '" ditambahkan ke tag ' + tag.name);
+}
+
+function removeKeyword(tagId, kwIndex){
+  const tag = getTagById(tagId);
+  if(!tag) return;
+  const removed = tag.keywords[kwIndex];
+  tag.keywords.splice(kwIndex, 1);
+  renderTagSettings();
+  renderConvoMessages();
+  updateTagBadge();
+  demoToast('🗑 Keyword "' + removed + '" dihapus dari tag ' + tag.name);
 }
 
 /* ---------------- RENDER: SETTINGS ---------------- */
@@ -3059,7 +4120,638 @@ function refreshAfterIssueChange(it){
   document.getElementById('badge-open').textContent = issues.filter(i=>i.status==='Open').length;
 }
 
+/* ============================================================
+   SLA SETTING
+   ============================================================ */
+const SLA_TARGET_OPTIONS = [1, 2, 4, 8, 12, 24, 48];
+const SLA_DAY_OPTIONS = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'];
+const SLA_DAY_SHORT = {Senin:'Sen', Selasa:'Sel', Rabu:'Rab', Kamis:'Kam', Jumat:'Jum', Sabtu:'Sab', Minggu:'Min'};
+
+let slaSettings = [
+  {
+    id: 'sla_cs_high',
+    name: 'SLA Customer Service - Prioritas Tinggi',
+    targetHrs: 2,
+    workingType: 'working',
+    days: ['Senin','Selasa','Rabu','Kamis','Jumat'],
+    shifts: [{start:'08:00', end:'17:00'}],
+    picIds: ['pic_cs']
+  },
+  {
+    id: 'sla_it_infra',
+    name: 'SLA IT Infrastructure',
+    targetHrs: 1,
+    workingType: 'working',
+    days: ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'],
+    shifts: [{start:'00:00', end:'12:00'}, {start:'12:00', end:'23:59'}],
+    picIds: ['pic_it']
+  },
+  {
+    id: 'sla_fleet',
+    name: 'SLA Fleet & Kendaraan',
+    targetHrs: 2,
+    workingType: 'working',
+    days: ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'],
+    shifts: [{start:'06:00', end:'18:00'}],
+    picIds: ['pic_fleet', 'pic_logistics', 'pic_hr_fleet']
+  },
+  {
+    id: 'sla_finance',
+    name: 'SLA Finance - Approval Invoice',
+    targetHrs: 8,
+    workingType: 'working',
+    days: ['Senin','Selasa','Rabu','Kamis','Jumat'],
+    shifts: [{start:'08:00', end:'17:00'}],
+    picIds: ['pic_finance']
+  },
+  {
+    id: 'sla_hr',
+    name: 'SLA HR - Layanan Karyawan',
+    targetHrs: 24,
+    workingType: 'working',
+    days: ['Senin','Selasa','Rabu','Kamis','Jumat'],
+    shifts: [{start:'08:00', end:'17:00'}],
+    picIds: ['pic_hr']
+  },
+  {
+    id: 'sla_maintenance',
+    name: 'SLA Maintenance / Operations',
+    targetHrs: 3,
+    workingType: 'working',
+    days: ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'],
+    shifts: [{start:'00:00', end:'12:00'}, {start:'12:00', end:'23:59'}],
+    picIds: ['pic_maintenance']
+  },
+  {
+    id: 'sla_procurement',
+    name: 'SLA Procurement - PO & Vendor',
+    targetHrs: 12,
+    workingType: 'working',
+    days: ['Senin','Selasa','Rabu','Kamis','Jumat'],
+    shifts: [{start:'08:00', end:'17:00'}],
+    picIds: ['pic_procurement']
+  }
+];
+
+function getSlaById(id){ return slaSettings.find(s=>s.id===id); }
+
+function updateSlaSettingBadge(){
+  const el = document.getElementById('badge-sla-setting');
+  if(el) el.textContent = slaSettings.length;
+}
+
+function renderSlaSettings(){
+  updateSlaSettingBadge();
+  const list = document.getElementById('sla-set-list');
+  const empty = document.getElementById('sla-set-empty');
+  if(!list) return;
+
+  if(slaSettings.length === 0){
+    list.innerHTML = '';
+    empty.style.display = '';
+  } else {
+    empty.style.display = 'none';
+    list.innerHTML = slaSettings.map(renderSlaSetCard).join('');
+  }
+}
+
+function renderSlaSetCard(s){
+  const dayChips = s.workingType === 'working'
+    ? s.days.map(d=>`<span class="sla-set-day-chip">${SLA_DAY_SHORT[d]||d}</span>`).join('')
+    : '<span class="sla-set-day-chip">Berlaku setiap hari (Not Working Day)</span>';
+  const shiftLines = s.workingType === 'working'
+    ? (s.shifts && s.shifts.length
+        ? s.shifts.map(sh=>`<div class="sla-set-shift-line">🕐 ${sh.start} — ${sh.end}</div>`).join('')
+        : '<div class="sla-set-shift-line" style="color:var(--ink-faint);">Belum ada jam kerja</div>')
+    : '';
+
+  return `<div class="sla-set-card" id="slacard-${s.id}">
+    <div class="sla-set-card-head">
+      <div>
+        <div class="name">${s.name}</div>
+        <div class="sla-set-target-badge">⏱ Target ${s.targetHrs} Jam</div>
+      </div>
+    </div>
+    <div class="sla-set-card-body">
+      <div class="sla-set-row"><span class="k">PIC</span><div>${slaPicChipsHtml(s.picIds)}</div></div>
+      <div class="sla-set-row"><span class="k">Status</span><span>${s.workingType === 'working' ? 'Working Day' : 'Not Working Day'}</span></div>
+      <div class="sla-set-row"><span class="k">Hari</span><div>${dayChips}</div></div>
+      ${shiftLines ? `<div class="sla-set-row"><span class="k">Jam Kerja</span><div>${shiftLines}</div></div>` : ''}
+    </div>
+    <div class="sla-set-card-foot">
+      <button class="tag-action-btn" onclick="editSla('${s.id}')">✏️ Edit</button>
+      <button class="tag-action-btn danger" onclick="deleteSla('${s.id}')">🗑 Hapus</button>
+    </div>
+  </div>`;
+}
+
+/* ---- SLA Modal state ---- */
+let _slaModalMode = 'add'; // 'add' | 'edit'
+let _slaModalEditId = null;
+let _slaModalDays = [];
+let _slaModalShifts = [];
+let _slaModalPics = [];
+let _slaConfirmDeleteId = null;
+
+function populateSlaTargetSelect(selected){
+  const sel = document.getElementById('sla-modal-target-select');
+  sel.innerHTML = SLA_TARGET_OPTIONS.map(h=>`<option value="${h}">${h} Jam</option>`).join('');
+  sel.value = selected || SLA_TARGET_OPTIONS[0];
+}
+
+function slaPicLabel(picId){
+  const p = getPicById(picId);
+  return p ? `${p.name} · ${p.team}` : 'Belum ditentukan';
+}
+
+function slaPicChipsHtml(picIds){
+  const ids = (picIds || []).filter(id => getPicById(id));
+  if(ids.length === 0) return '<span style="color:var(--ink-faint);">Belum ditentukan</span>';
+  return ids.map(id => `<span class="sla-set-day-chip">${slaPicLabel(id)}</span>`).join('');
+}
+
+/* ---- PIC multi-select (SLA modal) ----
+   Sumber data selalu picSettings, sama persis dengan data di halaman Setting PIC,
+   sehingga daftar PIC yang bisa dipilih di sini selalu sinkron dengan Setting PIC. */
+function renderSlaPicChips(){
+  const wrap = document.getElementById('sla-pic-chips');
+  if(!wrap) return;
+  if(_slaModalPics.length === 0){
+    wrap.innerHTML = '<span class="sla-day-placeholder">— Pilih PIC —</span>';
+  } else {
+    wrap.innerHTML = _slaModalPics.map(id=>{
+      const p = getPicById(id);
+      return `<span class="sla-day-chip">${p ? p.name : id}</span>`;
+    }).join('');
+  }
+}
+
+function renderSlaPicDropdown(){
+  const dd = document.getElementById('sla-pic-dropdown');
+  if(!dd) return;
+  if(picSettings.length === 0){
+    dd.innerHTML = '<div style="padding:8px 9px; font-size:12.5px; color:var(--ink-faint);">Belum ada PIC terdaftar. Tambahkan dulu di Setting PIC.</div>';
+    return;
+  }
+  dd.innerHTML = picSettings.map(p=>{
+    const sel = _slaModalPics.includes(p.id);
+    return `<div class="sla-day-dropdown-opt ${sel?'selected':''}" onclick="toggleSlaPic('${p.id}', event)">
+      <span class="chk">${sel?'✓':''}</span><span>${p.name} · ${p.team}</span>
+    </div>`;
+  }).join('');
+}
+
+function toggleSlaPicDropdown(e){
+  e.stopPropagation();
+  const dd = document.getElementById('sla-pic-dropdown');
+  const willShow = !dd.classList.contains('show');
+  renderSlaPicDropdown();
+  dd.classList.toggle('show', willShow);
+}
+
+function toggleSlaPic(picId, e){
+  if(e) e.stopPropagation();
+  const idx = _slaModalPics.indexOf(picId);
+  if(idx === -1) _slaModalPics.push(picId); else _slaModalPics.splice(idx,1);
+  renderSlaPicDropdown();
+  renderSlaPicChips();
+}
+
+function populateSlaPicSelect(selected){
+  // selected can be an array of pic ids, a single pic id (legacy), or empty
+  _slaModalPics = Array.isArray(selected) ? [...selected] : (selected ? [selected] : []);
+  // Drop any ids that no longer exist in picSettings (e.g. PIC was deleted)
+  _slaModalPics = _slaModalPics.filter(id => getPicById(id));
+  renderSlaPicChips();
+  renderSlaPicDropdown();
+}
+
+function renderSlaDayChips(){
+  const wrap = document.getElementById('sla-day-chips');
+  if(_slaModalDays.length === 0){
+    wrap.innerHTML = '<span class="sla-day-placeholder">Select Day</span>';
+  } else {
+    wrap.innerHTML = _slaModalDays.map(d=>`<span class="sla-day-chip">${SLA_DAY_SHORT[d]||d}</span>`).join('');
+  }
+}
+
+function renderSlaDayDropdown(){
+  const dd = document.getElementById('sla-day-dropdown');
+  dd.innerHTML = SLA_DAY_OPTIONS.map(d=>{
+    const sel = _slaModalDays.includes(d);
+    return `<div class="sla-day-dropdown-opt ${sel?'selected':''}" onclick="toggleSlaDay('${d}', event)">
+      <span class="chk">${sel?'✓':''}</span><span>${d}</span>
+    </div>`;
+  }).join('');
+}
+
+function toggleSlaDayDropdown(e){
+  e.stopPropagation();
+  const dd = document.getElementById('sla-day-dropdown');
+  const willShow = !dd.classList.contains('show');
+  renderSlaDayDropdown();
+  dd.classList.toggle('show', willShow);
+}
+
+function toggleSlaDay(day, e){
+  if(e) e.stopPropagation();
+  const idx = _slaModalDays.indexOf(day);
+  if(idx === -1) _slaModalDays.push(day); else _slaModalDays.splice(idx,1);
+  renderSlaDayDropdown();
+  renderSlaDayChips();
+  document.getElementById('sla-modal-day-err').classList.remove('show');
+}
+
+document.addEventListener('click', (e)=>{
+  const dd = document.getElementById('sla-day-dropdown');
+  const wrap = document.getElementById('sla-day-select');
+  if(dd && dd.classList.contains('show') && wrap && !wrap.contains(e.target)){
+    dd.classList.remove('show');
+  }
+  const picDd = document.getElementById('sla-pic-dropdown');
+  const picWrap = document.getElementById('sla-pic-select');
+  if(picDd && picDd.classList.contains('show') && picWrap && !picWrap.contains(e.target)){
+    picDd.classList.remove('show');
+  }
+});
+
+function renderSlaShiftList(){
+  const wrap = document.getElementById('sla-shift-list');
+  wrap.innerHTML = _slaModalShifts.map((sh, i)=>`
+    <div class="sla-shift-row">
+      <span class="sla-shift-label">Shift ${i+1}</span>
+      <input type="time" value="${sh.start||''}" onchange="updateSlaShift(${i},'start',this.value)">
+      <span class="sep">—</span>
+      <input type="time" value="${sh.end||''}" onchange="updateSlaShift(${i},'end',this.value)">
+      <button type="button" class="sla-shift-remove" onclick="removeSlaShift(${i})" title="Hapus shift">✕</button>
+    </div>`).join('');
+}
+
+function updateSlaShift(i, field, val){
+  if(_slaModalShifts[i]){ _slaModalShifts[i][field] = val; }
+  document.getElementById('sla-modal-shift-err').classList.remove('show');
+}
+
+function addSlaShift(){
+  _slaModalShifts.push({start:'', end:''});
+  renderSlaShiftList();
+}
+
+function removeSlaShift(i){
+  _slaModalShifts.splice(i,1);
+  renderSlaShiftList();
+}
+
+function onSlaStatusChange(){
+  const val = document.querySelector('input[name="sla-status-working"]:checked').value;
+  document.getElementById('sla-modal-working-section').style.display = (val === 'working') ? '' : 'none';
+}
+
+function openSlaModal(mode, editId){
+  _slaModalMode = mode;
+  _slaModalEditId = editId || null;
+
+  const titleEl = document.getElementById('sla-modal-title');
+  const subEl = document.getElementById('sla-modal-sub');
+  const nameInput = document.getElementById('sla-modal-name-input');
+  const submitBtn = document.getElementById('sla-modal-submit-btn');
+
+  ['sla-modal-name-err','sla-modal-day-err','sla-modal-shift-err'].forEach(id=>document.getElementById(id).classList.remove('show'));
+
+  if(mode === 'edit' && editId){
+    const s = getSlaById(editId);
+    titleEl.textContent = 'Edit SLA';
+    subEl.textContent = 'Perbarui setting SLA untuk agent ini';
+    nameInput.value = s ? s.name : '';
+    populateSlaTargetSelect(s ? s.targetHrs : SLA_TARGET_OPTIONS[0]);
+    populateSlaPicSelect(s ? (s.picIds || (s.picId ? [s.picId] : [])) : []);
+    const workingType = s ? s.workingType : 'working';
+    document.querySelector(`input[name="sla-status-working"][value="${workingType}"]`).checked = true;
+    _slaModalDays = s ? [...s.days] : [];
+    _slaModalShifts = s ? s.shifts.map(sh=>({...sh})) : [];
+    submitBtn.textContent = 'Save Changes';
+  } else {
+    titleEl.textContent = 'Tambah SLA';
+    subEl.textContent = 'Setting SLA for Agents here!';
+    nameInput.value = '';
+    populateSlaTargetSelect(SLA_TARGET_OPTIONS[0]);
+    populateSlaPicSelect([]);
+    document.querySelector('input[name="sla-status-working"][value="working"]').checked = true;
+    _slaModalDays = [];
+    _slaModalShifts = [{start:'08:00', end:'17:00'}];
+    submitBtn.textContent = 'Save Changes';
+  }
+
+  onSlaStatusChange();
+  renderSlaDayChips();
+  renderSlaShiftList();
+  document.getElementById('sla-day-dropdown').classList.remove('show');
+  document.getElementById('sla-pic-dropdown').classList.remove('show');
+  document.getElementById('sla-modal-overlay').classList.add('show');
+  setTimeout(()=> nameInput.focus(), 100);
+}
+
+function closeSlaModal(){
+  document.getElementById('sla-modal-overlay').classList.remove('show');
+}
+
+function addNewSla(){
+  openSlaModal('add');
+}
+
+function editSla(id){
+  openSlaModal('edit', id);
+}
+
+function submitSlaModal(){
+  const nameInput = document.getElementById('sla-modal-name-input');
+  const name = nameInput.value.trim();
+  const nameErr = document.getElementById('sla-modal-name-err');
+  const dayErr = document.getElementById('sla-modal-day-err');
+  const shiftErr = document.getElementById('sla-modal-shift-err');
+  nameErr.classList.remove('show'); dayErr.classList.remove('show'); shiftErr.classList.remove('show');
+
+  let hasError = false;
+  if(!name){ nameErr.classList.add('show'); hasError = true; }
+
+  const workingType = document.querySelector('input[name="sla-status-working"]:checked').value;
+  const targetHrs = parseInt(document.getElementById('sla-modal-target-select').value, 10);
+  const picIds = [..._slaModalPics];
+
+  if(workingType === 'working'){
+    if(_slaModalDays.length === 0){ dayErr.classList.add('show'); hasError = true; }
+    const shiftsValid = _slaModalShifts.length > 0 && _slaModalShifts.every(sh => sh.start && sh.end);
+    if(!shiftsValid){ shiftErr.classList.add('show'); hasError = true; }
+  }
+
+  if(hasError){
+    if(!name) nameInput.focus();
+    return;
+  }
+
+  if(_slaModalMode === 'edit' && _slaModalEditId){
+    const s = getSlaById(_slaModalEditId);
+    if(s){
+      s.name = name;
+      s.targetHrs = targetHrs;
+      s.workingType = workingType;
+      s.days = workingType === 'working' ? [..._slaModalDays] : [];
+      s.shifts = workingType === 'working' ? _slaModalShifts.map(sh=>({...sh})) : [];
+      s.picIds = picIds;
+      demoToast('✏️ SLA "' + s.name + '" diperbarui!');
+    }
+  } else {
+    const newSla = {
+      id: 'sla_' + Date.now(),
+      name,
+      targetHrs,
+      workingType,
+      days: workingType === 'working' ? [..._slaModalDays] : [],
+      shifts: workingType === 'working' ? _slaModalShifts.map(sh=>({...sh})) : [],
+      picIds: picIds
+    };
+    slaSettings.push(newSla);
+    demoToast('✅ SLA "' + newSla.name + '" berhasil dibuat!');
+  }
+
+  renderSlaSettings();
+  closeSlaModal();
+}
+
+function openConfirmDeleteSla(id){
+  const s = getSlaById(id);
+  if(!s) return;
+  _slaConfirmDeleteId = id;
+  document.getElementById('sla-confirm-msg').innerHTML =
+    'Hapus SLA <b>"' + s.name + '"</b>?<br><span style="font-size:12.5px;color:var(--ink-faint);">Aturan waktu respons dan jam kerja ini akan dihapus.</span>';
+  document.getElementById('sla-confirm-modal-overlay').classList.add('show');
+}
+
+function closeConfirmSlaModal(){
+  document.getElementById('sla-confirm-modal-overlay').classList.remove('show');
+  _slaConfirmDeleteId = null;
+}
+
+function confirmDeleteSla(){
+  const id = _slaConfirmDeleteId;
+  if(!id) return;
+  const s = getSlaById(id);
+  const name = s ? s.name : '';
+  slaSettings = slaSettings.filter(x=>x.id!==id);
+  renderSlaSettings();
+  closeConfirmSlaModal();
+  demoToast('🗑 SLA "' + name + '" dihapus');
+}
+
+function deleteSla(id){
+  openConfirmDeleteSla(id);
+}
+
 /* ---------------- NAV / VIEW SWITCH ---------------- */
+/* ============================================================
+   PIC SETTING
+   ============================================================ */
+let picSettings = [
+  { id: 'pic_cs',          name: 'Dewi Anggraini',   team: 'Customer Service',        phone: '+62 812-3456-7890', verified: true },
+  { id: 'pic_it',          name: 'Rizky Pratama',    team: 'IT Infrastructure',       phone: '+62 813-2211-9087', verified: true },
+  { id: 'pic_fleet',       name: 'Bagus Setiawan',   team: 'Fleet Team',              phone: '+62 815-7788-4433', verified: false },
+  { id: 'pic_finance',     name: 'Siti Nurhaliza',   team: 'Finance Team',            phone: '+62 811-4455-2290', verified: true },
+  { id: 'pic_hr',          name: 'Andi Wijaya',      team: 'HR Team',                 phone: '+62 878-9900-1123', verified: true },
+  { id: 'pic_hr_fleet',    name: 'Fajar Ramadhan',   team: 'HR / Fleet',              phone: '+62 856-2233-8871', verified: false },
+  { id: 'pic_logistics',   name: 'Bayu Kurniawan',   team: 'Logistics / Fleet Team',  phone: '+62 821-6677-4409', verified: true },
+  { id: 'pic_maintenance', name: 'Hendra Saputra',   team: 'Maintenance Team',        phone: '+62 819-3344-5567', verified: true },
+  { id: 'pic_procurement', name: 'Nadia Putri',      team: 'Procurement Team',        phone: '+62 852-1199-3345', verified: false }
+];
+
+function getPicById(id){ return picSettings.find(p=>p.id===id); }
+
+function picInitials(name){
+  return (name||'').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+}
+
+function updatePicSettingBadge(){
+  const el = document.getElementById('badge-pic-setting');
+  if(el) el.textContent = picSettings.length;
+}
+
+function renderPicSettings(){
+  updatePicSettingBadge();
+  const list = document.getElementById('pic-set-list');
+  const empty = document.getElementById('pic-set-empty');
+  if(!list) return;
+
+  if(picSettings.length === 0){
+    list.innerHTML = '';
+    empty.style.display = '';
+  } else {
+    empty.style.display = 'none';
+    list.innerHTML = picSettings.map(renderPicSetCard).join('');
+  }
+  // Keep the PIC multi-select inside the Setting SLA modal in sync with the PIC list
+  // (uses the exact same picSettings data as the Setting PIC page)
+  if(document.getElementById('sla-pic-dropdown')){
+    populateSlaPicSelect(_slaModalPics);
+  }
+}
+
+function renderPicSetCard(p){
+  return `<div class="pic-card" id="piccard-${p.id}">
+    <div class="pic-card-top">
+      <div class="pic-avatar">${picInitials(p.name)}</div>
+      <div class="pic-info">
+        <div class="name">${p.name}</div>
+        <div class="pic-team">${p.team}</div>
+      </div>
+    </div>
+    <div class="pic-card-body">
+      <div class="pic-row"><span class="k">WhatsApp</span><span class="v mono">${p.phone}</span></div>
+      <div class="pic-row"><span class="k">Status</span>
+        <span class="pic-detect ${p.verified ? 'on' : 'off'}"><span class="dot"></span>${p.verified ? 'Terverifikasi & terdeteksi' : 'Belum terverifikasi'}</span>
+      </div>
+    </div>
+    <div class="pic-card-foot">
+      ${p.verified ? '' : `<button class="tag-action-btn pic-verify-btn" onclick="verifyPic('${p.id}')">✅ Verifikasi</button>`}
+      <button class="tag-action-btn" onclick="editPic('${p.id}')">✏️ Edit</button>
+      <button class="tag-action-btn danger" onclick="deletePic('${p.id}')">🗑 Hapus</button>
+    </div>
+  </div>`;
+}
+
+function verifyPic(id){
+  const p = getPicById(id);
+  if(!p) return;
+  p.verified = true;
+  renderPicSettings();
+  demoToast('✅ Nomor WhatsApp ' + p.name + ' berhasil diverifikasi & terdeteksi sistem!');
+}
+
+/* ---- PIC Modal state ---- */
+let _picModalMode = 'add'; // 'add' | 'edit'
+let _picModalEditId = null;
+let _picConfirmDeleteId = null;
+
+function populatePicTeamSelect(selected){
+  const sel = document.getElementById('pic-modal-team-input');
+  if(!sel) return;
+  sel.innerHTML = PIC_TEAMS.map(t=>`<option value="${t}">${t}</option>`).join('');
+  sel.value = selected || PIC_TEAMS[0];
+}
+
+function openPicModal(mode, editId){
+  _picModalMode = mode;
+  _picModalEditId = editId || null;
+
+  const titleEl = document.getElementById('pic-modal-title');
+  const subEl = document.getElementById('pic-modal-sub');
+  const nameInput = document.getElementById('pic-modal-name-input');
+  const phoneInput = document.getElementById('pic-modal-phone-input');
+  const submitBtn = document.getElementById('pic-modal-submit-btn');
+
+  ['pic-modal-name-err','pic-modal-team-err','pic-modal-phone-err'].forEach(id=>document.getElementById(id).classList.remove('show'));
+
+  if(mode === 'edit' && editId){
+    const p = getPicById(editId);
+    titleEl.textContent = 'Edit PIC';
+    subEl.textContent = 'Perbarui data PIC ini';
+    nameInput.value = p ? p.name : '';
+    phoneInput.value = p ? p.phone : '';
+    populatePicTeamSelect(p ? p.team : PIC_TEAMS[0]);
+    submitBtn.textContent = 'Save Changes';
+  } else {
+    titleEl.textContent = 'Tambah PIC';
+    subEl.textContent = 'Daftarkan PIC baru beserta nomor WhatsApp-nya';
+    nameInput.value = '';
+    phoneInput.value = '';
+    populatePicTeamSelect(PIC_TEAMS[0]);
+    submitBtn.textContent = 'Save Changes';
+  }
+
+  document.getElementById('pic-modal-overlay').classList.add('show');
+  setTimeout(()=> nameInput.focus(), 100);
+}
+
+function closePicModal(){
+  document.getElementById('pic-modal-overlay').classList.remove('show');
+}
+
+function addNewPic(){
+  openPicModal('add');
+}
+
+function editPic(id){
+  openPicModal('edit', id);
+}
+
+function submitPicModal(){
+  const nameInput = document.getElementById('pic-modal-name-input');
+  const teamSelect = document.getElementById('pic-modal-team-input');
+  const phoneInput = document.getElementById('pic-modal-phone-input');
+  const nameErr = document.getElementById('pic-modal-name-err');
+  const teamErr = document.getElementById('pic-modal-team-err');
+  const phoneErr = document.getElementById('pic-modal-phone-err');
+  nameErr.classList.remove('show'); teamErr.classList.remove('show'); phoneErr.classList.remove('show');
+
+  const name = nameInput.value.trim();
+  const team = teamSelect.value;
+  const phone = phoneInput.value.trim();
+
+  let hasError = false;
+  if(!name){ nameErr.classList.add('show'); hasError = true; }
+  if(!team){ teamErr.classList.add('show'); hasError = true; }
+  if(!phone){ phoneErr.classList.add('show'); hasError = true; }
+
+  if(hasError){
+    if(!name) nameInput.focus();
+    return;
+  }
+
+  if(_picModalMode === 'edit' && _picModalEditId){
+    const p = getPicById(_picModalEditId);
+    if(p){
+      p.name = name;
+      p.team = team;
+      p.phone = phone;
+      demoToast('✏️ PIC "' + p.name + '" diperbarui!');
+    }
+  } else {
+    const newPic = { id: 'pic_' + Date.now(), name, team, phone, verified: false };
+    picSettings.push(newPic);
+    demoToast('✅ PIC "' + newPic.name + '" berhasil didaftarkan!');
+  }
+
+  renderPicSettings();
+  closePicModal();
+}
+
+function openConfirmDeletePic(id){
+  const p = getPicById(id);
+  if(!p) return;
+  _picConfirmDeleteId = id;
+  document.getElementById('pic-confirm-msg').innerHTML =
+    'Hapus PIC <b>"' + p.name + '"</b>?<br><span style="font-size:12.5px;color:var(--ink-faint);">Data nomor WhatsApp dan status verifikasi akan dihapus.</span>';
+  document.getElementById('pic-confirm-modal-overlay').classList.add('show');
+}
+
+function closeConfirmPicModal(){
+  document.getElementById('pic-confirm-modal-overlay').classList.remove('show');
+  _picConfirmDeleteId = null;
+}
+
+function confirmDeletePic(){
+  const id = _picConfirmDeleteId;
+  if(!id) return;
+  const p = getPicById(id);
+  const name = p ? p.name : '';
+  picSettings = picSettings.filter(x=>x.id!==id);
+  renderPicSettings();
+  closeConfirmPicModal();
+  demoToast('🗑 PIC "' + name + '" dihapus');
+}
+
+function deletePic(id){
+  openConfirmDeletePic(id);
+}
+
 function switchView(view){
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active', b.dataset.view===view));
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active', v.id==='view-'+view));
@@ -3073,11 +4765,19 @@ function switchView(view){
     insights:["AI Insights","Pola berulang dan early warning dari AI"],
     reports:["Reports","Analisis performa operasional"],
     settings:["Pengelompokan PT","Atur grup WhatsApp ke dalam perusahaan / PT"],
+    "tag-settings":["Setting Tag","Kelola tag dan keyword otomatis untuk deteksi issue"],
+    "sla-setting":["Setting SLA","Atur target waktu respons dan jam kerja tim/agent"],
+    "pic-setting":["Setting PIC","Kelola daftar PIC, tim, dan nomor WhatsApp"],
   };
-  document.getElementById('view-title').textContent = titles[view][0];
-  document.getElementById('view-sub').textContent = titles[view][1];
+  const t = titles[view] || ["—",""];
+  document.getElementById('view-title').textContent = t[0];
+  document.getElementById('view-sub').textContent = t[1];
   document.getElementById('sidebar').classList.remove('show');
   window.scrollTo(0,0);
+  // Re-render tag settings every time we navigate to it
+  if(view === 'tag-settings') renderTagSettings();
+  if(view === 'sla-setting') renderSlaSettings();
+  if(view === 'pic-setting') renderPicSettings();
 }
 document.querySelectorAll('.nav-item').forEach(b=> b.addEventListener('click', ()=> switchView(b.dataset.view)) );
 
@@ -3133,6 +4833,8 @@ function init(){
   renderConvoList();
   renderConvoMessages();
   renderSettings();
+  renderPicSettings();
+  renderSlaSettings();
   document.getElementById('badge-open').textContent = issues.filter(i=>i.status==='Open').length;
   document.getElementById('badge-flagged').textContent = countFlaggedToday();
   setInterval(()=>{ renderSlaTable(); }, 30000);
@@ -3271,7 +4973,7 @@ const demoSteps = [
         recipient: "Customer Service",
         group: "WAG Customer Service Jakarta",
         time: nowStr,
-        status: "Terkirim"
+        status: "Open"
       });
 
       renderConvoMessages();
@@ -3327,7 +5029,7 @@ const demoSteps = [
       it.thread.push({ who: "CS Lead · " + nowStr, text: "Sudah koordinasi dengan gudang dan tim pengiriman. Foto kerusakan sudah diminta ke customer, proses pengecekan berjalan." });
       // Update alert status
       const al = alerts.find(a=>a.issueId===DEMO_ISSUE_ID);
-      if(al) al.status = "Dibaca";
+      if(al) al.status = "In Progress";
 
       switchView('issues');
       renderIssuesTable();
@@ -3360,7 +5062,7 @@ const demoSteps = [
         recipient: "CS Manager",
         group: "WAG Customer Service Jakarta",
         time: nowStr,
-        status: "Terkirim"
+        status: "Open"
       });
 
       switchView('sla');
