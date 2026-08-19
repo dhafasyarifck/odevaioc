@@ -44,7 +44,7 @@ button{ cursor:pointer; }
   position: fixed;
   bottom: 28px;
   right: 28px;
-  z-index: 9999;
+  z-index: 10050;
   width: 380px;
   background: #fff;
   border: 1px solid var(--line);
@@ -99,6 +99,65 @@ button{ cursor:pointer; }
   transition: background .15s;
 }
 #demo-panel .dp-close-btn:hover { background: var(--card-tint); }
+
+.dp-back-btn {
+  border: none; background: var(--card-tint);
+  color: var(--g-700); font-size: 15px; font-weight: 700;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  flex: 0 0 auto;
+  transition: background .15s, transform .15s;
+}
+.dp-back-btn:hover { background: var(--g-300); color: #fff; transform: translateX(-1px); }
+
+/* Scenario picker */
+#demo-panel .dp-picker {
+  padding: 12px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+.dp-scenario-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #fff;
+  cursor: pointer;
+  transition: all .18s;
+  text-align: left;
+}
+.dp-scenario-card:hover {
+  border-color: var(--g-300);
+  background: var(--card-tint);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(126,34,206,0.10);
+}
+.dp-scenario-icon {
+  width: 34px; height: 34px;
+  border-radius: 10px;
+  background: var(--grad-soft);
+  display: grid; place-items: center;
+  font-size: 16px;
+  flex: 0 0 auto;
+}
+.dp-scenario-text { flex: 1; min-width: 0; }
+.dp-scenario-title { font-size: 12.5px; font-weight: 700; color: var(--g-900); line-height: 1.3; }
+.dp-scenario-sub { font-size: 10.5px; color: var(--ink-dim); margin-top: 2px; line-height: 1.4; }
+.dp-scenario-steps {
+  font-size: 10px; font-weight: 700; color: var(--g-700);
+  background: var(--card-tint);
+  padding: 3px 8px;
+  border-radius: 20px;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+.dp-scenario-arrow { color: var(--g-500); font-weight: 700; flex: 0 0 auto; }
 
 /* Progress bar */
 #demo-panel .dp-progress-bar {
@@ -403,7 +462,7 @@ button{ cursor:pointer; }
 .badge{ font-size:10.5px; font-weight:700; padding:4px 9px; border-radius:999px; text-transform:uppercase; letter-spacing:0.02em; display:inline-block; white-space:nowrap; }
 .badge.track{ background:#E4F7EC; color:var(--g-700); border:1px solid #BFE9D3; }
 .badge.risk{ background:var(--amber-bg); color:#B4720A; border:1px solid var(--amber-line); }
-.badge.breach{ background:var(--red-bg); color:#C24545; border:1px solid var(--red-line); }
+.badge.delay{ background:var(--red-bg); color:#C24545; border:1px solid var(--red-line); }
 .badge.open{ background:#EFF3FF; color:#3557C4; border:1px solid #D3DEFA; }
 .badge.progress{ background:#FFF6E2; color:#96690A; border:1px solid #F3E1AE; }
 .badge.resolved{ background:#E4F7EC; color:var(--g-700); border:1px solid #BFE9D3; }
@@ -491,7 +550,8 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
 .wa-owner.none{ color:var(--ink-faint); background:#F5F5F4; }
 
 /* insight cards */
-.insight-card{ border:1px solid var(--line); border-radius:var(--radius); padding:20px; background:var(--grad-soft); box-shadow:var(--shadow); }
+.insight-card{ border:1px solid var(--line); border-radius:var(--radius); padding:20px; background:var(--grad-soft); box-shadow:var(--shadow); cursor:pointer; transition:transform .15s, box-shadow .15s, border-color .15s; }
+.insight-card:hover{ transform:translateY(-2px); box-shadow:0 10px 24px rgba(88,28,135,0.12); border-color:var(--g-300); }
 .insight-card .tag{ font-size:10.5px; font-weight:700; color:var(--g-700); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:10px; }
 .insight-card p.insight-text{ font-size:14px; color:var(--g-900); font-weight:600; margin-bottom:10px; line-height:1.4; }
 .insight-card p.insight-action{ font-size:12.5px; color:var(--ink-dim); }
@@ -499,7 +559,8 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
 .conf-track{ flex:1; height:5px; border-radius:4px; background:#EDF3EF; overflow:hidden; }
 .conf-fill{ height:100%; background:var(--grad); }
 
-.warn-row{ display:flex; align-items:center; gap:14px; border:1px solid var(--line); border-radius:12px; padding:14px 16px; background:#fff; box-shadow:var(--shadow); }
+.warn-row{ display:flex; align-items:center; gap:14px; border:1px solid var(--line); border-radius:12px; padding:14px 16px; background:#fff; box-shadow:var(--shadow); cursor:pointer; transition:transform .15s, box-shadow .15s, border-color .15s; }
+.warn-row:hover{ transform:translateY(-2px); box-shadow:0 10px 24px rgba(88,28,135,0.12); border-color:var(--g-300); }
 .warn-icon{ width:36px; height:36px; border-radius:10px; background:var(--amber-bg); display:grid; place-items:center; flex:0 0 auto; }
 .warn-icon svg{ width:17px; height:17px; color:#B4720A; }
 .warn-row .t{ font-size:13.5px; font-weight:700; color:var(--g-900); }
@@ -509,6 +570,8 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
 .lb-row{ display:grid; grid-template-columns:26px 1fr 90px 90px 90px; gap:10px; align-items:center; padding:11px 4px; border-bottom:1px solid var(--line); font-size:12.5px; }
 .lb-row:last-child{ border-bottom:none; }
 .lb-row.head{ font-size:10.5px; text-transform:uppercase; color:var(--ink-faint); font-weight:700; letter-spacing:0.03em; }
+.lb-row.clickable{ cursor:pointer; border-radius:9px; transition:background .12s; }
+.lb-row.clickable:hover{ background:var(--card-tint); }
 .lb-rank{ font-family:var(--font-mono); color:var(--ink-faint); font-weight:700; }
 .lb-name{ font-weight:700; color:var(--g-900); }
 .lb-val{ font-family:var(--font-mono); color:var(--ink-dim); text-align:right; }
@@ -928,6 +991,24 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
   transition: border-color .15s, box-shadow .15s;
 }
 .tag-modal-input:focus { border-color: var(--g-500); box-shadow: 0 0 0 3px rgba(126,34,206,0.14); }
+
+/* ============================================================
+   DETAIL POPUP (AI Insight / Early Warning / Team performance)
+   ============================================================ */
+.detail-modal-box{ width:460px; }
+.detail-modal-icon{ width:40px; height:40px; border-radius:11px; display:grid; place-items:center; font-size:18px; flex:0 0 auto; }
+.detail-modal-meta-row{ display:flex; gap:10px; margin:2px 0 14px; flex-wrap:wrap; }
+.detail-modal-meta-item{ background:var(--card-tint); border:1px solid var(--line); border-radius:9px; padding:7px 11px; font-size:11.5px; }
+.detail-modal-meta-item b{ display:block; font-size:14px; color:var(--g-900); font-family:var(--font-mono); margin-top:2px; }
+.detail-action-box{ padding:12px 14px; background:var(--card-tint); border-radius:10px; border:1px solid var(--line); margin:14px 0; }
+.detail-action-label{ font-size:10.5px; font-weight:700; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px; }
+.detail-action-text{ font-size:13px; color:var(--g-900); font-weight:600; line-height:1.45; }
+.detail-evidence-label{ font-size:10.5px; font-weight:700; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.03em; margin:16px 0 8px; }
+.detail-evidence-list{ display:flex; flex-direction:column; gap:6px; }
+.detail-evidence-row{ display:flex; align-items:center; gap:10px; padding:9px 10px; border:1px solid var(--line); border-radius:9px; cursor:pointer; transition:background .12s, border-color .12s; }
+.detail-evidence-row:hover{ background:var(--card-tint); border-color:var(--g-300); }
+.detail-evidence-row .ttl{ flex:1; font-size:12.5px; font-weight:600; color:var(--ink); }
+.detail-empty{ font-size:12px; color:var(--ink-faint); padding:6px 0; }
 .tag-modal-err { font-size: 11.5px; color: var(--red); font-weight: 600; display: none; margin-top: -8px; }
 .tag-modal-err.show { display: block; }
 
@@ -1554,7 +1635,7 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
           <div class="qr-timer"><span class="qr-dot"></span><span id="qr-countdown">57 detik tersisa</span></div>
         </div>
         <button class="pf-btn" onclick="simulateScan()">
-          <span> Simulasikan Scan QR</span>
+          <span>📱 Simulasikan Scan QR</span>
         </button>
       </div>
     </div>
@@ -1726,27 +1807,6 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
           <div class="card kpi"><div class="label">Avg. Resolution Time</div><div class="value">2.4h</div><div class="delta up">↓ 18 menit lebih cepat</div></div>
         </div>
 
-        <div class="section-title"><h2>Ringkasan Operasional</h2><span class="muted" style="font-size:12px;">Klik untuk lihat detailnya</span></div>
-        <div class="grid-3">
-          <div class="card"><h3>Issue per Kategori</h3><div class="hbars" id="category-hbars"></div></div>
-          <div class="card">
-            <h3>Top Issue Area</h3>
-            <div class="card-sub">Berdasarkan volume 30 hari</div>
-            <div style="margin-top:16px; display:flex; flex-direction:column; gap:12px;" id="top-issue-area"></div>
-          </div>
-          <div class="card">
-            <h3>Most Delayed Team</h3>
-            <div class="card-sub">Rata-rata waktu penyelesaian tertinggi</div>
-            <div style="margin-top:16px; display:flex; flex-direction:column; gap:12px;" id="most-delayed-team"></div>
-          </div>
-        </div>
-
-        <div class="section-title"><h2>Issue Terbaru</h2><button class="link-btn" onclick="switchView('issues')">Lihat semua →</button></div>
-        <div class="table-wrap">
-          <table><thead><tr><th>ID</th><th>Issue</th><th>Kategori</th><th>Severity</th><th>Sentimen</th><th>PIC</th><th>Status</th><th>SLA</th></tr></thead>
-          <tbody id="recent-issues-body"></tbody></table>
-        </div>
-
         <div class="section-title"><h2>AI Summary per Grup WhatsApp</h2><span class="muted" style="font-size:12px;">Otomatis dari analisis percakapan hari ini · klik kartu untuk detail</span></div>
         <div class="ai-summary-grid" id="dashboard-ai-summary"></div>
 
@@ -1765,7 +1825,7 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
               <div class="legend">
                 <div class="legend-item"><span class="sw" style="background:var(--g-500)"></span><span class="lbl">On Track</span><span class="val">946</span></div>
                 <div class="legend-item"><span class="sw" style="background:var(--amber)"></span><span class="lbl">At Risk</span><span class="val">186</span></div>
-                <div class="legend-item"><span class="sw" style="background:var(--red)"></span><span class="lbl">Breached</span><span class="val">113</span></div>
+                <div class="legend-item"><span class="sw" style="background:var(--red)"></span><span class="lbl">Delayed</span><span class="val">113</span></div>
               </div>
             </div>
           </div>
@@ -1790,7 +1850,26 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
           </div>
         </div>
 
-        
+        <div class="section-title"><h2>Ringkasan Operasional</h2><span class="muted" style="font-size:12px;">Klik untuk lihat detailnya</span></div>
+        <div class="grid-3">
+          <div class="card"><h3>Issue per Kategori</h3><div class="hbars" id="category-hbars"></div></div>
+          <div class="card">
+            <h3>Top Issue Area</h3>
+            <div class="card-sub">Berdasarkan volume 30 hari</div>
+            <div style="margin-top:16px; display:flex; flex-direction:column; gap:12px;" id="top-issue-area"></div>
+          </div>
+          <div class="card">
+            <h3>Most Delayed Team</h3>
+            <div class="card-sub">Rata-rata waktu penyelesaian tertinggi</div>
+            <div style="margin-top:16px; display:flex; flex-direction:column; gap:12px;" id="most-delayed-team"></div>
+          </div>
+        </div>
+
+        <div class="section-title"><h2>Issue Terbaru</h2><button class="link-btn" onclick="switchView('issues')">Lihat semua →</button></div>
+        <div class="table-wrap">
+          <table><thead><tr><th>ID</th><th>Issue</th><th>Kategori</th><th>Severity</th><th>Sentimen</th><th>PIC</th><th>Status</th><th>SLA</th></tr></thead>
+          <tbody id="recent-issues-body"></tbody></table>
+        </div>
       </section>
 
       <!-- ============ ISSUES ============ -->
@@ -1823,7 +1902,7 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
           </select>
           <select id="sla-filter">
             <option value="all">Semua SLA</option>
-            <option>On Track</option><option>At Risk</option><option>Breached</option>
+            <option>On Track</option><option>At Risk</option><option>Delayed</option>
           </select>
         </div>
         <div class="table-wrap">
@@ -1838,7 +1917,7 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
         <div class="grid-3">
           <div class="card"><div class="label" style="font-size:11.5px;color:var(--ink-faint);font-weight:700;text-transform:uppercase;">On Track</div><div class="value mono" style="font-size:26px;font-weight:600;color:var(--g-700);margin-top:8px;">946</div><div class="card-sub">76% dari total issue</div></div>
           <div class="card"><div class="label" style="font-size:11.5px;color:var(--ink-faint);font-weight:700;text-transform:uppercase;">At Risk</div><div class="value mono" style="font-size:26px;font-weight:600;color:#B4720A;margin-top:8px;">186</div><div class="card-sub">Butuh perhatian dalam &lt;2 jam</div></div>
-          <div class="card"><div class="label" style="font-size:11.5px;color:var(--ink-faint);font-weight:700;text-transform:uppercase;">Breached</div><div class="value mono" style="font-size:26px;font-weight:600;color:var(--red);margin-top:8px;">113</div><div class="card-sub">Perlu eskalasi segera</div></div>
+          <div class="card"><div class="label" style="font-size:11.5px;color:var(--ink-faint);font-weight:700;text-transform:uppercase;">Delayed</div><div class="value mono" style="font-size:26px;font-weight:600;color:var(--red);margin-top:8px;">113</div><div class="card-sub">Perlu eskalasi segera</div></div>
         </div>
 
         <div class="section-title">
@@ -2259,6 +2338,64 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
   </div>
 </div>
 
+<!-- ============ DETAIL POPUP: AI Insight / Early Warning / Team Performance ============ -->
+<div class="tag-modal-overlay" id="detail-modal-overlay" onclick="if(event.target===this) closeDetailModal()">
+  <div class="tag-modal-box detail-modal-box">
+    <div class="tag-modal-accent"></div>
+    <div class="tag-modal-head">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="detail-modal-icon" id="detail-modal-icon">💡</div>
+        <div>
+          <h3 id="detail-modal-title">Judul</h3>
+          <div class="sub" id="detail-modal-sub">Subjudul</div>
+        </div>
+      </div>
+      <button class="tag-modal-close" onclick="closeDetailModal()">✕</button>
+    </div>
+    <div class="tag-modal-body" id="detail-modal-body"></div>
+    <div class="tag-modal-foot">
+      <button class="tag-modal-btn ghost" onclick="closeDetailModal()">Tutup</button>
+      <button class="tag-modal-btn primary" id="detail-modal-cta">Lihat Issue Terkait</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TAMBAH PERUSAHAAN (PT) MODAL - pengganti window.prompt() ============ -->
+<div class="tag-modal-overlay" id="company-modal-overlay" onclick="if(event.target===this) closeCompanyModal()">
+  <div class="tag-modal-box">
+    <div class="tag-modal-accent"></div>
+    <div class="tag-modal-head">
+      <div>
+        <h3>Tambah Perusahaan / PT</h3>
+        <div class="sub">Buat kelompok perusahaan baru untuk grup WhatsApp</div>
+      </div>
+      <button class="tag-modal-close" onclick="closeCompanyModal()">✕</button>
+    </div>
+    <div class="tag-modal-body">
+      <div class="tag-modal-field">
+        <label><span class="req-star">*</span> Nama Perusahaan / PT</label>
+        <input class="tag-modal-input" id="company-modal-name-input" placeholder="Contoh: PT Nusantara Cargo" onkeydown="if(event.key==='Enter') submitCompanyModal()">
+        <div class="tag-modal-err" id="company-modal-name-err">Nama perusahaan tidak boleh kosong.</div>
+      </div>
+      <div class="tag-modal-field">
+        <label>Industri</label>
+        <select class="tag-modal-input" id="company-modal-industry-select">
+          <option>Logistics</option>
+          <option>Mining</option>
+          <option>Retail</option>
+          <option>Manufacturing</option>
+          <option>Shared Services</option>
+          <option>Lainnya</option>
+        </select>
+      </div>
+    </div>
+    <div class="tag-modal-foot">
+      <button class="tag-modal-btn ghost" onclick="closeCompanyModal()">Batal</button>
+      <button class="tag-modal-btn primary" onclick="submitCompanyModal()">Buat Perusahaan</button>
+    </div>
+  </div>
+</div>
+
 <!-- ============ MANUAL TICKET MODAL ============ -->
 <div class="modal-overlay" id="tm-overlay" onclick="if(event.target===this) closeManualTicketModal()">
   <div class="ticket-modal">
@@ -2649,7 +2786,7 @@ const issues = [
     sentiment:{label:"Neutral", score:0.10}, sourceType:"NLP", tags:["HR","Resolved"],
     thread:[{who:"Staff · Kemarin", text:"Pengajuan cuti saya belum di-approve dari 3 hari lalu, tolong dicek."},{who:"Andi Wijaya · Kemarin", text:"Sudah di-approve ya, mohon maaf ada keterlambatan sistem."}],
     stage:6},
-  {id:"OPS-2287", title:"Customer Complaint - Damaged Delivery", category:"Customer", severity:"High", pic:"Customer Service", status:"Open", sla:"Breached", created:"06:50", source:"WAG Customer Service Jakarta", slaTargetHrs:2, deadline: now - 48*min,
+  {id:"OPS-2287", title:"Customer Complaint - Damaged Delivery", category:"Customer", severity:"High", pic:"Customer Service", status:"Open", sla:"Delayed", created:"06:50", source:"WAG Customer Service Jakarta", slaTargetHrs:2, deadline: now - 48*min,
     sentiment:{label:"Negative", score:-0.82}, sourceType:"NLP", tags:["Komplain","Refund","Urgent"],
     thread:[{who:"CS Agent · 06:50", text:"Customer komplain barang datang dalam kondisi rusak, minta refund atau ganti unit."},{who:"Dewi Anggraini · 07:10", text:"Sudah eskalasi ke warehouse untuk cek proses packing."}],
     stage:4},
@@ -2657,7 +2794,7 @@ const issues = [
     sentiment:{label:"Negative", score:-0.30}, sourceType:"NLP", tags:["Stok","Delay"],
     thread:[{who:"Site Ops · 08:30", text:"PO spare part belum keluar, stok gudang site mulai menipis."}],
     stage:2},
-  {id:"OPS-2285", title:"Warehouse Equipment Breakdown", category:"Operations", severity:"High", pic:"Maintenance Team", status:"In Progress", sla:"Breached", created:"05:20", source:"WAG Site Ops Kalimantan", slaTargetHrs:3, deadline: now - 90*min,
+  {id:"OPS-2285", title:"Warehouse Equipment Breakdown", category:"Operations", severity:"High", pic:"Maintenance Team", status:"In Progress", sla:"Delayed", created:"05:20", source:"WAG Site Ops Kalimantan", slaTargetHrs:3, deadline: now - 90*min,
     sentiment:{label:"Negative", score:-0.66}, sourceType:"NLP", tags:["Breakdown","Maintenance","Urgent"],
     thread:[{who:"Site Supervisor · 05:20", text:"Forklift unit 3 mogok di area loading, proses bongkar muat terhambat."},{who:"Maintenance · 06:00", text:"Teknisi sudah menuju lokasi, part pengganti sedang dicari."}],
     stage:5},
@@ -2713,8 +2850,10 @@ const alerts = [
 
 const stages = ["Detected","Assigned","In Progress","At Risk","Escalated","Resolved","Closed"];
 
-const categoryCounts = {Fleet:214, IT:98, Customer:141, Finance:87, Operations:176, HR:54, Procurement:63};
-const statusCounts = {Open:186, "In Progress":214, Resolved:1059, Closed:412};
+/* Total issue per kategori & status disamakan dengan KPI "Total Issues" (1.245) di Dashboard,
+   supaya angka di Dashboard & menu Reports konsisten satu sama lain. */
+const categoryCounts = {Fleet:320, Operations:263, Customer:211, IT:146, Finance:130, Procurement:94, HR:81};
+const statusCounts = {Open:186, "In Progress":134, Resolved:666, Closed:259};
 
 const waGroups = [
   {id:"g1", name:"WAG Jakarta Operations", industry:"Logistics · Fleet", msgs:342, issues:18, top:"Fleet"},
@@ -2774,26 +2913,33 @@ let companies = [
 ];
 
 const insights = [
-  {tag:"Maintenance Pattern", text:"35% maintenance issues berasal dari Equipment A.", action:"Evaluasi asset dan preventive maintenance.", conf:88},
-  {tag:"Fleet Trend", text:"Driver delay meningkat 24% dibanding bulan sebelumnya.", action:"Review fleet, rute, dan proses keberangkatan.", conf:81},
-  {tag:"SLA Risk", text:"12 issues berpotensi delay dalam 2 jam ke depan.", action:"Prioritaskan eskalasi ke PIC terkait.", conf:93},
+  {tag:"Maintenance Pattern", text:"38% issue kategori Operations berasal dari breakdown & keterlambatan maintenance alat berat di WAG Site Ops Kalimantan.", action:"Evaluasi jadwal preventive maintenance dan ketersediaan stok spare part kritis.", conf:88, filter:{type:"category", value:"Operations"}},
+  {tag:"Fleet Trend", text:"Vehicle & driver delay naik 24% dibanding bulan lalu, terkonsentrasi di WAG Jakarta Operations.", action:"Review rute pengiriman dan proses checklist keberangkatan driver.", conf:84, filter:{type:"category", value:"Fleet"}},
+  {tag:"SLA Risk", text:"12 tiket berisiko delay SLA dalam 2 jam ke depan, mayoritas dari kategori Fleet dan Operations.", action:"Prioritaskan eskalasi ke PIC Logistics/Fleet Team & Maintenance Team.", conf:93, filter:{type:"sla", value:"At Risk"}},
+  {tag:"IT Recurrence", text:"Downtime server & jaringan cabang berulang 6 kali dalam 30 hari terakhir, 3 di antaranya berseverity Critical.", action:"Audit infrastruktur cabang dan pertimbangkan redundansi ISP kedua.", conf:79, filter:{type:"category", value:"IT"}},
+  {tag:"Customer Sentiment", text:"Komplain barang rusak & permintaan refund naik 18% di WAG Customer Service Jakarta minggu ini.", action:"Tinjau proses packing dan QC gudang sebelum pengiriman.", conf:86, filter:{type:"category", value:"Customer"}},
+  {tag:"Procurement Delay", text:"PO spare part & approval vendor tertahan rata-rata 1,5 hari lebih lama dari SLA standar 12 jam.", action:"Sederhanakan alur approval berjenjang untuk PO di bawah nilai tertentu.", conf:77, filter:{type:"category", value:"Procurement"}},
 ];
 
 const warnings = [
-  {t:"Volume - IT", d:"Jumlah IT issues meningkat 40% dalam 7 hari terakhir."},
-  {t:"SLA - Critical", d:"12 critical issues berpotensi breach dalam 2 jam."},
-  {t:"Recurring Issue", d:"Equipment breakdown terjadi 8 kali dalam 30 hari."},
-  {t:"Severity", d:"Issue dengan potential business impact tinggi terdeteksi di WAG Site Ops Kalimantan."},
+  {t:"Volume - IT", d:"Jumlah issue kategori IT meningkat 40% dalam 7 hari terakhir, dominan dari WAG IT Support.", filter:{type:"category", value:"IT"}},
+  {t:"SLA - Critical", d:"12 tiket critical berpotensi delay SLA dalam 2 jam ke depan.", filter:{type:"sla", value:"At Risk"}},
+  {t:"Recurring Issue", d:"Equipment breakdown terjadi 8 kali dalam 30 hari terakhir di WAG Site Ops Kalimantan.", filter:{type:"category", value:"Operations"}},
+  {t:"Severity", d:"Issue dengan potential business impact tinggi terdeteksi di WAG Site Ops Kalimantan.", filter:{type:"category", value:"Operations"}},
+  {t:"Customer Sentiment", d:"Sentimen negatif di WAG Customer Service Jakarta naik 3 hari berturut-turut, dipicu komplain pengiriman rusak.", filter:{type:"category", value:"Customer"}},
+  {t:"Procurement Backlog", d:"6 PO di WAG Finance & Procurement tertahan lebih dari 24 jam tanpa approval.", filter:{type:"category", value:"Procurement"}},
 ];
 
+/* n per tim disamakan dengan categoryCounts (Fleet->Logistics/Fleet, Operations->Maintenance, dst)
+   supaya total issue di leaderboard = total issue per kategori = Total Issues KPI (1.245). */
 const leaderboard = [
-  {team:"Customer Service", n:214, avg:"1.8h", sla:"96%"},
-  {team:"IT Infrastructure", n:104, avg:"3.1h", sla:"89%"},
-  {team:"Finance Team", n:87, avg:"2.6h", sla:"94%"},
-  {team:"HR Team", n:54, avg:"2.2h", sla:"97%"},
-  {team:"Procurement Team", n:63, avg:"4.0h", sla:"85%"},
-  {team:"Maintenance Team", n:98, avg:"3.6h", sla:"82%"},
-  {team:"Logistics / Fleet", n:214, avg:"5.1h", sla:"78%"},
+  {team:"Customer Service", n:211, avg:"1.8h", sla:"97%", cat:"Customer"},
+  {team:"IT Infrastructure", n:146, avg:"3.1h", sla:"91%", cat:"IT"},
+  {team:"Finance Team", n:130, avg:"2.6h", sla:"95%", cat:"Finance"},
+  {team:"HR Team", n:81, avg:"2.2h", sla:"98%", cat:"HR"},
+  {team:"Procurement Team", n:94, avg:"4.0h", sla:"90%", cat:"Procurement"},
+  {team:"Maintenance Team", n:263, avg:"3.6h", sla:"90%", cat:"Operations"},
+  {team:"Logistics / Fleet", n:320, avg:"5.1h", sla:"87%", cat:"Fleet"},
 ];
 
 const volume14d = [22,28,19,31,26,34,29,40,33,25,38,45,30,37];
@@ -2853,7 +2999,7 @@ const conversations = {
 
 /* ---------------- HELPERS ---------------- */
 function statusBadgeClass(s){ return {"Open":"open","In Progress":"progress","Resolved":"resolved","Closed":"closed"}[s]||"open"; }
-function slaBadgeClass(s){ return {"On Track":"track","At Risk":"risk","Breached":"breach"}[s]||"track"; }
+function slaBadgeClass(s){ return {"On Track":"track","At Risk":"risk","Delayed":"delay"}[s]||"track"; }
 function sevBadgeClass(s){ return {"Critical":"sev-critical","High":"sev-high","Medium":"sev-medium","Low":"sev-low"}[s]||"sev-low"; }
 function companyOfGroup(groupId){ return companies.find(c=>c.groupIds.includes(groupId)); }
 function sentimentBadgeClass(l){ return {"Positive":"sent-pos","Neutral":"sent-neu","Negative":"sent-neg"}[l]||"sent-neu"; }
@@ -2972,11 +3118,33 @@ function goToIssuesBySearch(term){
   renderIssuesTable();
 }
 
+function goToIssuesBySla(slaVal){
+  switchView('issues');
+  resetIssueFilterControls();
+  document.getElementById('sla-filter').value = slaVal;
+  filterState.sla = slaVal;
+  document.getElementById('issue-search').value = '';
+  filterState.search = '';
+  renderIssuesTable();
+}
+
+function goToIssuesByStatus(statusVal){
+  switchView('issues');
+  resetIssueFilterControls();
+  document.querySelectorAll('#status-seg button').forEach(x=>x.classList.remove('active'));
+  const btn = document.querySelector(`#status-seg button[data-status="${statusVal}"]`);
+  if(btn) btn.classList.add('active');
+  filterState.status = statusVal;
+  document.getElementById('issue-search').value = '';
+  filterState.search = '';
+  renderIssuesTable();
+}
+
 function renderStatusBars(){
   const max = Math.max(...Object.values(statusCounts));
   const el = document.getElementById('report-status-hbars');
   el.innerHTML = Object.entries(statusCounts).map(([k,v])=>`
-    <div class="hbar-row">
+    <div class="hbar-row" onclick="goToIssuesByStatus('${k}')">
       <div class="name">${k}</div>
       <div class="hbar-track"><div class="hbar-fill" style="width:${(v/max*100).toFixed(0)}%"></div></div>
       <div class="count">${v}</div>
@@ -3193,7 +3361,7 @@ function renderSlaTable(){
       <td class="title">${it.title}</td>
       <td>${it.pic}</td>
       <td><span class="badge ${slaBadgeClass(it.sla)}">${it.sla}</span></td>
-      <td class="mono" style="font-size:11.5px; color:${it.sla==='Breached'?'var(--red)':(it.sla==='At Risk'?'#B4720A':'var(--ink-dim)')}; font-weight:700;">${formatCountdown(it.deadline)}</td>
+      <td class="mono" style="font-size:11.5px; color:${it.sla==='Delayed'?'var(--red)':(it.sla==='At Risk'?'#B4720A':'var(--ink-dim)')}; font-weight:700;">${formatCountdown(it.deadline)}</td>
     </tr>`).join('');
 }
 
@@ -3217,25 +3385,115 @@ function renderWaGroups(){
 
 /* ---------------- RENDER: INSIGHTS ---------------- */
 function renderInsights(){
-  document.getElementById('insight-cards').innerHTML = insights.map(i=>`
-    <div class="insight-card">
+  document.getElementById('insight-cards').innerHTML = insights.map((i,idx)=>`
+    <div class="insight-card" onclick="openInsightModal(${idx})">
       <div class="tag">${i.tag}</div>
       <p class="insight-text">${i.text}</p>
       <p class="insight-action">→ ${i.action}</p>
       <div class="conf"><span>AI Confidence</span><div class="conf-track"><div class="conf-fill" style="width:${i.conf}%"></div></div><span>${i.conf}%</span></div>
     </div>`).join('');
 
-  document.getElementById('warning-rows').innerHTML = warnings.map(w=>`
-    <div class="warn-row">
+  document.getElementById('warning-rows').innerHTML = warnings.map((w,idx)=>`
+    <div class="warn-row" onclick="openWarningModal(${idx})">
       <div class="warn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
       <div><div class="t">${w.t}</div><div class="d">${w.d}</div></div>
     </div>`).join('');
 }
 
+/* ---------------- DETAIL POPUP: AI Insight / Early Warning / Team ---------------- */
+function relatedIssuesForFilter(filter, limit){
+  limit = limit || 3;
+  if(!filter) return [];
+  if(filter.type==='category') return issues.filter(it=>it.category===filter.value).slice(0,limit);
+  if(filter.type==='sla') return issues.filter(it=>it.sla===filter.value).slice(0,limit);
+  return [];
+}
+function evidenceListHtml(related){
+  if(!related.length) return '<div class="detail-empty">Belum ada issue terkait yang cocok saat ini.</div>';
+  return `<div class="detail-evidence-label">Issue Terkait</div>
+    <div class="detail-evidence-list">${related.map(it=>`
+      <div class="detail-evidence-row" onclick="event.stopPropagation(); closeDetailModal(); openDrawer('${it.id}');">
+        <span class="mono" style="font-size:11px; color:var(--g-700); font-weight:700;">${it.id}</span>
+        <span class="ttl">${it.title}</span>
+        <span class="badge ${sevBadgeClass(it.severity)}">${it.severity}</span>
+      </div>`).join('')}
+    </div>`;
+}
+function setDetailModalCta(filter, fallbackLabel){
+  const ctaBtn = document.getElementById('detail-modal-cta');
+  if(filter){
+    ctaBtn.style.display = 'inline-flex';
+    ctaBtn.textContent = fallbackLabel || 'Lihat Semua Issue Terkait';
+    ctaBtn.onclick = ()=>{
+      closeDetailModal();
+      if(filter.type==='sla') goToIssuesBySla(filter.value); else goToIssuesByCategory(filter.value);
+    };
+  } else {
+    ctaBtn.style.display = 'none';
+  }
+}
+function openInsightModal(idx){
+  const i = insights[idx];
+  if(!i) return;
+  document.getElementById('detail-modal-icon').style.background = 'var(--grad)';
+  document.getElementById('detail-modal-icon').style.color = '#fff';
+  document.getElementById('detail-modal-icon').textContent = '💡';
+  document.getElementById('detail-modal-title').textContent = i.tag;
+  document.getElementById('detail-modal-sub').textContent = 'AI Insight · Recurring Issue';
+  const related = relatedIssuesForFilter(i.filter);
+  document.getElementById('detail-modal-body').innerHTML = `
+    <p style="font-size:14px; color:var(--ink); line-height:1.55;">${i.text}</p>
+    <div class="detail-action-box">
+      <div class="detail-action-label">Rekomendasi Tindakan</div>
+      <div class="detail-action-text">→ ${i.action}</div>
+    </div>
+    <div class="conf" style="margin-top:2px;"><span>AI Confidence</span><div class="conf-track"><div class="conf-fill" style="width:${i.conf}%"></div></div><span>${i.conf}%</span></div>
+    ${evidenceListHtml(related)}`;
+  setDetailModalCta(i.filter, 'Lihat Semua Issue Terkait');
+  document.getElementById('detail-modal-overlay').classList.add('show');
+}
+function openWarningModal(idx){
+  const w = warnings[idx];
+  if(!w) return;
+  document.getElementById('detail-modal-icon').style.background = 'var(--amber-bg)';
+  document.getElementById('detail-modal-icon').style.color = '#B4720A';
+  document.getElementById('detail-modal-icon').textContent = '⚠️';
+  document.getElementById('detail-modal-title').textContent = w.t;
+  document.getElementById('detail-modal-sub').textContent = 'Early Warning · Terdeteksi Otomatis oleh Odeva AI';
+  const related = relatedIssuesForFilter(w.filter);
+  document.getElementById('detail-modal-body').innerHTML = `
+    <p style="font-size:14px; color:var(--ink); line-height:1.55;">${w.d}</p>
+    ${evidenceListHtml(related)}`;
+  setDetailModalCta(w.filter, 'Lihat Semua Issue Terkait');
+  document.getElementById('detail-modal-overlay').classList.add('show');
+}
+function openTeamModal(team){
+  const l = leaderboard.find(x=>x.team===team);
+  if(!l) return;
+  document.getElementById('detail-modal-icon').style.background = 'var(--grad)';
+  document.getElementById('detail-modal-icon').style.color = '#fff';
+  document.getElementById('detail-modal-icon').textContent = '👥';
+  document.getElementById('detail-modal-title').textContent = l.team;
+  document.getElementById('detail-modal-sub').textContent = 'Performa Tim / PIC · 30 hari terakhir';
+  const related = relatedIssuesForFilter(l.filter || {type:'category', value:l.cat}, 4);
+  document.getElementById('detail-modal-body').innerHTML = `
+    <div class="detail-modal-meta-row">
+      <div class="detail-modal-meta-item">Total Issue<b>${l.n}</b></div>
+      <div class="detail-modal-meta-item">Avg. Resolution<b>${l.avg}</b></div>
+      <div class="detail-modal-meta-item">SLA Achievement<b>${l.sla}</b></div>
+    </div>
+    ${evidenceListHtml(related)}`;
+  setDetailModalCta({type:'category', value:l.cat}, 'Lihat Semua Issue Tim Ini');
+  document.getElementById('detail-modal-overlay').classList.add('show');
+}
+function closeDetailModal(){
+  document.getElementById('detail-modal-overlay').classList.remove('show');
+}
+
 /* ---------------- RENDER: REPORTS ---------------- */
 function renderLeaderboard(){
   document.getElementById('leaderboard').innerHTML = leaderboard.slice().sort((a,b)=>b.n-a.n).map((l,i)=>`
-    <div class="lb-row">
+    <div class="lb-row clickable" onclick="openTeamModal('${l.team.replace(/'/g,"\\'")}')">
       <div class="lb-rank">${i+1}</div>
       <div class="lb-name">${l.team}</div>
       <div class="lb-val">${l.n}</div>
@@ -3272,13 +3530,13 @@ function buildGroupAiSummary(groupId){
   items.forEach(x=> catCounts[x.issue.category] = (catCounts[x.issue.category]||0)+1);
   const topCat = Object.entries(catCounts).sort((a,b)=>b[1]-a[1])[0][0];
 
-  const breached = items.filter(x=>x.issue.sla==='Breached').length;
+  const delayed = items.filter(x=>x.issue.sla==='Delayed').length;
 
-  let text = `Sedang ada ${items.length} issue aktif di grup ini. Paling mendesak: "${top.title}" (${top.severity}${top.sla==='Breached'?', SLA sudah lewat':top.sla==='At Risk'?', SLA hampir habis':''}).`;
+  let text = `Sedang ada ${items.length} issue aktif di grup ini. Paling mendesak: "${top.title}" (${top.severity}${top.sla==='Delayed'?', SLA sudah lewat':top.sla==='At Risk'?', SLA hampir habis':''}).`;
   if(others>0) text += ` Ditambah ${others} issue lain, mayoritas terkait ${topCat}.`;
-  if(breached>1) text += ` ${breached} issue sudah melewati target SLA - perlu perhatian segera.`;
+  if(delayed>1) text += ` ${delayed} issue sudah melewati target SLA - perlu perhatian segera.`;
 
-  const tone = (top.severity==='Critical' || breached>0) ? 'critical' : (top.severity==='High' ? 'warn' : 'ok');
+  const tone = (top.severity==='Critical' || delayed>0) ? 'critical' : (top.severity==='High' ? 'warn' : 'ok');
   return { text, tone, count: items.length, items };
 }
 
@@ -3868,11 +4126,26 @@ function unassignGroup(companyId, groupId){
   renderWaGroups();
 }
 function addCompany(){
-  const name = prompt("Nama perusahaan / PT baru:");
-  if(!name) return;
-  const industry = prompt("Industri (contoh: Logistics, Mining, Retail):", "Lainnya") || "Lainnya";
+  document.getElementById('company-modal-name-input').value = '';
+  document.getElementById('company-modal-industry-select').value = 'Logistics';
+  document.getElementById('company-modal-name-err').classList.remove('show');
+  document.getElementById('company-modal-overlay').classList.add('show');
+  setTimeout(()=> document.getElementById('company-modal-name-input').focus(), 100);
+}
+function closeCompanyModal(){
+  document.getElementById('company-modal-overlay').classList.remove('show');
+}
+function submitCompanyModal(){
+  const input = document.getElementById('company-modal-name-input');
+  const errEl = document.getElementById('company-modal-name-err');
+  const name = input.value.trim();
+  if(!name){ errEl.classList.add('show'); input.focus(); return; }
+  errEl.classList.remove('show');
+  const industry = document.getElementById('company-modal-industry-select').value || 'Lainnya';
   companies.push({id:"c"+(companies.length+1)+"_"+Date.now(), name:name, industry:industry, groupIds:[]});
+  closeCompanyModal();
   renderSettings();
+  demoToast('🏢 Perusahaan "'+name+'" berhasil ditambahkan!');
 }
 
 /* ---------------- DRAWER ---------------- */
@@ -3886,7 +4159,7 @@ function openDrawer(id){
     <span class="badge ${statusBadgeClass(it.status)}">${it.status}</span>
     <span class="badge ${slaBadgeClass(it.sla)}">${it.sla}</span>`;
   document.getElementById('d-sla-text').textContent = formatCountdown(it.deadline);
-  document.getElementById('d-sla-text').style.color = it.sla==='Breached'?'var(--red)':(it.sla==='At Risk'?'#B4720A':'var(--g-700)');
+  document.getElementById('d-sla-text').style.color = it.sla==='Delayed'?'var(--red)':(it.sla==='At Risk'?'#B4720A':'var(--g-700)');
   document.getElementById('d-sla-badge').className = 'badge '+slaBadgeClass(it.sla);
   document.getElementById('d-sla-badge').textContent = it.sla;
   renderClosePanel(it);
@@ -4850,34 +5123,39 @@ function init(){
 <div id="dp-toast" class="dp-toast"></div>
 
 <button id="demo-fab" onclick="demoShowPanel()">
-  ▶ Demo: Open → Close Tiket
+  ▶ Demo Simulasi
 </button>
 
 <div id="demo-panel">
   <div class="dp-accent"></div>
   <div class="dp-header">
-    <div>
-      <div class="dp-title">
-        <span class="dp-icon">🎬</span>
-        Demo Simulasi End-to-End
+    <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+      <button class="dp-back-btn" id="dp-back-btn" onclick="demoBackToPicker()" title="Pilih simulasi lain" style="display:none;">←</button>
+      <div style="min-width:0;">
+        <div class="dp-title">
+          <span class="dp-icon" id="dp-header-icon">🎬</span>
+          <span id="dp-header-title">Demo Simulasi Odeva IOC</span>
+        </div>
+        <div class="dp-subtitle" id="dp-header-subtitle">Pilih simulasi yang mau dijalankan</div>
       </div>
-      <div class="dp-subtitle">Open Tiket → Proses → Close · 1 skenario nyata</div>
     </div>
     <button class="dp-close-btn" onclick="demoHidePanel()" title="Tutup panel">×</button>
   </div>
 
-  <div class="dp-progress-bar">
+  <div class="dp-progress-bar" id="dp-progress-bar-wrap" style="display:none;">
     <div class="dp-progress-fill" id="dp-progress" style="width:0%"></div>
   </div>
 
-  <div class="dp-steps" id="dp-steps-list"></div>
+  <div class="dp-picker" id="dp-picker"></div>
+
+  <div class="dp-steps" id="dp-steps-list" style="display:none;"></div>
 
   <div class="dp-callout" id="dp-callout">
     <div class="dp-callout-title" id="dp-callout-title"></div>
     <div id="dp-callout-body"></div>
   </div>
 
-  <div class="dp-footer">
+  <div class="dp-footer" id="dp-footer" style="display:none;">
     <button class="dp-btn-reset" onclick="demoReset()" title="Mulai ulang">↺ Reset</button>
     <span class="dp-step-counter" id="dp-step-counter">Langkah 0 / 7</span>
     <button class="dp-btn-next" id="dp-next-btn" onclick="demoNext()">
@@ -4889,258 +5167,699 @@ function init(){
 
 <script>
 /* ============================================================
-   DEMO SIMULATOR ENGINE
+   DEMO SIMULATOR ENGINE - multi skenario
    ============================================================ */
 
-// The ONE scenario we demo:
-// Pesan masuk di WAG Customer Service → AI deteksi → tiket open → assign PIC →
-// in progress → escalate → resolved → close (AI auto)
 const DEMO_ISSUE_ID = "OPS-DEMO1";
+const DEMO_PIC_ID = "pic_demo_cs2";
+const DEMO_COMPANY_ID = "c_demo1";
+const DEMO_SLA_ID = "sla_demo_cs_kerusakan";
+const DEMO_TAG_ID = "tag_demo_kardus";
+const DEMO_COMPANY_ORIGINAL_OWNER = "c3"; // PT Sumber Retail - pemilik asli grup g4
 
-const demoSteps = [
+const demoScenarios = [
   {
-    label: "Pesan masuk di WAG Customer Service",
-    desc: "Pelanggan mengeluh via WhatsApp grup",
-    view: "conversations",
-    group: "g4",
-    calloutTitle: "📱 Tahap 1 - Pesan Masuk",
-    callout: "Buka tab Conversations dan pilih grup <b>WAG Customer Service Jakarta</b>. Pesan baru masuk dari pelanggan tentang barang rusak. Odeva AI langsung membaca dan menganalisis percakapan ini.",
-    action: () => {
-      switchView('conversations');
-      selectConvo('g4');
-      // Add a fresh message to g4
-      const nowStr = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-      conversations.g4.msgs.push({
-        who:"Customer Service Agent",
-        time: nowStr,
-        date:"13 Agu 2026",
-        day:"Kamis",
-        text:"🚨 Ada customer baru komplain - Laptop yang dikirim tidak menyala sama sekali, sudah dicek kardus penyok. Minta ganti unit atau refund penuh.",
-        _demoNew: true
-      });
-      conversations.g4.last = "Customer komplain laptop tidak menyala, kardus penyok.";
-      conversations.g4.time = nowStr;
-      renderConvoList();
-      renderConvoMessages();
-      setTimeout(() => {
-        const msgs = document.getElementById('convo-messages');
-        if(msgs) msgs.scrollTop = msgs.scrollHeight;
-      }, 200);
-      demoToast("📱 Pesan baru masuk di WAG Customer Service Jakarta");
-    }
-  },
-  {
-    label: "AI NLP mendeteksi issue otomatis",
-    desc: "Odeva AI mengklasifikasikan severity & membuat tiket",
-    view: "conversations",
-    group: "g4",
-    calloutTitle: "🤖 Tahap 2 - NLP Auto-Detect",
-    callout: "Odeva AI menganalisis sentimen pesan (<b>Negative, skor −0.87</b>) dan langsung membuat tiket dengan severity <b>High</b>. Tiket muncul otomatis tanpa input manual.",
-    action: () => {
-      const nowStr = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-      // Update the last message to have a flag
-      const msgs = conversations.g4.msgs;
-      const last = msgs[msgs.length - 1];
-      last.flag = { severity: "High", issueId: DEMO_ISSUE_ID };
+    id: "ticket",
+    icon: "🎬",
+    title: "Alur Tiket Customer Service",
+    subtitle: "Open → Proses → Close · skenario end-to-end",
+    steps: [
+      {
+        label: "Pesan masuk di WAG Customer Service",
+        desc: "Pelanggan mengeluh via WhatsApp grup",
+        view: "conversations",
+        group: "g4",
+        calloutTitle: "📱 Langkah 1 - Pesan Masuk",
+        callout: "Buka tab Conversations dan pilih grup <b>WAG Customer Service Jakarta</b>. Pesan baru masuk dari pelanggan tentang barang rusak. Odeva AI langsung membaca dan menganalisis percakapan ini.",
+        action: () => {
+          switchView('conversations');
+          selectConvo('g4');
+          const nowStr = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+          conversations.g4.msgs.push({
+            who:"Customer Service Agent",
+            time: nowStr,
+            date:"13 Agu 2026",
+            day:"Kamis",
+            text:"🚨 Ada customer baru komplain - Laptop yang dikirim tidak menyala sama sekali, sudah dicek kardus penyok. Minta ganti unit atau refund penuh.",
+            _demoNew: true
+          });
+          conversations.g4.last = "Customer komplain laptop tidak menyala, kardus penyok.";
+          conversations.g4.time = nowStr;
 
-      // Add the new issue
-      const existing = issues.find(x=>x.id===DEMO_ISSUE_ID);
-      if(!existing){
-        issues.unshift({
-          id: DEMO_ISSUE_ID,
-          title: "Laptop Pelanggan Rusak - Pengiriman Bermasalah",
-          category: "Customer",
-          severity: "High",
-          pic: "Customer Service",
-          status: "Open",
-          sla: "On Track",
-          created: nowStr,
-          source: "WAG Customer Service Jakarta",
-          slaTargetHrs: 4,
-          deadline: Date.now() + 4*3600*1000,
-          sentiment: { label: "Negative", score: -0.87 },
-          sourceType: "NLP",
-          tags: ["Refund","Kerusakan","Pengiriman","Auto-Detect"],
-          thread: [
-            { who: "Customer Service Agent · " + nowStr, text: "Customer komplain laptop tidak menyala, kardus penyok. Minta ganti unit atau refund." }
-          ],
-          stage: 1
-        });
+          const g4stat = waGroups.find(g=>g.id==='g4');
+          if(g4stat) g4stat.msgs += 1;
+          renderWaGroups();
+
+          renderConvoList();
+          renderConvoMessages();
+          setTimeout(() => {
+            const msgs = document.getElementById('convo-messages');
+            if(msgs) msgs.scrollTop = msgs.scrollHeight;
+          }, 200);
+          demoToast("📱 Pesan baru masuk di WAG Customer Service Jakarta");
+        }
+      },
+      {
+        label: "AI NLP mendeteksi issue otomatis",
+        desc: "Odeva AI mengklasifikasikan severity & membuat tiket",
+        view: "conversations",
+        group: "g4",
+        calloutTitle: "🤖 Langkah 2 - NLP Auto-Detect",
+        callout: "Odeva AI menganalisis sentimen pesan (<b>Negative, skor −0.87</b>) dan langsung membuat tiket dengan severity <b>High</b>. Tiket muncul otomatis tanpa input manual.",
+        action: () => {
+          const nowStr = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+          const msgs = conversations.g4.msgs;
+          const last = msgs[msgs.length - 1];
+          last.flag = { severity: "High", issueId: DEMO_ISSUE_ID };
+
+          const existing = issues.find(x=>x.id===DEMO_ISSUE_ID);
+          if(!existing){
+            issues.unshift({
+              id: DEMO_ISSUE_ID,
+              title: "Laptop Pelanggan Rusak - Pengiriman Bermasalah",
+              category: "Customer",
+              severity: "High",
+              pic: "Customer Service",
+              status: "Open",
+              sla: "On Track",
+              created: nowStr,
+              source: "WAG Customer Service Jakarta",
+              slaTargetHrs: 4,
+              deadline: Date.now() + 4*3600*1000,
+              sentiment: { label: "Negative", score: -0.87 },
+              sourceType: "NLP",
+              tags: ["Refund","Kerusakan","Pengiriman","Auto-Detect"],
+              thread: [
+                { who: "Customer Service Agent · " + nowStr, text: "Customer komplain laptop tidak menyala, kardus penyok. Minta ganti unit atau refund." }
+              ],
+              stage: 1
+            });
+          }
+
+          alerts.unshift({
+            id: "ALT-DEMO1",
+            issueId: DEMO_ISSUE_ID,
+            channels: ["dashboard","whatsapp"],
+            recipient: "Customer Service",
+            group: "WAG Customer Service Jakarta",
+            time: nowStr,
+            status: "Open"
+          });
+
+          const g4stat2 = waGroups.find(g=>g.id==='g4');
+          if(g4stat2) g4stat2.issues += 1;
+          renderWaGroups();
+
+          renderConvoMessages();
+          renderIssuesTable();
+          renderRecentIssues();
+          renderAlerts();
+          renderRecentAlertsList();
+          renderDashboardAiSummary();
+          renderSentimentDonut();
+          document.getElementById('badge-open').textContent = issues.filter(i=>i.status==='Open').length;
+          document.getElementById('badge-alerts').textContent = alerts.length;
+          document.getElementById('badge-flagged').textContent = countFlaggedToday();
+          setTimeout(() => {
+            const msgs2 = document.getElementById('convo-messages');
+            if(msgs2) msgs2.scrollTop = msgs2.scrollHeight;
+          }, 200);
+          demoToast("🤖 AI NLP membuat tiket " + DEMO_ISSUE_ID + " secara otomatis");
+        }
+      },
+      {
+        label: "Lihat Tiket Baru di Issues & Alert Log",
+        desc: "Tiket OPS-DEMO1 muncul dengan status Open",
+        view: "issues",
+        calloutTitle: "📋 Langkah 3 - Tiket Open",
+        callout: "Buka halaman <b>Issues & Tickets</b>. Tiket <b>OPS-DEMO1</b> sudah muncul di baris paling atas dengan status <b>Open</b>. Alert otomatis sudah dikirim ke Dashboard dan WhatsApp PIC. Klik tiket untuk lihat drawer detail.",
+        action: () => {
+          switchView('issues');
+          setTimeout(() => openDrawer(DEMO_ISSUE_ID), 300);
+          demoToast("📋 Tiket OPS-DEMO1 terlihat di Issues & Tickets - status Open");
+        }
+      },
+      {
+        label: "PIC merespon & status berubah ke In Progress",
+        desc: "Customer Service sudah mengonfirmasi penanganan",
+        view: "issues",
+        calloutTitle: "⚙️ Langkah 4 - In Progress",
+        callout: "Customer Service sudah mengonfirmasi penanganan. Status berubah ke <b>In Progress</b>. Pesan update masuk di thread tiket, dan stage timeline bergerak maju.",
+        action: () => {
+          const it = issues.find(x=>x.id===DEMO_ISSUE_ID);
+          if(!it) return;
+          it.status = "In Progress";
+          it.stage = 2;
+          it.sla = "On Track";
+          const nowStr = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+          it.thread.push({ who: "CS Lead · " + nowStr, text: "Sudah koordinasi dengan gudang dan tim pengiriman. Foto kerusakan sudah diminta ke customer, proses pengecekan berjalan." });
+          const al = alerts.find(a=>a.issueId===DEMO_ISSUE_ID);
+          if(al) al.status = "In Progress";
+
+          switchView('issues');
+          renderIssuesTable();
+          renderRecentIssues();
+          renderAlerts();
+          renderDashboardAiSummary();
+          setTimeout(() => openDrawer(DEMO_ISSUE_ID), 300);
+          demoToast("⚙️ Status berubah ke In Progress - CS sedang menangani");
+        }
+      },
+      {
+        label: "SLA hampir habis - eskalasi otomatis",
+        desc: "Odeva AI mendeteksi risiko SLA dan eskalasi ke manager",
+        view: "sla",
+        calloutTitle: "⚠️ Langkah 5 - Eskalasi SLA",
+        callout: "Odeva AI mendeteksi tiket ini berisiko melewati SLA. Status SLA berubah ke <b>At Risk</b> dan otomatis mengirim eskalasi ke Manager CS. Terlihat di halaman SLA Monitoring.",
+        action: () => {
+          const it = issues.find(x=>x.id===DEMO_ISSUE_ID);
+          if(!it) return;
+          it.sla = "At Risk";
+          it.stage = 3;
+          it.deadline = Date.now() + 20*60*1000;
+          const nowStr = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+          it.thread.push({ who: "🤖 Odeva AI · " + nowStr, text: "⚠️ Auto-escalation: SLA hampir habis (sisa 20 menit). Notifikasi dikirim ke CS Manager." });
+
+          alerts.unshift({
+            id: "ALT-DEMO2",
+            issueId: DEMO_ISSUE_ID,
+            channels: ["dashboard","whatsapp"],
+            recipient: "CS Manager",
+            group: "WAG Customer Service Jakarta",
+            time: nowStr,
+            status: "Open"
+          });
+
+          switchView('sla');
+          renderSlaTable();
+          renderAlerts();
+          renderDashboardAiSummary();
+          document.getElementById('badge-alerts').textContent = alerts.length;
+          setTimeout(() => openDrawer(DEMO_ISSUE_ID), 300);
+          demoToast("⚠️ SLA At Risk - eskalasi otomatis ke CS Manager");
+        }
+      },
+      {
+        label: "Issue diselesaikan oleh tim CS",
+        desc: "Solusi ditemukan, unit pengganti dikirim ke pelanggan",
+        view: "issues",
+        calloutTitle: "✅ Langkah 6 - Resolved",
+        callout: "Tim CS berhasil menyelesaikan issue. Unit pengganti sudah dikirim, pelanggan konfirmasi puas. Status berubah ke <b>Resolved</b> dan stage timeline mencapai titik Resolved.",
+        action: () => {
+          const it = issues.find(x=>x.id===DEMO_ISSUE_ID);
+          if(!it) return;
+          it.status = "Resolved";
+          it.stage = 5;
+          it.sla = "On Track";
+          it.deadline = Date.now() + 3600*1000;
+          it.sentiment = { label: "Positive", score: 0.72 };
+          const nowStr = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+          it.thread.push({ who: "CS Lead · " + nowStr, text: "✅ Unit pengganti sudah dikirim via kurir express, nomor resi terlampir. Customer mengonfirmasi puas dan sudah diterima dengan baik." });
+
+          switchView('issues');
+          renderIssuesTable();
+          renderRecentIssues();
+          renderSlaTable();
+          renderDashboardAiSummary();
+          renderSentimentDonut();
+          setTimeout(() => openDrawer(DEMO_ISSUE_ID), 300);
+          demoToast("✅ Issue Resolved - customer sudah puas, unit pengganti terkirim");
+        }
+      },
+      {
+        label: "Tiket ditutup - Odeva AI Auto-Close",
+        desc: "AI mendeteksi konfirmasi selesai & menutup tiket",
+        view: "issues",
+        calloutTitle: "🔒 Langkah 7 - Tiket Closed!",
+        callout: "Odeva AI mendeteksi percakapan WhatsApp menunjukkan konfirmasi selesai dari semua pihak. Tiket ditutup secara <b>otomatis oleh AI</b>. Status menjadi <b>Closed</b>, SLA <b>On Track</b>. Skenario selesai! 🎉",
+        action: () => {
+          const it = issues.find(x=>x.id===DEMO_ISSUE_ID);
+          if(!it) return;
+          it.status = "Closed";
+          it.stage = 6;
+          it.sla = "On Track";
+          it.closeMethod = "auto";
+          it.closedBy = "Odeva AI";
+          it.closedAt = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+
+          const nowStr = it.closedAt;
+          conversations.g4.msgs.push({
+            who: "🤖 Odeva IOC Bot",
+            time: nowStr,
+            date: "13 Agu 2026",
+            day: "Kamis",
+            text: "✅ Tiket OPS-DEMO1 telah ditutup otomatis. Durasi penyelesaian: dalam SLA. Terima kasih tim CS atas penanganan yang cepat!"
+          });
+          conversations.g4.last = "✅ Tiket OPS-DEMO1 telah ditutup otomatis.";
+          conversations.g4.time = nowStr;
+          const g4stat3 = waGroups.find(g=>g.id==='g4');
+          if(g4stat3) g4stat3.msgs += 1;
+          renderWaGroups();
+          renderConvoList();
+          if(activeGroupId === 'g4') renderConvoMessages();
+
+          switchView('issues');
+          renderIssuesTable();
+          renderRecentIssues();
+          renderSlaTable();
+          renderDashboardAiSummary();
+          renderSentimentDonut();
+          document.getElementById('badge-open').textContent = issues.filter(i=>i.status==='Open').length;
+          setTimeout(() => openDrawer(DEMO_ISSUE_ID), 300);
+          demoToast("🔒 Tiket CLOSED - Odeva AI auto-close berhasil! 🎉");
+        }
       }
+    ],
+    reset: () => {
+      const idx = issues.findIndex(x=>x.id===DEMO_ISSUE_ID);
+      if(idx !== -1) issues.splice(idx, 1);
+      while(true){
+        const ai = alerts.findIndex(a=>a.issueId===DEMO_ISSUE_ID);
+        if(ai === -1) break;
+        alerts.splice(ai, 1);
+      }
+      conversations.g4.msgs = conversations.g4.msgs.filter(m => !m._demoNew && !(m.flag && m.flag.issueId===DEMO_ISSUE_ID) && !(m.who==='🤖 Odeva IOC Bot'));
+      conversations.g4.last = "Sudah eskalasi ke warehouse.";
+      conversations.g4.time = "07:10";
 
-      // Add alert
-      alerts.unshift({
-        id: "ALT-DEMO1",
-        issueId: DEMO_ISSUE_ID,
-        channels: ["dashboard","whatsapp"],
-        recipient: "Customer Service",
-        group: "WAG Customer Service Jakarta",
-        time: nowStr,
-        status: "Open"
-      });
+      const g4statReset = waGroups.find(g=>g.id==='g4');
+      if(g4statReset){ g4statReset.msgs = 210; g4statReset.issues = 9; }
 
-      renderConvoMessages();
       renderIssuesTable();
       renderRecentIssues();
       renderAlerts();
       renderRecentAlertsList();
       renderDashboardAiSummary();
+      renderSentimentDonut();
+      renderSlaTable();
+      renderWaGroups();
+      renderConvoList();
+      if(activeGroupId === 'g4') renderConvoMessages();
       document.getElementById('badge-open').textContent = issues.filter(i=>i.status==='Open').length;
       document.getElementById('badge-alerts').textContent = alerts.length;
       document.getElementById('badge-flagged').textContent = countFlaggedToday();
-      setTimeout(() => {
-        const msgs2 = document.getElementById('convo-messages');
-        if(msgs2) msgs2.scrollTop = msgs2.scrollHeight;
-      }, 200);
-      demoToast("🤖 AI NLP membuat tiket " + DEMO_ISSUE_ID + " secara otomatis");
+      closeDrawer();
     }
   },
   {
-    label: "Lihat Tiket Baru di Issues & Alert Log",
-    desc: "Tiket OPS-DEMO1 muncul dengan status Open",
-    view: "issues",
-    calloutTitle: "📋 Tahap 3 - Tiket Open",
-    callout: "Buka halaman <b>Issues & Tickets</b>. Tiket <b>OPS-DEMO1</b> sudah muncul di baris paling atas dengan status <b>Open</b>. Alert otomatis sudah dikirim ke Dashboard dan WhatsApp PIC. Klik tiket untuk lihat drawer detail.",
-    action: () => {
-      switchView('issues');
-      setTimeout(() => {
-        // highlight the new row
-        const tbody = document.getElementById('issues-body');
-        const firstRow = tbody && tbody.querySelector('tr');
-        if(firstRow){
-          firstRow.classList.add('dp-highlight');
-          setTimeout(() => firstRow.classList.remove('dp-highlight'), 3500);
+    id: "pic",
+    icon: "👤",
+    title: "Setting PIC",
+    subtitle: "Tambah PIC baru & verifikasi nomor WA",
+    steps: [
+      {
+        label: "Tambah PIC baru",
+        desc: "Daftarkan PIC cadangan untuk tim Customer Service",
+        view: "pic-setting",
+        calloutTitle: "👤 Langkah 1 - Tambah PIC",
+        callout: "Buka halaman <b>Setting PIC</b>. PIC baru <b>Fitri Handayani</b> (Customer Service) didaftarkan lengkap dengan nomor WhatsApp-nya. Statusnya masih <b>belum terverifikasi</b>.",
+        action: () => {
+          switchView('pic-setting');
+          const existing = getPicById(DEMO_PIC_ID);
+          if(!existing){
+            picSettings.push({ id: DEMO_PIC_ID, name: "Fitri Handayani", team: "Customer Service", phone: "+62 857-1234-9900", verified: false });
+          }
+          renderPicSettings();
+          demoToast("👤 PIC baru ditambahkan: Fitri Handayani (Customer Service)");
         }
-        openDrawer(DEMO_ISSUE_ID);
-      }, 300);
-      demoToast("📋 Tiket OPS-DEMO1 sudah Open - drawer dibuka");
+      },
+      {
+        label: "Verifikasi nomor WhatsApp",
+        desc: "Nomor terverifikasi & siap dipakai sistem",
+        view: "pic-setting",
+        calloutTitle: "✅ Langkah 2 - Verifikasi Nomor",
+        callout: "Nomor WhatsApp Fitri Handayani <b>diverifikasi</b>. Setelah terverifikasi, PIC ini otomatis terdeteksi sistem dan bisa langsung dipilih saat memindahkan tiket atau menerima alert.",
+        action: () => {
+          switchView('pic-setting');
+          const p = getPicById(DEMO_PIC_ID);
+          if(p) p.verified = true;
+          renderPicSettings();
+          demoToast("✅ Nomor WhatsApp Fitri Handayani berhasil diverifikasi & terdeteksi sistem");
+        }
+      }
+    ],
+    reset: () => {
+      picSettings = picSettings.filter(p=>p.id!==DEMO_PIC_ID);
+      renderPicSettings();
     }
   },
   {
-    label: "PIC merespon & status berubah ke In Progress",
-    desc: "Tim CS mulai menangani, stage diperbarui",
-    view: "issues",
-    calloutTitle: "⚙️ Tahap 4 - In Progress",
-    callout: "Customer Service sudah mengonfirmasi penanganan. Status berubah ke <b>In Progress</b>. Pesan update masuk di thread tiket, dan stage timeline bergerak maju.",
-    action: () => {
-      const it = issues.find(x=>x.id===DEMO_ISSUE_ID);
-      if(!it) return;
-      it.status = "In Progress";
-      it.stage = 2;
-      it.sla = "On Track";
-      const nowStr = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-      it.thread.push({ who: "CS Lead · " + nowStr, text: "Sudah koordinasi dengan gudang dan tim pengiriman. Foto kerusakan sudah diminta ke customer, proses pengecekan berjalan." });
-      // Update alert status
-      const al = alerts.find(a=>a.issueId===DEMO_ISSUE_ID);
-      if(al) al.status = "In Progress";
-
-      switchView('issues');
-      renderIssuesTable();
-      renderRecentIssues();
-      renderAlerts();
-      renderDashboardAiSummary();
-      setTimeout(() => openDrawer(DEMO_ISSUE_ID), 300);
-      demoToast("⚙️ Status berubah ke In Progress - CS sedang menangani");
+    id: "company",
+    icon: "🏢",
+    title: "Pengelompokan PT",
+    subtitle: "Buka form, buat PT baru, sampai grup WA dipindahkan",
+    steps: [
+      {
+        label: "Buka form Tambah Perusahaan",
+        desc: "Klik + Tambah Perusahaan di halaman Pengelompokan PT",
+        view: "settings",
+        calloutTitle: "🏢 Langkah 1 - Buka Form",
+        callout: "Buka halaman <b>Pengelompokan Perusahaan (PT)</b> lalu klik <b>+ Tambah Perusahaan</b>. Form <b>Tambah Perusahaan / PT</b> terbuka, siap diisi dari awal.",
+        action: () => {
+          switchView('settings');
+          addCompany();
+          demoToast("🏢 Form Tambah Perusahaan terbuka");
+        }
+      },
+      {
+        label: "Isi nama & industri PT",
+        desc: "PT Sumber Retail - CS Digital, industri Retail",
+        view: "settings",
+        calloutTitle: "✏️ Langkah 2 - Nama & Industri",
+        callout: "Nama Perusahaan diisi <b>\"PT Sumber Retail - CS Digital\"</b> dan Industri dipilih <b>Retail</b>.",
+        action: () => {
+          const nameInput = document.getElementById('company-modal-name-input');
+          if(nameInput) nameInput.value = "PT Sumber Retail - CS Digital";
+          document.getElementById('company-modal-name-err').classList.remove('show');
+          const industrySelect = document.getElementById('company-modal-industry-select');
+          if(industrySelect) industrySelect.value = "Retail";
+          demoToast("✏️ Nama PT & industri Retail terisi");
+        }
+      },
+      {
+        label: "Simpan PT baru",
+        desc: "Klik Buat Perusahaan - PT baru langsung muncul di daftar",
+        view: "settings",
+        calloutTitle: "✅ Langkah 3 - Simpan",
+        callout: "Klik <b>Buat Perusahaan</b>. PT baru langsung tersimpan dan muncul di daftar Pengelompokan Perusahaan (PT), siap dikaitkan dengan grup WhatsApp.",
+        action: () => {
+          const nameInput = document.getElementById('company-modal-name-input');
+          if(nameInput && nameInput.value.trim() !== "PT Sumber Retail - CS Digital"){
+            nameInput.value = "PT Sumber Retail - CS Digital";
+            document.getElementById('company-modal-industry-select').value = "Retail";
+          }
+          submitCompanyModal();
+          const company = companies.find(c=>c.name==="PT Sumber Retail - CS Digital");
+          if(company) window.__demoCompanyId = company.id;
+        }
+      },
+      {
+        label: "Buka picker Tambah Grup",
+        desc: "Klik + Tambah Grup pada kartu PT baru",
+        view: "settings",
+        calloutTitle: "🔀 Langkah 4 - Buka Tambah Grup",
+        callout: "Klik <b>+ Tambah Grup</b> pada kartu PT baru. Daftar grup WhatsApp yang belum/sudah terhubung ke PT lain langsung muncul untuk dipilih.",
+        action: () => {
+          const companyId = window.__demoCompanyId || (companies.find(c=>c.name==="PT Sumber Retail - CS Digital")||{}).id;
+          if(!companyId) return;
+          window.__demoCompanyId = companyId;
+          openPickerFor = companyId;
+          renderSettings();
+          demoToast("🔀 Daftar grup WhatsApp ditampilkan");
+        }
+      },
+      {
+        label: "Pilih grup WAG Customer Service Jakarta",
+        desc: "Grup dipindahkan dari PT lama ke PT baru",
+        view: "settings",
+        calloutTitle: "✅ Langkah 5 - Pilih Grup",
+        callout: "Pilih <b>WAG Customer Service Jakarta</b> dari daftar. Grup otomatis dipindahkan dari pemiliknya sebelumnya ke PT ini - persis alur assign grup di menu Pengelompokan PT.",
+        action: () => {
+          const companyId = window.__demoCompanyId || (companies.find(c=>c.name==="PT Sumber Retail - CS Digital")||{}).id;
+          if(!companyId) return;
+          assignGroup(companyId, "g4");
+          demoToast("🔀 Grup WAG Customer Service Jakarta dipindahkan ke PT Sumber Retail - CS Digital");
+        }
+      }
+    ],
+    reset: () => {
+      closeCompanyModal();
+      const company = companies.find(c=>c.name==="PT Sumber Retail - CS Digital");
+      if(company) companies = companies.filter(c=>c.id!==company.id);
+      companies = companies.filter(c=>c.id!==DEMO_COMPANY_ID);
+      companies.forEach(c => c.groupIds = c.groupIds.filter(id=>id!=="g4"));
+      const originalOwner = companies.find(c=>c.id===DEMO_COMPANY_ORIGINAL_OWNER);
+      if(originalOwner && !originalOwner.groupIds.includes("g4")) originalOwner.groupIds.push("g4");
+      openPickerFor = null;
+      window.__demoCompanyId = null;
+      renderSettings();
+      renderWaGroups();
     }
   },
   {
-    label: "SLA hampir habis - eskalasi otomatis",
-    desc: "Odeva AI mendeteksi risiko SLA dan eskalasi ke manager",
-    view: "sla",
-    calloutTitle: "⚠️ Tahap 5 - Eskalasi SLA",
-    callout: "Odeva AI mendeteksi tiket ini berisiko melewati SLA. Status SLA berubah ke <b>At Risk</b> dan otomatis mengirim eskalasi ke Manager CS. Terlihat di halaman SLA Monitoring.",
-    action: () => {
-      const it = issues.find(x=>x.id===DEMO_ISSUE_ID);
-      if(!it) return;
-      it.sla = "At Risk";
-      it.stage = 3;
-      it.deadline = Date.now() + 20*60*1000; // 20 menit lagi
-      const nowStr = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-      it.thread.push({ who: "🤖 Odeva AI · " + nowStr, text: "⚠️ Auto-escalation: SLA hampir habis (sisa 20 menit). Notifikasi dikirim ke CS Manager." });
-
-      alerts.unshift({
-        id: "ALT-DEMO2",
-        issueId: DEMO_ISSUE_ID,
-        channels: ["dashboard","whatsapp"],
-        recipient: "CS Manager",
-        group: "WAG Customer Service Jakarta",
-        time: nowStr,
-        status: "Open"
-      });
-
-      switchView('sla');
-      renderSlaTable();
-      renderAlerts();
-      renderDashboardAiSummary();
-      document.getElementById('badge-alerts').textContent = alerts.length;
-      setTimeout(() => openDrawer(DEMO_ISSUE_ID), 300);
-      demoToast("⚠️ SLA At Risk - eskalasi otomatis ke CS Manager");
+    id: "sla",
+    icon: "⏱️",
+    title: "Setting SLA",
+    subtitle: "Buka form, isi lengkap, sampai tersimpan",
+    steps: [
+      {
+        label: "Buka form Tambah SLA",
+        desc: "Klik + Tambah SLA di halaman Setting SLA",
+        view: "sla-setting",
+        calloutTitle: "⏱️ Langkah 1 - Buka Form",
+        callout: "Buka halaman <b>Setting SLA</b> lalu klik <b>+ Tambah SLA</b>. Form <b>Tambah SLA</b> terbuka, siap diisi dari awal.",
+        action: () => {
+          switchView('sla-setting');
+          openSlaModal('add');
+          demoToast("⏱️ Form Tambah SLA terbuka");
+        }
+      },
+      {
+        label: "Isi nama & target waktu SLA",
+        desc: "SLA Customer Service - Kerusakan Barang, target 4 jam",
+        view: "sla-setting",
+        calloutTitle: "✏️ Langkah 2 - Nama & Target",
+        callout: "Nama SLA diisi <b>\"SLA Customer Service - Kerusakan Barang\"</b> dan SLA Target dipilih <b>4 Jam</b>.",
+        action: () => {
+          const nameInput = document.getElementById('sla-modal-name-input');
+          if(nameInput) nameInput.value = "SLA Customer Service - Kerusakan Barang";
+          document.getElementById('sla-modal-name-err').classList.remove('show');
+          populateSlaTargetSelect(4);
+          demoToast("✏️ Nama SLA & target 4 jam terisi");
+        }
+      },
+      {
+        label: "Pilih PIC penanggung jawab",
+        desc: "Tugaskan ke tim Customer Service",
+        view: "sla-setting",
+        calloutTitle: "👤 Langkah 3 - PIC Penanggung Jawab",
+        callout: "PIC <b>Dewi Anggraini (Customer Service)</b> dipilih sebagai penanggung jawab SLA ini - bisa pilih lebih dari satu PIC kalau perlu.",
+        action: () => {
+          populateSlaPicSelect(['pic_cs']);
+          demoToast("👤 PIC Customer Service ditugaskan ke SLA ini");
+        }
+      },
+      {
+        label: "Atur hari & jam kerja",
+        desc: "Senin-Sabtu, jam 08.00-20.00",
+        view: "sla-setting",
+        calloutTitle: "📅 Langkah 4 - Hari & Jam Kerja",
+        callout: "Working Day diatur <b>Senin-Sabtu</b>, dengan Working Hour <b>08.00-20.00</b>. Jam kerja ini yang menentukan kapan hitungan SLA aktif berjalan.",
+        action: () => {
+          _slaModalDays = ["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+          renderSlaDayChips();
+          document.getElementById('sla-modal-day-err').classList.remove('show');
+          _slaModalShifts = [{start:"08:00", end:"20:00"}];
+          renderSlaShiftList();
+          document.getElementById('sla-modal-shift-err').classList.remove('show');
+          demoToast("📅 Hari & jam kerja diatur: Senin-Sabtu, 08.00-20.00");
+        }
+      },
+      {
+        label: "Simpan SLA",
+        desc: "Klik Save Changes - SLA baru langsung aktif",
+        view: "sla-setting",
+        calloutTitle: "✅ Langkah 5 - Simpan",
+        callout: "Klik <b>Save Changes</b>. SLA baru langsung tersimpan, muncul di daftar Setting SLA, dan siap dipakai untuk tiket kategori Customer.",
+        action: () => {
+          submitSlaModal();
+        }
+      }
+    ],
+    reset: () => {
+      closeSlaModal();
+      _slaModalDays = [];
+      _slaModalShifts = [{start:'08:00', end:'17:00'}];
+      _slaModalPics = [];
+      slaSettings = slaSettings.filter(s=>s.id!==DEMO_SLA_ID && !(s.name === "SLA Customer Service - Kerusakan Barang"));
+      renderSlaSettings();
     }
   },
   {
-    label: "Issue diselesaikan oleh tim CS",
-    desc: "Solusi ditemukan, unit pengganti dikirim ke pelanggan",
-    view: "issues",
-    calloutTitle: "✅ Tahap 6 - Resolved",
-    callout: "Tim CS berhasil menyelesaikan issue. Unit pengganti sudah dikirim, pelanggan konfirmasi puas. Status berubah ke <b>Resolved</b> dan stage timeline mencapai titik Resolved.",
-    action: () => {
-      const it = issues.find(x=>x.id===DEMO_ISSUE_ID);
-      if(!it) return;
-      it.status = "Resolved";
-      it.stage = 5;
-      it.sla = "On Track";
-      it.deadline = Date.now() + 3600*1000;
-      it.sentiment = { label: "Positive", score: 0.72 };
-      const nowStr = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-      it.thread.push({ who: "CS Lead · " + nowStr, text: "✅ Unit pengganti sudah dikirim via kurir express, nomor resi terlampir. Customer mengonfirmasi puas dan sudah diterima dengan baik." });
-
-      switchView('issues');
-      renderIssuesTable();
-      renderRecentIssues();
-      renderSlaTable();
-      renderDashboardAiSummary();
-      setTimeout(() => openDrawer(DEMO_ISSUE_ID), 300);
-      demoToast("✅ Issue Resolved - customer sudah puas, unit pengganti terkirim");
-    }
-  },
-  {
-    label: "Tiket ditutup - Odeva AI Auto-Close",
-    desc: "AI mendeteksi konfirmasi selesai & menutup tiket",
-    view: "issues",
-    calloutTitle: "🔒 Tahap 7 - Tiket Closed!",
-    callout: "Odeva AI mendeteksi percakapan WhatsApp menunjukkan konfirmasi selesai dari semua pihak. Tiket ditutup secara <b>otomatis oleh AI</b>. Status menjadi <b>Closed</b>, SLA <b>On Track</b>. Demo selesai! 🎉",
-    action: () => {
-      const it = issues.find(x=>x.id===DEMO_ISSUE_ID);
-      if(!it) return;
-      it.status = "Closed";
-      it.stage = 6;
-      it.sla = "On Track";
-      it.closeMethod = "auto";
-      it.closedBy = "Odeva AI";
-      it.closedAt = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-
-      // Update WA conversation with close confirmation
-      const nowStr = it.closedAt;
-      conversations.g4.msgs.push({
-        who: "🤖 Odeva IOC Bot",
-        time: nowStr,
-        date: "13 Agu 2026",
-        day: "Kamis",
-        text: "✅ Tiket OPS-DEMO1 telah ditutup otomatis. Durasi penyelesaian: dalam SLA. Terima kasih tim CS atas penanganan yang cepat!"
-      });
-
-      switchView('issues');
-      renderIssuesTable();
-      renderRecentIssues();
-      renderSlaTable();
-      renderDashboardAiSummary();
-      document.getElementById('badge-open').textContent = issues.filter(i=>i.status==='Open').length;
-      setTimeout(() => openDrawer(DEMO_ISSUE_ID), 300);
-      demoToast("🔒 Tiket CLOSED - Odeva AI auto-close berhasil! 🎉");
+    id: "tag",
+    icon: "🏷️",
+    title: "Setting Tag",
+    subtitle: "Buka form, isi lengkap, sampai auto-detect di Conversations",
+    steps: [
+      {
+        label: "Buka form Tambah Tag",
+        desc: "Klik + Tambah Tag Baru di halaman Setting Tag",
+        view: "tag-settings",
+        calloutTitle: "🏷️ Langkah 1 - Buka Form",
+        callout: "Buka halaman <b>Setting Tag</b> lalu klik <b>+ Tambah Tag Baru</b>. Form <b>Tambah Tag Baru</b> terbuka, siap diisi dari awal - persis alur yang dipakai tim Operasional saat membuat tag baru.",
+        action: () => {
+          switchView('tag-settings');
+          addNewTag();
+          /* Pastikan skenario ini berdiri sendiri: sisipkan 1 pesan contoh
+             ke WAG Customer Service Jakarta yang memang mengandung
+             keyword-keyword demo, supaya tidak bergantung pada skenario lain. */
+          if(!window.__tagDemoMsgInjected){
+            const nowStr = new Date().toTimeString().slice(0,5);
+            conversations.g4.msgs.push({
+              who: "CS Agent", time: nowStr, date: "13 Agu 2026", day: "Kamis",
+              text: "Update: laptop customer tidak menyala sama sekali, kardus penyok waktu diterima. Ini termasuk kasus barang rusak yang perlu ditindaklanjuti."
+            });
+            conversations.g4.last = "Update: laptop tidak menyala, kardus penyok.";
+            conversations.g4.time = nowStr;
+            window.__tagDemoMsgInjected = true;
+          }
+          demoToast("🏷️ Form Tambah Tag Baru terbuka");
+        }
+      },
+      {
+        label: "Isi nama tag",
+        desc: "Nama tag: Kardus Rusak",
+        view: "tag-settings",
+        calloutTitle: "✏️ Langkah 2 - Nama Tag",
+        callout: "Nama Tag diisi <b>\"Kardus Rusak\"</b>. Nama ini yang akan tampil sebagai label di pesan-pesan yang cocok dengan keyword-nya nanti.",
+        action: () => {
+          const input = document.getElementById('tag-modal-name-input');
+          if(input) input.value = "Kardus Rusak";
+          const errEl = document.getElementById('tag-modal-name-err');
+          if(errEl) errEl.classList.remove('show');
+          demoToast("✏️ Nama tag \"Kardus Rusak\" terisi");
+        }
+      },
+      {
+        label: "Pilih warna tag",
+        desc: "Warna ungu dipilih supaya mudah dikenali",
+        view: "tag-settings",
+        calloutTitle: "🎨 Langkah 3 - Pilih Warna",
+        callout: "Warna tag dipilih <b>ungu (#9B59B6)</b> dari palet warna yang tersedia. Warna ini nanti dipakai sebagai badge di pesan Conversations supaya gampang dikenali sekilas.",
+        action: () => {
+          if(typeof selectTagModalColor === 'function') selectTagModalColor('#9B59B6');
+          demoToast("🎨 Warna tag dipilih: ungu");
+        }
+      },
+      {
+        label: "Simpan tag baru",
+        desc: "Klik Buat Tag - tag langsung muncul di daftar",
+        view: "tag-settings",
+        calloutTitle: "✅ Langkah 4 - Simpan Tag",
+        callout: "Klik <b>Buat Tag</b>. Tag <b>Kardus Rusak</b> langsung tersimpan dan muncul sebagai kartu baru di halaman Setting Tag, dalam keadaan terbuka (expanded) dan siap ditambahkan keyword.",
+        action: () => {
+          const nameInput = document.getElementById('tag-modal-name-input');
+          if(nameInput && nameInput.value.trim() !== "Kardus Rusak"){
+            nameInput.value = "Kardus Rusak";
+          }
+          if(typeof selectTagModalColor === 'function') selectTagModalColor('#9B59B6');
+          submitTagModal();
+          const created = tagSettings.find(t=>t.name==="Kardus Rusak");
+          if(created){
+            window.__demoTagId = created.id;
+            created.expanded = true;
+            renderTagSettings();
+          }
+        }
+      },
+      {
+        label: "Tambah keyword pertama",
+        desc: "Keyword: \"kardus penyok\"",
+        view: "tag-settings",
+        calloutTitle: "🔑 Langkah 5 - Keyword Pertama",
+        callout: "Di kartu tag <b>Kardus Rusak</b>, keyword <b>\"kardus penyok\"</b> diketik lalu ditambahkan. Setiap pesan yang mengandung frasa ini akan otomatis kena tag.",
+        action: () => {
+          const tagId = window.__demoTagId;
+          if(!tagId) return;
+          const input = document.getElementById('kw-input-' + tagId);
+          if(input){
+            input.value = "kardus penyok";
+            addKeyword(tagId);
+          }
+        }
+      },
+      {
+        label: "Tambah keyword kedua & ketiga",
+        desc: "Keyword: \"tidak menyala\" dan \"barang rusak\"",
+        view: "tag-settings",
+        calloutTitle: "🔑 Langkah 6 - Keyword Tambahan",
+        callout: "Dua keyword lagi ditambahkan: <b>\"tidak menyala\"</b> dan <b>\"barang rusak\"</b>. Makin lengkap daftar keyword, makin akurat tag ini mendeteksi keluhan serupa di semua grup WhatsApp.",
+        action: () => {
+          const tagId = window.__demoTagId;
+          if(!tagId) return;
+          ["tidak menyala", "barang rusak"].forEach(kw => {
+            const input = document.getElementById('kw-input-' + tagId);
+            if(input){
+              input.value = kw;
+              addKeyword(tagId);
+            }
+          });
+        }
+      },
+      {
+        label: "Lihat pesan yang otomatis terdeteksi",
+        desc: "Kartu tag menampilkan pesan yang cocok dengan keyword",
+        view: "tag-settings",
+        calloutTitle: "📋 Langkah 7 - Pesan Terdeteksi",
+        callout: "Scroll ke bagian <b>Pesan Terdeteksi</b> di kartu tag. Tanpa input manual sama sekali, Odeva langsung menandai pesan-pesan lama yang sudah masuk dan mengandung salah satu keyword di atas.",
+        action: () => {
+          switchView('tag-settings');
+          const tagId = window.__demoTagId;
+          if(tagId){
+            const tag = getTagById(tagId);
+            if(tag) tag.expanded = true;
+            renderTagSettings();
+            setTimeout(() => {
+              const card = document.getElementById('tagcard-' + tagId);
+              if(card) card.scrollIntoView({ behavior:'smooth', block:'center' });
+            }, 200);
+          }
+          demoToast("📋 Pesan yang cocok dengan tag Kardus Rusak langsung terlihat");
+        }
+      },
+      {
+        label: "Lihat efek otomatis di Conversations",
+        desc: "Tag langsung menandai pesan di WAG Customer Service",
+        view: "conversations",
+        group: "g4",
+        calloutTitle: "🔍 Langkah 8 - Auto-Detect di Conversations",
+        callout: "Buka tab <b>Conversations</b> pada grup <b>WAG Customer Service Jakarta</b>. Badge tag <b>Kardus Rusak</b> otomatis muncul di pesan pelanggan yang mengandung kata kunci tersebut, lengkap dengan highlight kata kuncinya.",
+        action: () => {
+          switchView('conversations');
+          selectConvo('g4');
+          renderConvoMessages();
+          setTimeout(() => {
+            const msgs = document.getElementById('convo-messages');
+            if(msgs) msgs.scrollTop = msgs.scrollHeight;
+          }, 200);
+          demoToast('🔍 Tag "Kardus Rusak" otomatis muncul di percakapan yang cocok');
+        }
+      },
+      {
+        label: "Cek badge counter tag di navigasi",
+        desc: "Jumlah pesan bertag terlihat real-time di sidebar",
+        view: "conversations",
+        calloutTitle: "🔢 Langkah 9 - Badge Counter",
+        callout: "Lihat badge angka di menu <b>Setting Tag</b> pada sidebar - jumlahnya bertambah otomatis mengikuti total pesan yang cocok dengan seluruh tag, termasuk tag <b>Kardus Rusak</b> yang baru dibuat. Skenario selesai! 🎉",
+        action: () => {
+          updateTagBadge();
+          demoToast("🔢 Badge counter tag ter-update otomatis - simulasi Setting Tag selesai! 🎉");
+        }
+      }
+    ],
+    reset: () => {
+      closeTagModal();
+      const tagId = window.__demoTagId;
+      if(tagId) tagSettings = tagSettings.filter(t=>t.id!==tagId);
+      tagSettings = tagSettings.filter(t=>t.id!==DEMO_TAG_ID);
+      window.__demoTagId = null;
+      /* Bersihkan pesan contoh yang disisipkan di langkah 1 supaya demo bisa diulang dari awal */
+      if(window.__tagDemoMsgInjected){
+        conversations.g4.msgs = conversations.g4.msgs.filter(m =>
+          !(m.who === "CS Agent" && m.text.includes("kardus penyok waktu diterima"))
+        );
+        conversations.g4.last = "Sudah eskalasi ke warehouse.";
+        conversations.g4.time = "07:10";
+        window.__tagDemoMsgInjected = false;
+      }
+      renderTagSettings();
+      renderConvoMessages();
+      updateTagBadge();
     }
   }
 ];
 
+let currentScenario = null;
 let demoCurrentStep = -1;
 let demoPanelVisible = false;
 
@@ -5148,7 +5867,7 @@ function demoShowPanel() {
   demoPanelVisible = true;
   document.getElementById('demo-panel').classList.remove('collapsed');
   document.getElementById('demo-fab').classList.add('hidden');
-  if(demoCurrentStep < 0) demoRenderSteps();
+  if(!currentScenario) demoRenderPicker();
 }
 
 function demoHidePanel() {
@@ -5157,40 +5876,66 @@ function demoHidePanel() {
   document.getElementById('demo-fab').classList.remove('hidden');
 }
 
-function demoReset() {
-  // Remove demo issue and alerts
-  const idx = issues.findIndex(x=>x.id===DEMO_ISSUE_ID);
-  if(idx !== -1) issues.splice(idx, 1);
-  // Remove demo alerts
-  while(true){
-    const ai = alerts.findIndex(a=>a.issueId===DEMO_ISSUE_ID);
-    if(ai === -1) break;
-    alerts.splice(ai, 1);
+function demoRenderPicker() {
+  document.getElementById('dp-picker').style.display = 'flex';
+  document.getElementById('dp-steps-list').style.display = 'none';
+  document.getElementById('dp-callout').classList.remove('show');
+  document.getElementById('dp-footer').style.display = 'none';
+  document.getElementById('dp-progress-bar-wrap').style.display = 'none';
+  document.getElementById('dp-back-btn').style.display = 'none';
+  document.getElementById('dp-header-icon').textContent = '🎬';
+  document.getElementById('dp-header-title').textContent = 'Demo Simulasi Odeva IOC';
+  document.getElementById('dp-header-subtitle').textContent = 'Pilih simulasi yang mau dijalankan';
+
+  document.getElementById('dp-picker').innerHTML = demoScenarios.map(sc => `
+    <button class="dp-scenario-card" onclick="demoSelectScenario('${sc.id}')">
+      <div class="dp-scenario-icon">${sc.icon}</div>
+      <div class="dp-scenario-text">
+        <div class="dp-scenario-title">${sc.title}</div>
+        <div class="dp-scenario-sub">${sc.subtitle}</div>
+      </div>
+      <div class="dp-scenario-steps">${sc.steps.length} langkah</div>
+      <div class="dp-scenario-arrow">→</div>
+    </button>`).join('');
+}
+
+function demoSelectScenario(id) {
+  currentScenario = demoScenarios.find(s=>s.id===id);
+  if(!currentScenario) return;
+  demoCurrentStep = -1;
+  document.getElementById('dp-picker').style.display = 'none';
+  document.getElementById('dp-steps-list').style.display = 'flex';
+  document.getElementById('dp-footer').style.display = 'flex';
+  document.getElementById('dp-progress-bar-wrap').style.display = 'block';
+  document.getElementById('dp-back-btn').style.display = 'grid';
+  document.getElementById('dp-header-icon').textContent = currentScenario.icon;
+  document.getElementById('dp-header-title').textContent = currentScenario.title;
+  document.getElementById('dp-header-subtitle').textContent = currentScenario.subtitle;
+  demoRenderSteps();
+}
+
+function demoBackToPicker() {
+  if(currentScenario && demoCurrentStep >= 0 && typeof currentScenario.reset === 'function'){
+    currentScenario.reset();
   }
-  // Remove demo messages from g4
-  conversations.g4.msgs = conversations.g4.msgs.filter(m => !m._demoNew && !(m.flag && m.flag.issueId===DEMO_ISSUE_ID) && !(m.who==='🤖 Odeva IOC Bot'));
-  conversations.g4.last = "Sudah eskalasi ke warehouse.";
-  conversations.g4.time = "07:10";
+  currentScenario = null;
+  demoCurrentStep = -1;
+  demoRenderPicker();
+}
 
-  renderIssuesTable();
-  renderRecentIssues();
-  renderAlerts();
-  renderRecentAlertsList();
-  renderDashboardAiSummary();
-  renderSlaTable();
-  document.getElementById('badge-open').textContent = issues.filter(i=>i.status==='Open').length;
-  document.getElementById('badge-alerts').textContent = alerts.length;
-  document.getElementById('badge-flagged').textContent = countFlaggedToday();
-
+function demoReset() {
+  if(!currentScenario) return;
+  if(typeof currentScenario.reset === 'function') currentScenario.reset();
   demoCurrentStep = -1;
   demoRenderSteps();
-  closeDrawer();
-  demoToast("↺ Demo direset - siap mulai dari awal");
+  demoToast("↺ Simulasi direset - siap mulai dari awal");
 }
 
 function demoRenderSteps() {
+  if(!currentScenario) return;
+  const steps = currentScenario.steps;
   const container = document.getElementById('dp-steps-list');
-  container.innerHTML = demoSteps.map((s, i) => {
+  container.innerHTML = steps.map((s, i) => {
     let cls = 'pending';
     let dotContent = i + 1;
     if(i < demoCurrentStep) { cls = 'done'; dotContent = '✓'; }
@@ -5204,21 +5949,18 @@ function demoRenderSteps() {
     </div>`;
   }).join('');
 
-  // Progress bar
-  const pct = demoCurrentStep < 0 ? 0 : Math.round(((demoCurrentStep + 1) / demoSteps.length) * 100);
+  const pct = demoCurrentStep < 0 ? 0 : Math.round(((demoCurrentStep + 1) / steps.length) * 100);
   document.getElementById('dp-progress').style.width = pct + '%';
 
-  // Counter
-  const step = demoCurrentStep < 0 ? 0 : demoCurrentStep + 1;
-  document.getElementById('dp-step-counter').textContent = `Langkah ${step} / ${demoSteps.length}`;
+  const stepNum = demoCurrentStep < 0 ? 0 : demoCurrentStep + 1;
+  document.getElementById('dp-step-counter').textContent = `Langkah ${stepNum} / ${steps.length}`;
 
-  // Next button label
   const nextLabel = document.getElementById('dp-next-label');
   const nextBtn = document.getElementById('dp-next-btn');
   if(demoCurrentStep < 0) {
-    nextLabel.textContent = 'Mulai Demo';
+    nextLabel.textContent = 'Mulai Simulasi';
     nextBtn.disabled = false;
-  } else if(demoCurrentStep >= demoSteps.length - 1) {
+  } else if(demoCurrentStep >= steps.length - 1) {
     nextLabel.textContent = 'Selesai! 🎉';
     nextBtn.disabled = true;
   } else {
@@ -5226,10 +5968,9 @@ function demoRenderSteps() {
     nextBtn.disabled = false;
   }
 
-  // Callout
   const callout = document.getElementById('dp-callout');
-  if(demoCurrentStep >= 0 && demoCurrentStep < demoSteps.length) {
-    const s = demoSteps[demoCurrentStep];
+  if(demoCurrentStep >= 0 && demoCurrentStep < steps.length) {
+    const s = steps[demoCurrentStep];
     document.getElementById('dp-callout-title').innerHTML = s.calloutTitle;
     document.getElementById('dp-callout-body').innerHTML = s.callout;
     callout.classList.add('show');
@@ -5237,7 +5978,6 @@ function demoRenderSteps() {
     callout.classList.remove('show');
   }
 
-  // Scroll active step into view
   setTimeout(() => {
     const items = container.querySelectorAll('.dp-step-item');
     if(items[demoCurrentStep]) {
@@ -5247,9 +5987,11 @@ function demoRenderSteps() {
 }
 
 function demoNext() {
+  if(!currentScenario) return;
+  const steps = currentScenario.steps;
   demoCurrentStep++;
-  if(demoCurrentStep >= demoSteps.length) return;
-  const step = demoSteps[demoCurrentStep];
+  if(demoCurrentStep >= steps.length) return;
+  const step = steps[demoCurrentStep];
   step.action();
   demoRenderSteps();
 }
