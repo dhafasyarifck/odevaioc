@@ -1807,6 +1807,27 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
           <div class="card kpi"><div class="label">Avg. Resolution Time</div><div class="value">2.4h</div><div class="delta up">↓ 18 menit lebih cepat</div></div>
         </div>
 
+ <div class="section-title"><h2>Ringkasan Operasional</h2><span class="muted" style="font-size:12px;">Klik untuk lihat detailnya</span></div>
+        <div class="grid-3">
+          <div class="card"><h3>Issue per Kategori</h3><div class="hbars" id="category-hbars"></div></div>
+          <div class="card">
+            <h3>Top Issue Area</h3>
+            <div class="card-sub">Berdasarkan volume 30 hari</div>
+            <div style="margin-top:16px; display:flex; flex-direction:column; gap:12px;" id="top-issue-area"></div>
+          </div>
+          <div class="card">
+            <h3>Most Delayed Team</h3>
+            <div class="card-sub">Rata-rata waktu penyelesaian tertinggi</div>
+            <div style="margin-top:16px; display:flex; flex-direction:column; gap:12px;" id="most-delayed-team"></div>
+          </div>
+        </div>
+
+        <div class="section-title"><h2>Issue Terbaru</h2><button class="link-btn" onclick="switchView('issues')">Lihat semua →</button></div>
+        <div class="table-wrap">
+          <table><thead><tr><th>ID</th><th>Issue</th><th>Kategori</th><th>Severity</th><th>Sentimen</th><th>PIC</th><th>Status</th><th>SLA</th></tr></thead>
+          <tbody id="recent-issues-body"></tbody></table>
+        </div>
+
         <div class="section-title"><h2>AI Summary per Grup WhatsApp</h2><span class="muted" style="font-size:12px;">Otomatis dari analisis percakapan hari ini · klik kartu untuk detail</span></div>
         <div class="ai-summary-grid" id="dashboard-ai-summary"></div>
 
@@ -1850,26 +1871,7 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
           </div>
         </div>
 
-        <div class="section-title"><h2>Ringkasan Operasional</h2><span class="muted" style="font-size:12px;">Klik untuk lihat detailnya</span></div>
-        <div class="grid-3">
-          <div class="card"><h3>Issue per Kategori</h3><div class="hbars" id="category-hbars"></div></div>
-          <div class="card">
-            <h3>Top Issue Area</h3>
-            <div class="card-sub">Berdasarkan volume 30 hari</div>
-            <div style="margin-top:16px; display:flex; flex-direction:column; gap:12px;" id="top-issue-area"></div>
-          </div>
-          <div class="card">
-            <h3>Most Delayed Team</h3>
-            <div class="card-sub">Rata-rata waktu penyelesaian tertinggi</div>
-            <div style="margin-top:16px; display:flex; flex-direction:column; gap:12px;" id="most-delayed-team"></div>
-          </div>
-        </div>
-
-        <div class="section-title"><h2>Issue Terbaru</h2><button class="link-btn" onclick="switchView('issues')">Lihat semua →</button></div>
-        <div class="table-wrap">
-          <table><thead><tr><th>ID</th><th>Issue</th><th>Kategori</th><th>Severity</th><th>Sentimen</th><th>PIC</th><th>Status</th><th>SLA</th></tr></thead>
-          <tbody id="recent-issues-body"></tbody></table>
-        </div>
+       
       </section>
 
       <!-- ============ ISSUES ============ -->
