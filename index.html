@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Odeva IOC - Integrated Operations Center</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/id.js"></script>
 <style>
 :root{
   --bg:#FFFFFF;
@@ -424,6 +427,136 @@ button{ cursor:pointer; }
 .search-box input{ border:none; background:none; outline:none; font-size:13px; width:100%; color:var(--ink); }
 .icon-btn{ position:relative; border:1px solid var(--line); background:#fff; width:36px; height:36px; border-radius:9px; display:grid; place-items:center; }
 .icon-btn svg{ width:16px; height:16px; color:var(--ink-dim); }
+
+/* ---------------- NOTIFICATION DROPDOWN ---------------- */
+.notif-wrap{ position:relative; }
+.notif-count{
+  position:absolute; top:-5px; right:-5px; min-width:16px; height:16px; padding:0 4px;
+  border-radius:999px; background:var(--red); color:#fff; font-size:9.5px; font-weight:800;
+  display:grid; place-items:center; border:1.5px solid #fff; line-height:1;
+}
+.notif-dropdown{
+  position:absolute; top:calc(100% + 10px); right:0; width:360px; max-width:88vw;
+  background:#fff; border:1px solid var(--line); border-radius:14px;
+  box-shadow:0 12px 40px rgba(88,28,135,0.18), 0 2px 8px rgba(88,28,135,0.08);
+  z-index:200; opacity:0; transform:translateY(-6px) scale(.98); pointer-events:none;
+  transition:opacity .15s, transform .15s; overflow:hidden;
+}
+.notif-dropdown.show{ opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
+.notif-dropdown .nd-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 14px; border-bottom:1px solid var(--line);
+}
+.notif-dropdown .nd-head h4{ font-size:13.5px; color:var(--g-900); }
+.notif-dropdown .nd-markread{
+  border:none; background:none; font-size:11.5px; font-weight:700; color:var(--g-700); cursor:pointer;
+}
+.notif-dropdown .nd-markread:hover{ text-decoration:underline; }
+.notif-list{ max-height:360px; overflow-y:auto; }
+.notif-item{
+  display:flex; gap:10px; align-items:flex-start; padding:11px 14px; cursor:pointer;
+  border-bottom:1px solid var(--line); transition:background .12s;
+}
+.notif-item:last-child{ border-bottom:none; }
+.notif-item:hover{ background:var(--bg-soft); }
+.notif-item.unread{ background:#FBF6FF; }
+.notif-item .ni-dot{
+  width:8px; height:8px; border-radius:50%; margin-top:5px; flex:0 0 auto;
+  background:var(--g-500);
+}
+.notif-item.read .ni-dot{ background:transparent; }
+.notif-item .ni-body{ flex:1; min-width:0; }
+.notif-item .ni-title{ font-size:12.5px; font-weight:700; color:var(--ink); margin-bottom:2px; }
+.notif-item .ni-sub{ font-size:11.5px; color:var(--ink-dim); line-height:1.4; }
+.notif-item .ni-meta{ font-size:10.5px; color:var(--ink-faint); margin-top:3px; display:flex; gap:6px; align-items:center; }
+.notif-dropdown .nd-empty{ padding:28px 14px; text-align:center; font-size:12.5px; color:var(--ink-faint); }
+.notif-dropdown .nd-foot{ padding:9px 14px; text-align:center; border-top:1px solid var(--line); }
+.notif-dropdown .nd-foot button{
+  border:none; background:none; font-size:11.5px; font-weight:700; color:var(--g-700); cursor:pointer;
+}
+.notif-dropdown .nd-foot button:hover{ text-decoration:underline; }
+
+/* ---------------- EXPORT BUTTON ---------------- */
+.export-wrap{ position:relative; display:inline-block; }
+.export-btn{
+  display:inline-flex; align-items:center; gap:7px;
+  background:var(--grad); color:#fff; border:none; border-radius:9px;
+  padding:9px 15px; font-size:12.5px; font-weight:700; cursor:pointer;
+  box-shadow:0 2px 8px rgba(88,28,135,0.25); transition:transform .12s, box-shadow .12s;
+}
+.export-btn:hover{ transform:translateY(-1px); box-shadow:0 4px 14px rgba(88,28,135,0.32); }
+.export-btn:active{ transform:translateY(0); }
+.export-btn svg{ width:14px; height:14px; }
+.export-btn.loading{ opacity:.75; cursor:progress; pointer-events:none; }
+.export-menu{
+  position:absolute; top:calc(100% + 8px); right:0; width:248px;
+  background:#fff; border:1px solid var(--line); border-radius:12px;
+  box-shadow:0 12px 32px rgba(88,28,135,0.18); z-index:60;
+  opacity:0; transform:translateY(-6px); pointer-events:none; transition:opacity .14s, transform .14s;
+  overflow:hidden;
+}
+.export-menu.show{ opacity:1; transform:translateY(0); pointer-events:auto; }
+.export-menu button{
+  width:100%; text-align:left; background:none; border:none; padding:11px 14px;
+  font-size:12.5px; font-weight:600; color:var(--ink); cursor:pointer; display:flex; flex-direction:column; gap:2px;
+  border-bottom:1px solid var(--line);
+}
+.export-menu button:last-child{ border-bottom:none; }
+.export-menu button:hover{ background:var(--bg-soft); }
+.export-menu button .em-sub{ font-size:11px; font-weight:500; color:var(--ink-faint); }
+.export-toast{
+  position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--g-900); color:#fff; padding:11px 20px; border-radius:10px;
+  font-size:12.5px; font-weight:600; box-shadow:0 8px 24px rgba(0,0,0,0.25);
+  opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; z-index:10060;
+  display:flex; align-items:center; gap:8px;
+}
+.export-toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* ---------------- DATE RANGE FILTER (flatpickr) ---------------- */
+.daterange-wrap{ position:relative; display:inline-flex; align-items:center; }
+.daterange-input{
+  border:1px solid var(--line); border-radius:9px; padding:8px 12px 8px 34px;
+  background:#fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%237E22CE" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>') no-repeat 10px center;
+  background-size:15px; color:var(--ink-dim); font-weight:600; font-size:12.5px;
+  min-width:190px; cursor:pointer;
+}
+.daterange-input::placeholder{ color:var(--ink-faint); font-weight:500; }
+.daterange-clear{
+  position:absolute; right:8px; top:50%; transform:translateY(-50%);
+  border:none; background:var(--card-tint); color:var(--g-700); width:19px; height:19px;
+  border-radius:50%; font-size:12px; font-weight:800; line-height:1; cursor:pointer; display:none;
+  align-items:center; justify-content:center;
+}
+.daterange-wrap.has-value .daterange-clear{ display:flex; }
+.daterange-wrap.has-value .daterange-input{ padding-right:30px; color:var(--g-900); }
+
+/* Flatpickr theme override -> selaraskan dengan warna brand Odeva IOC */
+.flatpickr-calendar{ box-shadow:0 12px 32px rgba(88,28,135,0.2); border-radius:14px; border:1px solid var(--line); }
+.flatpickr-months .flatpickr-month{ background:var(--grad); border-radius:14px 14px 0 0; }
+.flatpickr-current-month .flatpickr-monthDropdown-months, .flatpickr-current-month input.cur-year{ color:#fff; font-weight:700; }
+.flatpickr-current-month .flatpickr-monthDropdown-months option{ color:#000; }
+.flatpickr-weekdays{ background:var(--bg-soft); }
+span.flatpickr-weekday{ color:var(--g-700); font-weight:700; }
+.flatpickr-months .flatpickr-prev-month, .flatpickr-months .flatpickr-next-month{ color:#fff; fill:#fff; }
+.flatpickr-months .flatpickr-prev-month:hover svg, .flatpickr-months .flatpickr-next-month:hover svg{ fill:#fff; opacity:.7; }
+.flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange{
+  background:var(--g-700); border-color:var(--g-700);
+}
+.flatpickr-day.selected.startRange, .flatpickr-day.startRange, .flatpickr-day.endRange{ border-radius:50% 0 0 50%; }
+.flatpickr-day.selected.endRange, .flatpickr-day.endRange{ border-radius:0 50% 50% 0; }
+.flatpickr-day.inRange{ background:var(--card-tint); border-color:var(--card-tint); box-shadow:-5px 0 0 var(--card-tint), 5px 0 0 var(--card-tint); }
+.flatpickr-day:hover{ background:var(--bg-soft); }
+.flatpickr-day.today{ border-color:var(--g-500); }
+
+.dash-filter-bar{
+  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px 16px; margin-bottom:16px;
+}
+.dash-filter-left{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; color:var(--ink-dim); }
+.dash-filter-label{ font-size:12.5px; font-weight:700; color:var(--ink); white-space:nowrap; }
+.dash-filter-note{ font-size:12px; }
+#dash-quick-range button{ font-size:12px; }
 .notif-dot{ position:absolute; top:7px; right:8px; width:7px; height:7px; border-radius:50%; background:var(--red); border:1.5px solid #fff; }
 .pill-live{ display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; color:var(--g-700); background:var(--card-tint); border:1px solid var(--line); border-radius:999px; padding:6px 11px; }
 .pill-live .dot{ width:6px; height:6px; border-radius:50%; background:var(--g-500); animation:pulse 1.8s infinite; }
@@ -1791,7 +1924,17 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
           <input id="global-search" placeholder="Cari issue, PIC, kategori...">
         </div>
-        <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg><span class="notif-dot"></span></button>
+        <div class="notif-wrap">
+          <button class="icon-btn" onclick="event.stopPropagation(); toggleNotifDropdown();"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg><span class="notif-count" id="notif-count" style="display:none;">0</span></button>
+          <div class="notif-dropdown" id="notif-dropdown" onclick="event.stopPropagation();">
+            <div class="nd-head">
+              <h4>Notifikasi</h4>
+              <button class="nd-markread" onclick="markAllNotifRead()">Tandai semua dibaca</button>
+            </div>
+            <div class="notif-list" id="notif-list"></div>
+            <div class="nd-foot"><button onclick="closeNotifDropdown(); switchView('issues');">Lihat semua tiket →</button></div>
+          </div>
+        </div>
         <div class="avatar-sm">AW</div>
       </div>
     </header>
@@ -1800,14 +1943,30 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
 
       <!-- ============ DASHBOARD ============ -->
       <section class="view active" id="view-dashboard">
+        <div class="dash-filter-bar">
+          <div class="dash-filter-left">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0;"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            <span class="dash-filter-label">Filter Periode</span>
+            <div class="daterange-wrap" id="dashboard-daterange-wrap">
+              <input class="daterange-input" id="dashboard-daterange" placeholder="Semua tanggal" readonly style="min-width:200px;">
+              <button class="daterange-clear" id="dashboard-daterange-clear" onclick="clearDateRange('dashboard')" title="Hapus filter tanggal">✕</button>
+            </div>
+            <div class="seg" id="dash-quick-range">
+              <button data-range="7">7 Hari</button>
+              <button data-range="30">30 Hari</button>
+              <button data-range="all" class="active">Semua</button>
+            </div>
+          </div>
+          <span class="muted dash-filter-note" id="dash-filter-note">Menampilkan seluruh data operasional</span>
+        </div>
         <div class="grid-4">
-          <div class="card kpi"><div class="label">Total Issues</div><div class="value">1,245</div><div class="delta up">↑ 4.2% vs minggu lalu</div></div>
-          <div class="card kpi"><div class="label">Open Issues</div><div class="value">186</div><div class="delta down">↑ 12 issue baru hari ini</div></div>
-          <div class="card kpi"><div class="label">SLA Achievement</div><div class="value">92%</div><div class="delta up">↑ 1.3% vs minggu lalu</div></div>
-          <div class="card kpi"><div class="label">Avg. Resolution Time</div><div class="value">2.4h</div><div class="delta up">↓ 18 menit lebih cepat</div></div>
+          <div class="card kpi"><div class="label">Total Issues</div><div class="value" id="kpi-total-value">1,245</div><div class="delta up" id="kpi-total-delta">↑ 4.2% vs minggu lalu</div></div>
+          <div class="card kpi"><div class="label">Open Issues</div><div class="value" id="kpi-open-value">186</div><div class="delta down" id="kpi-open-delta">↑ 12 issue baru hari ini</div></div>
+          <div class="card kpi"><div class="label">SLA Achievement</div><div class="value" id="kpi-sla-value">92%</div><div class="delta up" id="kpi-sla-delta">↑ 1.3% vs minggu lalu</div></div>
+          <div class="card kpi"><div class="label">Avg. Resolution Time</div><div class="value" id="kpi-avgres-value">2.4h</div><div class="delta up" id="kpi-avgres-delta">↓ 18 menit lebih cepat</div></div>
         </div>
 
- <div class="section-title"><h2>Ringkasan Operasional</h2><span class="muted" style="font-size:12px;">Klik untuk lihat detailnya</span></div>
+<div class="section-title"><h2>Ringkasan Operasional</h2><span class="muted" style="font-size:12px;">Klik untuk lihat detailnya</span></div>
         <div class="grid-3">
           <div class="card"><h3>Issue per Kategori</h3><div class="hbars" id="category-hbars"></div></div>
           <div class="card">
@@ -1838,15 +1997,15 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
           </div>
           <div class="card">
             <h3>Distribusi SLA Status</h3>
-            <div class="card-sub">1,245 total issue tercatat</div>
+            <div class="card-sub" id="sla-dist-sub">1,245 total issue tercatat</div>
             <div class="donut-wrap" style="margin-top:18px;">
-              <div class="donut" style="background:conic-gradient(var(--g-500) 0% 76%, var(--amber) 76% 91%, var(--red) 91% 100%);">
-                <div class="donut-center"><div class="n">92%</div><div class="t">On Track</div></div>
+              <div class="donut" id="sla-dist-donut" style="background:conic-gradient(var(--g-500) 0% 76%, var(--amber) 76% 91%, var(--red) 91% 100%);">
+                <div class="donut-center"><div class="n" id="sla-dist-pct">92%</div><div class="t">On Track</div></div>
               </div>
               <div class="legend">
-                <div class="legend-item"><span class="sw" style="background:var(--g-500)"></span><span class="lbl">On Track</span><span class="val">946</span></div>
-                <div class="legend-item"><span class="sw" style="background:var(--amber)"></span><span class="lbl">At Risk</span><span class="val">186</span></div>
-                <div class="legend-item"><span class="sw" style="background:var(--red)"></span><span class="lbl">Delayed</span><span class="val">113</span></div>
+                <div class="legend-item"><span class="sw" style="background:var(--g-500)"></span><span class="lbl">On Track</span><span class="val" id="sla-dist-ontrack">946</span></div>
+                <div class="legend-item"><span class="sw" style="background:var(--amber)"></span><span class="lbl">At Risk</span><span class="val" id="sla-dist-atrisk">186</span></div>
+                <div class="legend-item"><span class="sw" style="background:var(--red)"></span><span class="lbl">Delayed</span><span class="val" id="sla-dist-delayed">113</span></div>
               </div>
             </div>
           </div>
@@ -1871,14 +2030,32 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
           </div>
         </div>
 
-       
+        
       </section>
 
       <!-- ============ ISSUES ============ -->
       <section class="view" id="view-issues">
         <div class="flex-between" style="margin-bottom:14px;">
           <span class="muted" style="font-size:12.5px;" id="source-split-info"></span>
-          <button class="link-btn" onclick="addManualTicket()">+ Buat Tiket Manual</button>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div class="export-wrap">
+              <button class="export-btn" id="export-issues-btn" onclick="event.stopPropagation(); toggleExportMenu('issues');">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+                Export Excel
+              </button>
+              <div class="export-menu" id="export-menu-issues" onclick="event.stopPropagation();">
+                <button onclick="exportIssuesToExcel('filtered')">
+                  Export hasil filter saat ini
+                  <span class="em-sub"><span id="export-count">0</span> tiket sesuai filter/pencarian</span>
+                </button>
+                <button onclick="exportIssuesToExcel('all')">
+                  Export semua tiket
+                  <span class="em-sub" id="export-count-all">- tiket</span>
+                </button>
+              </div>
+            </div>
+            <button class="link-btn" onclick="addManualTicket()">+ Buat Tiket Manual</button>
+          </div>
         </div>
         <div class="filters">
           <div class="search-box" style="min-width:220px;">
@@ -1906,6 +2083,10 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
             <option value="all">Semua SLA</option>
             <option>On Track</option><option>At Risk</option><option>Delayed</option>
           </select>
+          <div class="daterange-wrap" id="issue-daterange-wrap">
+            <input class="daterange-input" id="issue-daterange" placeholder="Filter tanggal dibuat" readonly>
+            <button class="daterange-clear" id="issue-daterange-clear" onclick="clearDateRange('issues')" title="Hapus filter tanggal">✕</button>
+          </div>
         </div>
         <div class="table-wrap">
           <table><thead><tr><th>ID</th><th>Issue</th><th>Kategori</th><th>Severity</th><th>Sentimen</th><th>PIC</th><th>Status</th><th>SLA</th><th>Dibuat</th></tr></thead>
@@ -1924,10 +2105,14 @@ td.title{ color:var(--g-900); font-weight:600; max-width:230px; }
 
         <div class="section-title">
           <h2>Issue yang Butuh Perhatian</h2>
-          <div style="display:flex; align-items:center; gap:10px;">
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
             <select id="sla-pic-filter" style="border:1px solid var(--line); border-radius:9px; padding:8px 10px; background:#fff; color:var(--ink-dim); font-weight:600; font-size:12.5px;">
               <option value="all">Semua PIC</option>
             </select>
+            <div class="daterange-wrap" id="sla-daterange-wrap">
+              <input class="daterange-input" id="sla-daterange" placeholder="Filter tanggal dibuat" readonly style="min-width:180px;">
+              <button class="daterange-clear" id="sla-daterange-clear" onclick="clearDateRange('sla')" title="Hapus filter tanggal">✕</button>
+            </div>
             <span class="muted" style="font-size:12px;">Diurutkan dari paling mendesak</span>
           </div>
         </div>
@@ -2838,6 +3023,129 @@ const issues = [
     stage:1},
 ];
 
+/* ---------------- CREATED-AT TIMESTAMP (untuk filter tanggal) ----------------
+   Field "created" di atas cuma label tampilan ("08:15", "Kemarin", "3 hari lalu").
+   Di sini kita hitung timestamp asli (createdAt) dari label tersebut supaya
+   bisa difilter pakai date-range picker di halaman Issues & SLA Monitoring. */
+function parseCreatedLabelToDate(label){
+  const ref = new Date(); // "hari ini" versi demo ini
+  if(!label || label === 'Baru saja') return new Date();
+  const hhmm = label.match(/^(\d{1,2}):(\d{2})$/);
+  if(hhmm){
+    const d = new Date(ref);
+    d.setHours(parseInt(hhmm[1],10), parseInt(hhmm[2],10), 0, 0);
+    return d;
+  }
+  if(label === 'Kemarin'){
+    const d = new Date(ref); d.setDate(d.getDate()-1); d.setHours(10,0,0,0); return d;
+  }
+  const nHariLalu = label.match(/^(\d+)\s*hari lalu$/);
+  if(nHariLalu){
+    const d = new Date(ref); d.setDate(d.getDate()-parseInt(nHariLalu[1],10)); d.setHours(9,0,0,0); return d;
+  }
+  return new Date(ref); // fallback: anggap hari ini
+}
+issues.forEach(it => { if(it.createdAt === undefined) it.createdAt = parseCreatedLabelToDate(it.created).getTime(); });
+
+/* ============================================================
+   NOTIFIKASI (bell icon di topbar)
+   ============================================================ */
+let notifications = [];
+
+function pushNotification(issue){
+  notifications.unshift({
+    id: 'NTF-' + Date.now() + '-' + Math.floor(Math.random()*1000),
+    issueId: issue.id,
+    title: issue.title,
+    severity: issue.severity,
+    source: issue.source,
+    time: issue.created || 'Baru saja',
+    read: false
+  });
+  renderNotifDropdown();
+  updateNotifBadge();
+}
+
+/* Seed notifikasi awal dari tiket Open/In Progress dengan severity tinggi,
+   supaya bell tidak kosong saat pertama kali dibuka. */
+issues.filter(it => (it.severity==='Critical' || it.severity==='High') && (it.status==='Open' || it.status==='In Progress'))
+  .slice(0, 5)
+  .forEach(it => {
+    notifications.push({
+      id: 'NTF-seed-' + it.id,
+      issueId: it.id,
+      title: it.title,
+      severity: it.severity,
+      source: it.source,
+      time: it.created,
+      read: false
+    });
+  });
+
+function updateNotifBadge(){
+  const unread = notifications.filter(n=>!n.read).length;
+  const el = document.getElementById('notif-count');
+  if(!el) return;
+  if(unread > 0){
+    el.textContent = unread > 9 ? '9+' : unread;
+    el.style.display = 'grid';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+function renderNotifDropdown(){
+  const listEl = document.getElementById('notif-list');
+  if(!listEl) return;
+  if(!notifications.length){
+    listEl.innerHTML = '<div class="nd-empty">Belum ada notifikasi.</div>';
+    return;
+  }
+  listEl.innerHTML = notifications.slice(0, 20).map(n => `
+    <div class="notif-item ${n.read?'read':'unread'}" onclick="handleNotifClick('${n.id}')">
+      <span class="ni-dot"></span>
+      <div class="ni-body">
+        <div class="ni-title">${n.title}</div>
+        <div class="ni-sub">Tiket ${n.issueId} · ${n.source || '-'}</div>
+        <div class="ni-meta"><span class="badge ${sevBadgeClass(n.severity)}">${n.severity}</span><span>${n.time}</span></div>
+      </div>
+    </div>`).join('');
+}
+
+function handleNotifClick(notifId){
+  const n = notifications.find(x=>x.id===notifId);
+  if(!n) return;
+  n.read = true;
+  renderNotifDropdown();
+  updateNotifBadge();
+  closeNotifDropdown();
+  openDrawer(n.issueId);
+}
+
+function markAllNotifRead(){
+  notifications.forEach(n => n.read = true);
+  renderNotifDropdown();
+  updateNotifBadge();
+}
+
+function toggleNotifDropdown(){
+  const dd = document.getElementById('notif-dropdown');
+  if(!dd) return;
+  dd.classList.contains('show') ? closeNotifDropdown() : openNotifDropdown();
+}
+function openNotifDropdown(){
+  renderNotifDropdown();
+  document.getElementById('notif-dropdown').classList.add('show');
+}
+function closeNotifDropdown(){
+  const dd = document.getElementById('notif-dropdown');
+  if(dd) dd.classList.remove('show');
+}
+document.addEventListener('click', (e)=>{
+  const wrap = document.querySelector('.notif-wrap');
+  if(wrap && !wrap.contains(e.target)) closeNotifDropdown();
+});
+
 /* Alert otomatis: setiap issue kritikal/high langsung memicu alert ke Dashboard & WhatsApp PIC terkait,
    sekaligus meng-assign PIC. Beberapa hanya lewat Dashboard bila severity lebih rendah. */
 const alerts = [
@@ -3050,10 +3358,19 @@ function renderVolumeChart(){
     </div>`).join('');
 }
 
-function renderCategoryBars(targetId){
-  const max = Math.max(...Object.values(categoryCounts));
+function renderCategoryBars(targetId, filteredArr){
+  let counts;
+  if(filteredArr){
+    counts = {};
+    filteredArr.forEach(it=>{ counts[it.category] = (counts[it.category]||0)+1; });
+  } else {
+    counts = categoryCounts;
+  }
+  const vals = Object.values(counts);
+  const max = vals.length ? Math.max(...vals) : 1;
   const el = document.getElementById(targetId);
-  el.innerHTML = Object.entries(categoryCounts).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
+  if(!Object.keys(counts).length){ el.innerHTML = '<div class="muted" style="font-size:12.5px;">Tidak ada data pada periode ini.</div>'; return; }
+  el.innerHTML = Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
     <div class="hbar-row" onclick="goToIssuesByCategory('${k}')">
       <div class="name">${k}</div>
       <div class="hbar-track"><div class="hbar-fill" style="width:${(v/max*100).toFixed(0)}%"></div></div>
@@ -3061,10 +3378,27 @@ function renderCategoryBars(targetId){
     </div>`).join('');
 }
 
-function renderTopIssueArea(){
-  const top = waGroups.slice().sort((a,b)=>b.issues-a.issues).slice(0,4);
-  document.getElementById('top-issue-area').innerHTML = top.map(g=>`
-    <div class="flex-between click-row" onclick="switchView('conversations'); selectConvo('${g.id}');">
+function renderTopIssueArea(filteredArr){
+  let top;
+  if(filteredArr){
+    const bySource = {};
+    filteredArr.forEach(it=>{
+      const key = it.source || 'Lainnya';
+      if(!bySource[key]) bySource[key] = {name:key, issues:0, catCounts:{}};
+      bySource[key].issues++;
+      bySource[key].catCounts[it.category] = (bySource[key].catCounts[it.category]||0)+1;
+    });
+    top = Object.values(bySource).map(g=>{
+      const topCat = Object.entries(g.catCounts).sort((a,b)=>b[1]-a[1])[0];
+      return {name:g.name, top: topCat?topCat[0]:'-', issues:g.issues, filtered:true};
+    }).sort((a,b)=>b.issues-a.issues).slice(0,4);
+  } else {
+    top = waGroups.slice().sort((a,b)=>b.issues-a.issues).slice(0,4);
+  }
+  const el = document.getElementById('top-issue-area');
+  if(!top.length){ el.innerHTML = '<div class="muted" style="font-size:12.5px;">Tidak ada data pada periode ini.</div>'; return; }
+  el.innerHTML = top.map(g=>`
+    <div class="flex-between click-row" onclick="${g.filtered ? `goToIssuesBySearch('${g.name.replace(/'/g,"\\'")}')` : `switchView('conversations'); selectConvo('${g.id}');`}">
       <span style="font-size:13px; font-weight:600;">${g.name}</span>
       <span style="display:flex; align-items:center;">
         <span class="mono" style="font-size:12px; color:var(--g-700); font-weight:700;">${g.top} · ${g.issues}</span>
@@ -3073,11 +3407,25 @@ function renderTopIssueArea(){
     </div>`).join('');
 }
 
-function renderMostDelayedTeam(){
-  const parseHrs = s => parseFloat(s);
-  const top = leaderboard.slice().sort((a,b)=> parseHrs(b.avg)-parseHrs(a.avg)).slice(0,4);
-  document.getElementById('most-delayed-team').innerHTML = top.map(l=>{
-    const hrs = parseHrs(l.avg);
+function renderMostDelayedTeam(filteredArr){
+  let top;
+  if(filteredArr){
+    const byPic = {};
+    filteredArr.forEach(it=>{
+      const key = it.pic || 'Belum ditentukan';
+      if(!byPic[key]) byPic[key] = {team:key, totalHrs:0, n:0};
+      byPic[key].totalHrs += (it.slaTargetHrs||0);
+      byPic[key].n++;
+    });
+    top = Object.values(byPic).map(t=>({team:t.team, avg:(t.totalHrs/t.n).toFixed(1)+'h'}))
+      .sort((a,b)=>parseFloat(b.avg)-parseFloat(a.avg)).slice(0,4);
+  } else {
+    top = leaderboard.slice().sort((a,b)=> parseFloat(b.avg)-parseFloat(a.avg)).slice(0,4);
+  }
+  const el = document.getElementById('most-delayed-team');
+  if(!top.length){ el.innerHTML = '<div class="muted" style="font-size:12.5px;">Tidak ada data pada periode ini.</div>'; return; }
+  el.innerHTML = top.map(l=>{
+    const hrs = parseFloat(l.avg);
     const color = hrs>=4 ? 'var(--red)' : (hrs>=3 ? 'var(--amber)' : 'var(--g-700)');
     return `<div class="flex-between click-row" onclick="goToIssuesBySearch('${l.team.replace(/'/g,"\\'")}')">
       <span style="font-size:13px; font-weight:600;">${l.team}</span>
@@ -3153,15 +3501,19 @@ function renderStatusBars(){
     </div>`).join('');
 }
 
-function renderRecentIssues(){
-  const recent = issues.slice(0,6);
-  document.getElementById('recent-issues-body').innerHTML = recent.map(it=>issueRowHtml(it,false)).join('');
+function renderRecentIssues(filteredArr){
+  const source = filteredArr || issues;
+  const recent = source.slice(0,6);
+  const el = document.getElementById('recent-issues-body');
+  el.innerHTML = recent.length ? recent.map(it=>issueRowHtml(it,false)).join('') : '<tr><td colspan="8" style="text-align:center;color:var(--ink-faint);padding:18px;">Tidak ada issue pada periode ini.</td></tr>';
 }
 
 /* ---------------- RENDER: SENTIMENT & ALERTS (dashboard) ---------------- */
-function renderSentimentDonut(){
-  const c = sentimentCounts();
-  const total = issues.length;
+function renderSentimentDonut(filteredArr){
+  const source = filteredArr || issues;
+  const c = {Positive:0,Neutral:0,Negative:0};
+  source.forEach(it=>c[it.sentiment.label]++);
+  const total = source.length || 1;
   const posPct = c.Positive/total*100, neuPct = c.Neutral/total*100;
   const el = document.getElementById('sentiment-donut');
   el.style.background = `conic-gradient(var(--g-500) 0% ${posPct}%, var(--ink-faint) ${posPct}% ${posPct+neuPct}%, var(--red) ${posPct+neuPct}% 100%)`;
@@ -3172,8 +3524,14 @@ function renderSentimentDonut(){
     <div class="legend-item"><span class="sw" style="background:var(--ink-faint)"></span><span class="lbl">Neutral</span><span class="val">${c.Neutral}</span></div>
     <div class="legend-item"><span class="sw" style="background:var(--red)"></span><span class="lbl">Negative</span><span class="val">${c.Negative}</span></div>`;
 }
-function renderRecentAlertsList(){
-  document.getElementById('recent-alerts-list').innerHTML = alerts.slice(0,4).map(a=>{
+function renderRecentAlertsList(filteredArr){
+  const list = filteredArr ? alerts.filter(a=>{
+    const it = issues.find(x=>x.id===a.issueId);
+    return it && filteredArr.includes(it);
+  }) : alerts;
+  const el = document.getElementById('recent-alerts-list');
+  if(!list.length){ el.innerHTML = '<div class="muted" style="font-size:12.5px;">Tidak ada alert pada periode ini.</div>'; return; }
+  el.innerHTML = list.slice(0,4).map(a=>{
     const it = issues.find(x=>x.id===a.issueId);
     return `<div class="flex-between" style="cursor:pointer;" onclick="openDrawer('${a.issueId}')">
       <div>
@@ -3203,9 +3561,271 @@ function renderAlerts(){
 }
 
 /* ---------------- RENDER: ISSUES TABLE ---------------- */
-let filterState = {status:'all', category:'all', sla:'all', source:'all', search:''};
-function renderIssuesTable(){
-  const filtered = issues.filter(it=>{
+let filterState = {status:'all', category:'all', sla:'all', source:'all', search:'', dateFrom:null, dateTo:null};
+let slaFilterState = {pic:'all', dateFrom:null, dateTo:null};
+/* ============================================================
+   EXPORT ISSUES & TICKETS -> EXCEL (styled ala Odeva IOC)
+   ============================================================ */
+const EXPORT_COLORS = {
+  brandDark: 'FF3B0764',   // --g-900
+  brandMid:  'FF581C87',   // --g-800
+  brandAccent: 'FF7E22CE', // --g-500
+  brandLight: 'FFC084FC',  // --g-300
+  tint: 'FFF3E8FF',        // --card-tint
+  white: 'FFFFFFFF',
+  ink: 'FF0C2019',
+  inkDim: 'FF4E655B',
+  sevCritical: 'FFC24545', sevCriticalBg: 'FFFDE7E7',
+  sevHigh: 'FFB4720A', sevHighBg: 'FFFFF2DA',
+  sevMedium: 'FF3557C4', sevMediumBg: 'FFEFF3FF',
+  sevLow: 'FF6B7570', sevLowBg: 'FFF0F1F0',
+  statusOpen: 'FF3557C4', statusOpenBg: 'FFEFF3FF',
+  statusProgress: 'FF96690A', statusProgressBg: 'FFFFF6E2',
+  statusResolved: 'FF6B21A8', statusResolvedBg: 'FFE4F7EC',
+  statusClosed: 'FF6B7570', statusClosedBg: 'FFF0F1F0',
+  slaTrack: 'FF6B21A8', slaTrackBg: 'FFE4F7EC',
+  slaRisk: 'FFB4720A', slaRiskBg: 'FFFFF2DA',
+  slaDelay: 'FFC24545', slaDelayBg: 'FFFDE7E7',
+};
+
+function _sevExportColors(sev){
+  return {Critical:[EXPORT_COLORS.sevCritical,EXPORT_COLORS.sevCriticalBg],
+    High:[EXPORT_COLORS.sevHigh,EXPORT_COLORS.sevHighBg],
+    Medium:[EXPORT_COLORS.sevMedium,EXPORT_COLORS.sevMediumBg],
+    Low:[EXPORT_COLORS.sevLow,EXPORT_COLORS.sevLowBg]}[sev] || [EXPORT_COLORS.ink, EXPORT_COLORS.white];
+}
+function _statusExportColors(st){
+  return {Open:[EXPORT_COLORS.statusOpen,EXPORT_COLORS.statusOpenBg],
+    "In Progress":[EXPORT_COLORS.statusProgress,EXPORT_COLORS.statusProgressBg],
+    Resolved:[EXPORT_COLORS.statusResolved,EXPORT_COLORS.statusResolvedBg],
+    Closed:[EXPORT_COLORS.statusClosed,EXPORT_COLORS.statusClosedBg]}[st] || [EXPORT_COLORS.ink, EXPORT_COLORS.white];
+}
+function _slaExportColors(sla){
+  return {"On Track":[EXPORT_COLORS.slaTrack,EXPORT_COLORS.slaTrackBg],
+    "At Risk":[EXPORT_COLORS.slaRisk,EXPORT_COLORS.slaRiskBg],
+    Delayed:[EXPORT_COLORS.slaDelay,EXPORT_COLORS.slaDelayBg]}[sla] || [EXPORT_COLORS.ink, EXPORT_COLORS.white];
+}
+
+function toggleExportMenu(key){
+  const menu = document.getElementById('export-menu-' + key);
+  if(!menu) return;
+  const isShown = menu.classList.contains('show');
+  document.querySelectorAll('.export-menu.show').forEach(m=>m.classList.remove('show'));
+  if(!isShown){
+    const all = document.getElementById('export-count-all');
+    if(all) all.textContent = issues.length + ' tiket';
+    const cnt = document.getElementById('export-count');
+    if(cnt) cnt.textContent = getFilteredIssues().length;
+    menu.classList.add('show');
+  }
+}
+document.addEventListener('click', ()=>{
+  document.querySelectorAll('.export-menu.show').forEach(m=>m.classList.remove('show'));
+});
+
+function showExportToast(msg, isError){
+  const el = document.getElementById('export-toast');
+  if(!el) return;
+  el.innerHTML = (isError ? '⚠️ ' : '✅ ') + msg;
+  el.style.background = isError ? '#8A2A2A' : '';
+  el.classList.add('show');
+  setTimeout(()=> el.classList.remove('show'), 3200);
+}
+
+async function exportIssuesToExcel(scope){
+  toggleExportMenu('issues'); // close menu
+  const btn = document.getElementById('export-issues-btn');
+  const originalLabel = btn.innerHTML;
+  btn.classList.add('loading');
+  btn.innerHTML = 'Menyiapkan file…';
+
+  try{
+    if(typeof ExcelJS === 'undefined'){
+      showExportToast('Library Excel gagal dimuat. Cek koneksi internet lalu coba lagi.', true);
+      return;
+    }
+    const data = scope === 'all' ? issues.slice() : getFilteredIssues();
+    if(!data.length){
+      showExportToast('Tidak ada tiket untuk diekspor.', true);
+      return;
+    }
+
+    const wb = new ExcelJS.Workbook();
+    wb.creator = 'Odeva IOC';
+    wb.created = new Date();
+    const ws = wb.addWorksheet('Issues & Tickets', {
+      views: [{ state: 'frozen', ySplit: 5 }]
+    });
+
+    const columns = [
+      { header: 'ID Tiket', width: 13 },
+      { header: 'Judul Issue', width: 42 },
+      { header: 'Kategori', width: 14 },
+      { header: 'Severity', width: 12 },
+      { header: 'Sentimen', width: 12 },
+      { header: 'Skor Sentimen', width: 13 },
+      { header: 'PIC', width: 22 },
+      { header: 'Status', width: 13 },
+      { header: 'SLA', width: 12 },
+      { header: 'Target SLA (jam)', width: 15 },
+      { header: 'Sumber', width: 16 },
+      { header: 'Grup / Sumber Data', width: 24 },
+      { header: 'Dibuat', width: 14 },
+    ];
+    const colCount = columns.length;
+
+    /* ---- Baris 1: Banner judul ---- */
+    ws.mergeCells(1, 1, 1, colCount);
+    const titleCell = ws.getCell(1, 1);
+    titleCell.value = '🟣 ODEVA IOC — Export Issues & Tickets';
+    titleCell.font = { name: 'Calibri', size: 15, bold: true, color: { argb: EXPORT_COLORS.white } };
+    titleCell.alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
+    titleCell.fill = { type: 'gradient', gradient: 'angle', degree: 0,
+      stops: [
+        { position: 0, color: { argb: EXPORT_COLORS.brandLight } },
+        { position: 0.5, color: { argb: EXPORT_COLORS.brandAccent } },
+        { position: 1, color: { argb: EXPORT_COLORS.brandDark } },
+      ]};
+    ws.getRow(1).height = 30;
+
+    /* ---- Baris 2: Subtitle / meta info ---- */
+    ws.mergeCells(2, 1, 2, colCount);
+    const subCell = ws.getCell(2, 1);
+    const nowFmt = new Date().toLocaleString('id-ID', { dateStyle:'full', timeStyle:'short' });
+    const scopeLabel = scope === 'all' ? 'Semua Tiket' : 'Hasil Filter/Pencarian Saat Ini';
+    subCell.value = `Diekspor: ${nowFmt}   ·   Cakupan: ${scopeLabel}   ·   Total: ${data.length} tiket`;
+    subCell.font = { name: 'Calibri', size: 10.5, italic: true, color: { argb: EXPORT_COLORS.inkDim } };
+    subCell.alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
+    subCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: EXPORT_COLORS.tint } };
+    ws.getRow(2).height = 20;
+
+    /* ---- Baris 3: kosong (spasi) ---- */
+    ws.getRow(3).height = 6;
+
+    /* ---- Baris 4: kop kategori ringkas ---- */
+    const bySev = { Critical:0, High:0, Medium:0, Low:0 };
+    data.forEach(it => { if(bySev[it.severity]!==undefined) bySev[it.severity]++; });
+    ws.mergeCells(4, 1, 4, colCount);
+    const kpiCell = ws.getCell(4, 1);
+    kpiCell.value = `Ringkasan Severity  —  Critical: ${bySev.Critical}   ·   High: ${bySev.High}   ·   Medium: ${bySev.Medium}   ·   Low: ${bySev.Low}`;
+    kpiCell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: EXPORT_COLORS.brandMid } };
+    kpiCell.alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
+    ws.getRow(4).height = 18;
+
+    /* ---- Baris 5: header tabel ---- */
+    const headerRowIdx = 5;
+    const headerRow = ws.getRow(headerRowIdx);
+    columns.forEach((c, i) => {
+      ws.getColumn(i+1).width = c.width;
+      const cell = headerRow.getCell(i+1);
+      cell.value = c.header;
+      cell.font = { name: 'Calibri', size: 11, bold: true, color: { argb: EXPORT_COLORS.white } };
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: EXPORT_COLORS.brandMid } };
+      cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+      cell.border = {
+        top: { style: 'thin', color: { argb: EXPORT_COLORS.brandDark } },
+        bottom: { style: 'thin', color: { argb: EXPORT_COLORS.brandDark } },
+        left: { style: 'thin', color: { argb: EXPORT_COLORS.brandDark } },
+        right: { style: 'thin', color: { argb: EXPORT_COLORS.brandDark } },
+      };
+    });
+    headerRow.height = 26;
+
+    /* ---- Baris data ---- */
+    data.forEach((it, idx) => {
+      const rowIdx = headerRowIdx + 1 + idx;
+      const row = ws.getRow(rowIdx);
+      const zebra = idx % 2 === 1;
+      const baseBg = zebra ? EXPORT_COLORS.tint : EXPORT_COLORS.white;
+
+      const values = [
+        it.id,
+        it.title,
+        it.category,
+        it.severity,
+        it.sentiment ? it.sentiment.label : '-',
+        it.sentiment ? Number(it.sentiment.score.toFixed(2)) : 0,
+        it.pic,
+        it.status,
+        it.sla,
+        it.slaTargetHrs,
+        it.sourceType === 'Manual' ? '📝 Tiket Manual' : '🤖 NLP Auto-Detect',
+        it.source,
+        it.created,
+      ];
+      values.forEach((v, i) => {
+        const cell = row.getCell(i+1);
+        cell.value = v;
+        cell.font = { name: 'Calibri', size: 10.5, color: { argb: EXPORT_COLORS.ink } };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: baseBg } };
+        cell.alignment = { vertical: 'middle', horizontal: i===1 ? 'left' : 'center', wrapText: i===1 };
+        cell.border = {
+          top: { style: 'hair', color: { argb: EXPORT_COLORS.brandLight } },
+          bottom: { style: 'hair', color: { argb: EXPORT_COLORS.brandLight } },
+          left: { style: 'hair', color: { argb: EXPORT_COLORS.brandLight } },
+          right: { style: 'hair', color: { argb: EXPORT_COLORS.brandLight } },
+        };
+      });
+
+      row.getCell(1).font = { name:'Calibri', size:10.5, bold:true, color:{argb:EXPORT_COLORS.brandMid} };
+
+      const [sevFg, sevBg] = _sevExportColors(it.severity);
+      const sevCell = row.getCell(4);
+      sevCell.font = { name:'Calibri', size:10.5, bold:true, color:{argb:sevFg} };
+      sevCell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:sevBg} };
+
+      const [stFg, stBg] = _statusExportColors(it.status);
+      const stCell = row.getCell(8);
+      stCell.font = { name:'Calibri', size:10.5, bold:true, color:{argb:stFg} };
+      stCell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:stBg} };
+
+      const [slaFg, slaBg] = _slaExportColors(it.sla);
+      const slaCell = row.getCell(9);
+      slaCell.font = { name:'Calibri', size:10.5, bold:true, color:{argb:slaFg} };
+      slaCell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:slaBg} };
+
+      row.getCell(6).numFmt = '0.00';
+      row.height = 20;
+    });
+
+    /* Autofilter di header */
+    ws.autoFilter = {
+      from: { row: headerRowIdx, column: 1 },
+      to: { row: headerRowIdx, column: colCount }
+    };
+
+    /* ---- Baris footer ---- */
+    const footerRowIdx = headerRowIdx + 1 + data.length + 1;
+    ws.mergeCells(footerRowIdx, 1, footerRowIdx, colCount);
+    const footCell = ws.getCell(footerRowIdx, 1);
+    footCell.value = 'Odeva IOC — Integrated Operations Center · Dokumen ini digenerate otomatis dari dashboard.';
+    footCell.font = { name:'Calibri', size:9, italic:true, color:{argb:EXPORT_COLORS.inkDim} };
+    footCell.alignment = { horizontal:'left', indent:1 };
+
+    const buffer = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const stamp = new Date().toISOString().slice(0,16).replace(/[:T]/g,'-');
+    a.href = url;
+    a.download = `Odeva-IOC_Issues-Tickets_${scope === 'all' ? 'Semua' : 'Filter'}_${stamp}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showExportToast(`Berhasil export ${data.length} tiket ke Excel.`);
+  } catch(err){
+    console.error('Export error:', err);
+    showExportToast('Gagal membuat file Excel: ' + err.message, true);
+  } finally {
+    btn.classList.remove('loading');
+    btn.innerHTML = originalLabel;
+  }
+}
+
+function getFilteredIssues(){
+  return issues.filter(it=>{
     if(filterState.status!=='all' && it.status!==filterState.status) return false;
     if(filterState.category!=='all' && it.category!==filterState.category) return false;
     if(filterState.sla!=='all' && it.sla!==filterState.sla) return false;
@@ -3214,13 +3834,21 @@ function renderIssuesTable(){
       const q = filterState.search.toLowerCase();
       if(!(it.id.toLowerCase().includes(q) || it.title.toLowerCase().includes(q) || it.pic.toLowerCase().includes(q))) return false;
     }
+    if(filterState.dateFrom!==null && it.createdAt < filterState.dateFrom) return false;
+    if(filterState.dateTo!==null && it.createdAt > filterState.dateTo) return false;
     return true;
   });
+}
+
+function renderIssuesTable(){
+  const filtered = getFilteredIssues();
   document.getElementById('issues-body').innerHTML = filtered.map(it=>issueRowHtml(it,true)).join('');
   document.getElementById('issues-empty').style.display = filtered.length ? 'none':'block';
   const nlpCount = issues.filter(i=>i.sourceType==='NLP').length;
   const manualCount = issues.filter(i=>i.sourceType==='Manual').length;
   document.getElementById('source-split-info').textContent = `🤖 ${nlpCount} issue dari NLP Auto-Detect (WAG)  ·  📝 ${manualCount} Tiket Manual`;
+  const expCount = document.getElementById('export-count');
+  if(expCount) expCount.textContent = filtered.length;
 }
 
 /* ---------------- MANUAL TICKET MODAL ---------------- */
@@ -3317,12 +3945,14 @@ function submitManualTicket(){
   }
 
   const newId = "OPS-"+(2300+issues.length+1);
-  issues.unshift({
+  const newTicket = {
     id:newId, title:title, category:category, severity:severity, pic:pic, status:"Open", sla:"On Track",
-    created:"Baru saja", source: group ? group.name : "Tiket Manual", slaTargetHrs:slaTargetHrs, deadline: now + slaTargetHrs*hr,
+    created:"Baru saja", createdAt: Date.now(), source: group ? group.name : "Tiket Manual", slaTargetHrs:slaTargetHrs, deadline: now + slaTargetHrs*hr,
     sentiment:{label:"Neutral", score:0}, sourceType:"Manual", tags:["Manual Entry"],
     thread:[], stage:1
-  });
+  };
+  issues.unshift(newTicket);
+  pushNotification(newTicket);
 
   if(existingMsg){
     existingMsg.flag = {severity: severity, issueId: newId};
@@ -3347,6 +3977,7 @@ function submitManualTicket(){
   if(group && activeGroupId === group.id) renderConvoMessages();
   renderIssuesTable();
   renderRecentIssues();
+  populateSlaPicFilter();
   renderSlaTable();
   renderDashboardAiSummary();
   document.getElementById('badge-open').textContent = issues.filter(i=>i.status==='Open').length;
@@ -3355,8 +3986,26 @@ function submitManualTicket(){
 }
 
 /* ---------------- RENDER: SLA VIEW ---------------- */
+function getFilteredSlaIssues(){
+  return issues.filter(it=>{
+    if(slaFilterState.pic!=='all' && it.pic!==slaFilterState.pic) return false;
+    if(slaFilterState.dateFrom!==null && it.createdAt < slaFilterState.dateFrom) return false;
+    if(slaFilterState.dateTo!==null && it.createdAt > slaFilterState.dateTo) return false;
+    return true;
+  });
+}
+
+function populateSlaPicFilter(){
+  const sel = document.getElementById('sla-pic-filter');
+  if(!sel) return;
+  const pics = Array.from(new Set(issues.map(it=>it.pic))).sort((a,b)=>a.localeCompare(b));
+  const current = sel.value || 'all';
+  sel.innerHTML = '<option value="all">Semua PIC</option>' + pics.map(p=>`<option value="${p}">${p}</option>`).join('');
+  if(pics.includes(current)) sel.value = current;
+}
+
 function renderSlaTable(){
-  const relevant = issues.slice().sort((a,b)=>a.deadline-b.deadline);
+  const relevant = getFilteredSlaIssues().sort((a,b)=>a.deadline-b.deadline);
   document.getElementById('sla-body').innerHTML = relevant.map(it=>`
     <tr onclick="openDrawer('${it.id}')">
       <td class="id">${it.id}</td>
@@ -3365,6 +4014,103 @@ function renderSlaTable(){
       <td><span class="badge ${slaBadgeClass(it.sla)}">${it.sla}</span></td>
       <td class="mono" style="font-size:11.5px; color:${it.sla==='Delayed'?'var(--red)':(it.sla==='At Risk'?'#B4720A':'var(--ink-dim)')}; font-weight:700;">${formatCountdown(it.deadline)}</td>
     </tr>`).join('');
+  document.getElementById('sla-empty').style.display = relevant.length ? 'none' : 'block';
+}
+
+/* ============================================================
+   DASHBOARD DATE-RANGE FILTER (mempengaruhi seluruh widget dashboard)
+   ============================================================ */
+let dashboardFilterState = {dateFrom:null, dateTo:null};
+const DEFAULT_KPI = {
+  total:{value:"1,245", delta:"↑ 4.2% vs minggu lalu"},
+  open:{value:"186", delta:"↑ 12 issue baru hari ini"},
+  sla:{value:"92%", delta:"↑ 1.3% vs minggu lalu"},
+  avgres:{value:"2.4h", delta:"↓ 18 menit lebih cepat"}
+};
+const DEFAULT_SLA_DIST = {onTrack:946, atRisk:186, delayed:113};
+
+function renderKpiCards(filteredArr){
+  if(!filteredArr){
+    document.getElementById('kpi-total-value').textContent = DEFAULT_KPI.total.value;
+    document.getElementById('kpi-total-delta').textContent = DEFAULT_KPI.total.delta;
+    document.getElementById('kpi-open-value').textContent = DEFAULT_KPI.open.value;
+    document.getElementById('kpi-open-delta').textContent = DEFAULT_KPI.open.delta;
+    document.getElementById('kpi-sla-value').textContent = DEFAULT_KPI.sla.value;
+    document.getElementById('kpi-sla-delta').textContent = DEFAULT_KPI.sla.delta;
+    document.getElementById('kpi-avgres-value').textContent = DEFAULT_KPI.avgres.value;
+    document.getElementById('kpi-avgres-delta').textContent = DEFAULT_KPI.avgres.delta;
+    return;
+  }
+  const total = filteredArr.length;
+  const open = filteredArr.filter(it=>it.status==='Open').length;
+  const onTrack = filteredArr.filter(it=>it.sla==='On Track').length;
+  const slaPct = total ? Math.round(onTrack/total*100) : 0;
+  const resolved = filteredArr.filter(it=>it.status==='Resolved'||it.status==='Closed');
+  const avgHrs = resolved.length ? (resolved.reduce((s,it)=>s+(it.slaTargetHrs||0),0)/resolved.length) : 0;
+  document.getElementById('kpi-total-value').textContent = total.toLocaleString('id-ID');
+  document.getElementById('kpi-total-delta').textContent = 'Sesuai periode terpilih';
+  document.getElementById('kpi-open-value').textContent = open.toLocaleString('id-ID');
+  document.getElementById('kpi-open-delta').textContent = 'Sesuai periode terpilih';
+  document.getElementById('kpi-sla-value').textContent = total ? slaPct+'%' : '-';
+  document.getElementById('kpi-sla-delta').textContent = 'Sesuai periode terpilih';
+  document.getElementById('kpi-avgres-value').textContent = resolved.length ? avgHrs.toFixed(1)+'h' : '-';
+  document.getElementById('kpi-avgres-delta').textContent = 'Sesuai periode terpilih';
+}
+
+function renderSlaDistribution(filteredArr){
+  let onTrack, atRisk, delayed, total;
+  if(!filteredArr){
+    ({onTrack, atRisk, delayed} = DEFAULT_SLA_DIST);
+    total = onTrack+atRisk+delayed;
+  } else {
+    onTrack = filteredArr.filter(it=>it.sla==='On Track').length;
+    atRisk = filteredArr.filter(it=>it.sla==='At Risk').length;
+    delayed = filteredArr.filter(it=>it.sla==='Delayed').length;
+    total = filteredArr.length;
+  }
+  const pctOnTrack = total ? onTrack/total*100 : 0;
+  const pctAtRisk = total ? atRisk/total*100 : 0;
+  document.getElementById('sla-dist-donut').style.background =
+    `conic-gradient(var(--g-500) 0% ${pctOnTrack}%, var(--amber) ${pctOnTrack}% ${pctOnTrack+pctAtRisk}%, var(--red) ${pctOnTrack+pctAtRisk}% 100%)`;
+  document.getElementById('sla-dist-pct').textContent = total ? Math.round(pctOnTrack)+'%' : '-';
+  document.getElementById('sla-dist-ontrack').textContent = onTrack.toLocaleString('id-ID');
+  document.getElementById('sla-dist-atrisk').textContent = atRisk.toLocaleString('id-ID');
+  document.getElementById('sla-dist-delayed').textContent = delayed.toLocaleString('id-ID');
+  document.getElementById('sla-dist-sub').textContent = `${total.toLocaleString('id-ID')} total issue tercatat`;
+}
+
+/* Terapkan filter tanggal dashboard ke SELURUH widget di halaman Dashboard */
+function applyDashboardFilter(from, to){
+  dashboardFilterState.dateFrom = from ? from.getTime() : null;
+  let toMs = null;
+  if(to){ const d = new Date(to); d.setHours(23,59,59,999); toMs = d.getTime(); }
+  dashboardFilterState.dateTo = toMs;
+
+  const active = dashboardFilterState.dateFrom!==null || dashboardFilterState.dateTo!==null;
+  const filtered = active ? issues.filter(it=>{
+    if(dashboardFilterState.dateFrom!==null && it.createdAt < dashboardFilterState.dateFrom) return false;
+    if(dashboardFilterState.dateTo!==null && it.createdAt > dashboardFilterState.dateTo) return false;
+    return true;
+  }) : null;
+
+  renderKpiCards(filtered);
+  renderCategoryBars('category-hbars', filtered || undefined);
+  renderTopIssueArea(filtered || undefined);
+  renderMostDelayedTeam(filtered || undefined);
+  renderRecentIssues(filtered || undefined);
+  renderSentimentDonut(filtered || undefined);
+  renderSlaDistribution(filtered);
+  renderRecentAlertsList(filtered || undefined);
+
+  const note = document.getElementById('dash-filter-note');
+  note.textContent = active
+    ? `Menampilkan ${filtered.length.toLocaleString('id-ID')} issue sesuai periode terpilih`
+    : 'Menampilkan seluruh data operasional';
+
+  document.querySelectorAll('#dash-quick-range button').forEach(b=>b.classList.remove('active'));
+  if(!active){
+    document.querySelector('#dash-quick-range button[data-range="all"]').classList.add('active');
+  }
 }
 
 /* ---------------- RENDER: WHATSAPP GROUPS ---------------- */
@@ -5090,6 +5836,94 @@ document.getElementById('global-search').addEventListener('input', e=>{
   renderIssuesTable();
 });
 
+document.getElementById('sla-pic-filter').addEventListener('change', e=>{ slaFilterState.pic = e.target.value; renderSlaTable(); });
+
+document.querySelectorAll('#dash-quick-range button').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    const range = b.dataset.range;
+    if(range==='all'){
+      clearDateRange('dashboard');
+      return;
+    }
+    const days = parseInt(range,10);
+    const to = new Date();
+    const from = new Date(); from.setDate(from.getDate()-(days-1));
+    if(dateRangePickers.dashboard){
+      dateRangePickers.dashboard.setDate([from, to], true);
+    } else {
+      applyDashboardFilter(from, to);
+      updateDateRangeInputUI('dashboard', from, to);
+    }
+  });
+});
+
+/* ---------------- DATE-RANGE PICKER (flatpickr) INFRASTRUCTURE ---------------- */
+let dateRangePickers = {};
+
+function formatDateRangeLabel(from, to){
+  const opts = {day:'2-digit', month:'short', year:'numeric'};
+  const f = from.toLocaleDateString('id-ID', opts);
+  const t = to.toLocaleDateString('id-ID', opts);
+  return f===t ? f : `${f} - ${t}`;
+}
+
+function updateDateRangeInputUI(key, from, to){
+  const input = document.getElementById(key+'-daterange');
+  const wrap = document.getElementById(key+'-daterange-wrap');
+  if(!input || !wrap) return;
+  if(from && to){
+    input.value = formatDateRangeLabel(from, to);
+    wrap.classList.add('has-value');
+  } else {
+    input.value = '';
+    wrap.classList.remove('has-value');
+  }
+}
+
+function initDateRangePicker(key, onApply){
+  const inputEl = document.getElementById(key+'-daterange');
+  if(!inputEl || typeof flatpickr==='undefined') return;
+  if(typeof flatpickr.l10ns!=='undefined' && flatpickr.l10ns.id) flatpickr.localize(flatpickr.l10ns.id);
+  dateRangePickers[key] = flatpickr(inputEl, {
+    mode:'range',
+    dateFormat:'d M Y',
+    maxDate:'today',
+    onChange:(selectedDates)=>{
+      if(selectedDates.length===2){
+        updateDateRangeInputUI(key, selectedDates[0], selectedDates[1]);
+        onApply(selectedDates[0], selectedDates[1]);
+      }
+    }
+  });
+}
+
+function clearDateRange(key){
+  const fp = dateRangePickers[key];
+  if(fp) fp.clear();
+  updateDateRangeInputUI(key, null, null);
+  if(key==='issues'){ filterState.dateFrom = null; filterState.dateTo = null; renderIssuesTable(); }
+  else if(key==='sla'){ slaFilterState.dateFrom = null; slaFilterState.dateTo = null; renderSlaTable(); }
+  else if(key==='dashboard'){ applyDashboardFilter(null, null); }
+}
+
+function initAllDateRangePickers(){
+  initDateRangePicker('issues', (from, to)=>{
+    filterState.dateFrom = from.getTime();
+    const t = new Date(to); t.setHours(23,59,59,999);
+    filterState.dateTo = t.getTime();
+    renderIssuesTable();
+  });
+  initDateRangePicker('sla', (from, to)=>{
+    slaFilterState.dateFrom = from.getTime();
+    const t = new Date(to); t.setHours(23,59,59,999);
+    slaFilterState.dateTo = t.getTime();
+    renderSlaTable();
+  });
+  initDateRangePicker('dashboard', (from, to)=>{
+    applyDashboardFilter(from, to);
+  });
+}
+
 /* ---------------- INIT ---------------- */
 function init(){
   renderVolumeChart();
@@ -5102,6 +5936,9 @@ function init(){
   renderSentimentDonut();
   renderRecentAlertsList();
   renderDashboardAiSummary();
+  renderKpiCards();
+  renderSlaDistribution();
+  populateSlaPicFilter();
   renderIssuesTable();
   renderSlaTable();
   renderAlerts();
@@ -5113,6 +5950,7 @@ function init(){
   renderSettings();
   renderPicSettings();
   renderSlaSettings();
+  initAllDateRangePickers();
   document.getElementById('badge-open').textContent = issues.filter(i=>i.status==='Open').length;
   document.getElementById('badge-flagged').textContent = countFlaggedToday();
   setInterval(()=>{ renderSlaTable(); }, 30000);
@@ -5123,6 +5961,10 @@ function init(){
      DEMO SIMULATOR PANEL HTML
      ============================================================ -->
 <div id="dp-toast" class="dp-toast"></div>
+<div id="export-toast" class="export-toast"></div>
+
+<!-- ExcelJS: dipakai untuk export tiket/issue ke Excel dengan styling warna Odeva IOC -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 
 <button id="demo-fab" onclick="demoShowPanel()">
   ▶ Demo Simulasi
@@ -5236,7 +6078,7 @@ const demoScenarios = [
 
           const existing = issues.find(x=>x.id===DEMO_ISSUE_ID);
           if(!existing){
-            issues.unshift({
+            const demoTicket = {
               id: DEMO_ISSUE_ID,
               title: "Laptop Pelanggan Rusak - Pengiriman Bermasalah",
               category: "Customer",
@@ -5245,6 +6087,7 @@ const demoScenarios = [
               status: "Open",
               sla: "On Track",
               created: nowStr,
+              createdAt: Date.now(),
               source: "WAG Customer Service Jakarta",
               slaTargetHrs: 4,
               deadline: Date.now() + 4*3600*1000,
@@ -5255,7 +6098,9 @@ const demoScenarios = [
                 { who: "Customer Service Agent · " + nowStr, text: "Customer komplain laptop tidak menyala, kardus penyok. Minta ganti unit atau refund." }
               ],
               stage: 1
-            });
+            };
+            issues.unshift(demoTicket);
+            pushNotification(demoTicket);
           }
 
           alerts.unshift({
@@ -6007,6 +6852,16 @@ function demoToast(msg) {
 
 // Initialize panel in collapsed state
 document.getElementById('demo-panel').classList.add('collapsed');
+
+// Initialize notification bell
+renderNotifDropdown();
+updateNotifBadge();
+
+// Initialize export button count
+(function(){
+  const all = document.getElementById('export-count-all');
+  if(all) all.textContent = issues.length + ' tiket';
+})();
 </script>
 </body>
 </html>
